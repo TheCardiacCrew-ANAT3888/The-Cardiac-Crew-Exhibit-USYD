@@ -40,27 +40,12 @@
                 id="heart"
                 src="models/adult_heart.glb"
                 position="0 0.5 0" 
-                scale="1 1 1"
+                scale="5 5 5"
                 animation-mixer
                 class="clickable">
             </a-gltf-model>
             
-            <!-- Heart Labels -->
-            <a-text 
-                value="Left Ventricle" 
-                position="-0.5 0.8 0" 
-                scale="0.5 0.5 0.5" 
-                color="white"
-                look-at="#camera">
-            </a-text>
-            
-            <a-text 
-                value="Right Ventricle" 
-                position="0.5 0.8 0" 
-                scale="0.5 0.5 0.5" 
-                color="white"
-                look-at="#camera">
-            </a-text>
+        
             
             <!-- Interactive Info Panel -->
             <a-plane 
@@ -80,19 +65,7 @@
                 </a-text>
             </a-plane>
             
-            <!-- Blood Flow Animation -->
-            <a-sphere 
-                id="blood-cell"
-                position="0 0.5 0.5" 
-                radius="0.05" 
-                color="#990000"
-                animation="property: position; 
-                          to: 0 0.5 -0.5; 
-                          dur: 2000; 
-                          loop: true; 
-                          dir: alternate">
-            </a-sphere>
-        </a-marker>
+            
 
         <!-- Camera -->
         <a-entity id="camera" camera></a-entity>
