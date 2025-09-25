@@ -35,17 +35,15 @@
     <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
         <!-- Heart Model Container -->
         <a-marker preset="hiro">
-            <!-- 3D Heart (using a basic shape for demo - replace with actual heart model) -->
-              <a-gltf-model 
+            <!-- 3D Heart Model with built-in animations -->
+            <a-gltf-model 
                 id="heart"
                 src="models/adult_heart.glb"
                 position="0 0.5 0" 
-                scale="5 5 5"
+                scale="1.0 1.0 1.0"
                 animation-mixer
                 class="clickable">
             </a-gltf-model>
-            
-        
             
             <!-- Interactive Info Panel -->
             <a-plane 
@@ -64,8 +62,7 @@
                     color="white">
                 </a-text>
             </a-plane>
-            
-            
+        </a-marker>
 
         <!-- Camera -->
         <a-entity id="camera" camera></a-entity>
