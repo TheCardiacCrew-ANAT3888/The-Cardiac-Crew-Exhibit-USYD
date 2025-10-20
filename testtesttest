@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AR.js HIRO Scanner</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aframe/1.4.0/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+        #instructions {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: Arial, sans-serif;
+            z-index: 999;
+            font-size: 14px;
+        }
+        #instructions h3 {
+            margin: 0 0 10px 0;
+            font-size: 16px;
+        }
+        #instructions p {
+            margin: 5px 0;
+            font-size: 12px;
+        }
+        .close-btn {
+            background: #ff4444;
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="instructions">
+        <h3>📱 AR Scanner Instructions</h3>
+        <p><strong>1.</strong> Allow camera permissions when prompted</p>
+        <p><strong>2.</strong> Point your camera at the HIRO marker (black square with symbol)</p>
+        <p><strong>3.</strong> Keep marker in view for 3D text to appear</p>
+        <p style="margin-top: 10px; font-size: 11px;">💡 Tip: Print the HIRO marker or display it on another screen</p>
+        <button class="close-btn" onclick="document.getElementById('instructions').style.display='none'">Got it!</button>
+    </div>
+
+    <a-scene
+        embedded
+        arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
+        renderer="logarithmicDepthBuffer: true; precision: medium;"
+        vr-mode-ui="enabled: false"
+        loading-screen="enabled: false">
+        
+        <!-- HIRO Marker -->
+        <a-marker preset="hiro" id="hiro-marker">
+            
+            <!-- 3D Text Line 1 -->
+            <a-text
+                value="Hi this is a test,"
+                position="-1.5 1.2 0"
+                rotation="-90 0 0"
+                color="#00ff00"
+                width="4"
+                align="center"
+                font="roboto"
+                shader="msdf">
+            </a-text>
+            
+            <!-- 3D Text Line 2 -->
+            <a-text
+                value="it will be replaced by"
+                position="-1.5 0.8 0"
+                rotation="-90 0 0"
+                color="#00ccff"
+                width="4"
+                align="center"
+                font="roboto"
+                shader="msdf">
+            </a-text>
+            
+            <!-- 3D Text Line 3 -->
+            <a-text
+                value="mitral heart valve"
+                position="-1.5 0.4 0"
+                rotation="-90 0 0"
+                color="#ff00ff"
+                width="4"
+                align="center"
+                font="roboto"
+                shader="msdf">
+            </a-text>
+            
+            <!-- 3D Text Line 4 -->
+            <a-text
+                value="pathology"
+                position="-1.5 0.0 0"
+                rotation="-90 0 0"
+                color="#ffff00"
+                width="4"
+                align="center"
+                font="roboto"
+                shader="msdf">
+            </a-text>
+            
+            <!-- Animated rotating box as visual indicator -->
+            <a-box
+                position="0 0.5 0"
+                rotation="45 45 0"
+                color="#4CC3D9"
+                scale="0.3 0.3 0.3"
+                animation="property: rotation; to: 45 405 0; loop: true; dur: 3000; easing: linear">
+            </a-box>
+            
+            <!-- Base platform -->
+            <a-plane
+                position="0 -0.1 0"
+                rotation="-90 0 0"
+                width="3"
+                height="3"
+                color="#7BC8A4"
+                opacity="0.5">
+            </a-plane>
+            
+        </a-marker>
+
+        <!-- Camera -->
+        <a-entity camera></a-entity>
+    </a-scene>
+
+    <script>
+        // Log when marker is found/lost
+        const marker = document.querySelector('#hiro-marker');
+        
+        marker.addEventListener('markerFound', function() {
+            console.log('HIRO marker detected!');
+        });
+        
+        marker.addEventListener('markerLost', function() {
+            console.log('HIRO marker lost');
+        });
+
+        // Auto-hide instructions after 10 seconds
+        setTimeout(function() {
+            const instructions = document.getElementById('instructions');
+            if (instructions) {
+                instructions.style.transition = 'opacity 1s';
+                instructions.style.opacity = '0';
+                setTimeout(function() {
+                    instructions.style.display = 'none';
+                }, 1000);
+            }
+        }, 10000);
+    </script>
+</body>
+</html>
