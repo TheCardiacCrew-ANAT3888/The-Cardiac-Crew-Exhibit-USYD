@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AR.js HIRO Scanner</title>
+    <title>AR.js Image Tracking Scanner</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aframe/1.4.0/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
     <style>
@@ -47,21 +47,27 @@
     <div id="instructions">
         <h3>📱 AR Scanner Instructions</h3>
         <p><strong>1.</strong> Allow camera permissions when prompted</p>
-        <p><strong>2.</strong> Point your camera at the HIRO marker (black square with symbol)</p>
+        <p><strong>2.</strong> Point your camera at YOUR custom marker image</p>
         <p><strong>3.</strong> Keep marker in view for 3D text to appear</p>
-        <p style="margin-top: 10px; font-size: 11px;">💡 Tip: Print the HIRO marker or display it on another screen</p>
+        <p style="margin-top: 10px; font-size: 11px;">💡 Tip: Print the marker or display it on another screen</p>
         <button class="close-btn" onclick="document.getElementById('instructions').style.display='none'">Got it!</button>
     </div>
 
     <a-scene
         embedded
-        arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
+        arjs="sourceType: webcam; debugUIEnabled: false;"
         renderer="logarithmicDepthBuffer: true; precision: medium;"
         vr-mode-ui="enabled: false"
         loading-screen="enabled: false">
         
-        <!-- HIRO Marker -->
-        <a-marker preset="hiro" id="hiro-marker">
+        <!-- IMAGE-BASED MARKER - Point to your marker image -->
+        <a-marker 
+            type="image" 
+            url="markers/my_marker_image.png" 
+            id="image-marker"
+            smooth="true"
+            smoothCount="10"
+            smoothTolerance="0.01">
             
             <!-- 3D Text Line 1 -->
             <a-text
@@ -111,7 +117,7 @@
                 shader="msdf">
             </a-text>
             
-            <!-- Animated rotating box as visual indicator -->
+            <!-- Animated rotating box -->
             <a-box
                 position="0 0.5 0"
                 rotation="45 45 0"
@@ -137,18 +143,16 @@
     </a-scene>
 
     <script>
-        // Log when marker is found/lost
-        const marker = document.querySelector('#hiro-marker');
+        const marker = document.querySelector('#image-marker');
         
         marker.addEventListener('markerFound', function() {
-            console.log('HIRO marker detected!');
+            console.log('Image marker detected!');
         });
         
         marker.addEventListener('markerLost', function() {
-            console.log('HIRO marker lost');
+            console.log('Image marker lost');
         });
 
-        // Auto-hide instructions after 10 seconds
         setTimeout(function() {
             const instructions = document.getElementById('instructions');
             if (instructions) {
