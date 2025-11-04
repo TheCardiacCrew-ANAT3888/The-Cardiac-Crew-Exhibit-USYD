@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+  <title>Heartscapes – AR Viewer</title>
+  <!-- A‑Frame + MindAR (image tracking) -->
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+  <style>
+    html, body {margin:0; height:100%; background:#000; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;}
+    .hud {position:fixed; left:0; right:0; display:flex; justify-content:center; gap:12px;}
+    #splash {inset:0; position:fixed; background:#000; color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:24px;}
+    #splash h1 {margin:0 0 8px 0; font-size:20px;}
+    #splash p {opacity:.85; max-width:520px;}
+    #start {margin-top:16px; padding:12px 18px; border-radius:12px; border:1px solid #444; background:#111; color:#fff;}
+    #ctaBar {bottom:20px;}
+    .btn {padding:12px 14px; border-radius:12px; border:1px solid #333; background:#111; color:#fff; min-width:140px}
+    .btn:active {transform:scale(0.98)}
+    #label {position:fixed; top:14px; left:14px; right:14px; color:#fff; text-align:center; opacity:.95}
+    #label span {background:rgba(0,0,0,.55); padding:6px 10px; border-radius:10px;}
+  </style>
+</head>
+<body>
+  <!-- Splash / permission prompt -->
+  <div id="splash">
+    <h1>Heartscapes – AR</h1>
+    <p>Point your camera at a Heartscapes image plaque (watercolour, cross‑section, embroidery, pathology disc, or geo‑historical globe). When a work is recognised, tap a button to open its page or video.</p>
+    <button id="start">Start</button>
+  </div>
+
+  <div id="label"><span id="labelText">Align a target within view…</span></div>
+
+  <!-- Call‑to‑action buttons appear only when a target is tracked -->
+  <div class="hud" id="ctaBar" style="display:none;">
+    <button class="btn" id="openSite">Open exhibit</button>
+    <button class="btn" id="openVideo">Watch video</button>
+  </div>
+
+  <!-- Scene: MindAR image tracking -->
+  <a-scene
+      mindar-image="imageTargetSrc: ./assets/targets/targets.mind; maxTrack: 1;"
+      color-space="sRGB"
+      renderer="colorManagement: true, physicallyCorrectLights: true, logarithmicDepthBuffer: true"
+      vr-mode-ui="enabled: false"
+      device-orientation-permission-ui="enabled: false"
+      embedded
+      id="scene"
+      style="display:none;"
+  >
+    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+    <!-- One entity per image target in targets.mind.
+      The targetIndex must match the order used when you compiled the .mind file.
+      Provide data attributes for name and links; the UI will read them on detection. -->
+
+    <!-- PATHOLOGY (Aortic stenosis discs) indices 0..2 -->
+    <a-entity mindar-image-target="targetIndex: 0"
+      id="path-severe"
+      data-name="Severe Aortic Stenosis"
+      data-site="https://unisydneyedu.sharepoint.com/:u:/r/sites/HeartscapesTheStructureofLife/SitePages/Valve-Pathology---Aortic-Stenosis.aspx?csf=1&web=1&share=EflVcCYjISZAhtiuCE7V8k4Bp3rD2yGRa2vbKf3Av_9t8Q&e=ZMU9WQ"
+      data-video="https://unisydneyedu.sharepoint.com/:u:/s/HeartscapesTheStructureofLife/EWH9J_ICS5NCmAIL7qcm2pYBUCAYaB3Z2EXK00DxCbZa0g?e=ybLefg"></a-entity>
+
+    <a-entity mindar-image-target="targetIndex: 1"
+      id="path-moderate"
+      data-name="Moderate Aortic Stenosis"
+      data-site="https://unisydneyedu.sharepoint.com/:u:/r/sites/HeartscapesTheStructureofLife/SitePages/Valve-Pathology---Aortic-Stenosis.aspx?csf=1&web=1&share=EflVcCYjISZAhtiuCE7V8k4Bp3rD2yGRa2vbKf3Av_9t8Q&e=ZMU9WQ"
+      data-video="https://unisydneyedu.sharepoint.com/:u:/s/HeartscapesTheStructureofLife/EWH9J_ICS5NCmAIL7qcm2pYBUCAYaB3Z2EXK00DxCbZa0g?e=ybLefg"></a-entity>
+
+    <a-entity mindar-image-target="targetIndex: 2"
+      id="path-healthy"
+      data-name="Healthy Aortic Valve"
+      data-site="https://unisydneyedu.sharepoint.com/:u:/r/sites/HeartscapesTheStructureofLife/SitePages/Valve-Pathology---Aortic-Stenosis.aspx?csf=1&web=1&share=EflVcCYjISZAhtiuCE7V8k4Bp3rD2yGRa2vbKf3Av_9t8Q&e=ZMU9WQ"
+      data-video="https://unisydneyedu.sharepoint.com/:u:/s/HeartscapesTheStructureofLife/EWH9J_ICS5NCmAIL7qcm2pYBUCAYaB3Z2EXK00DxCbZa0g?e=ybLefg"></a-entity>
+
+    <!-- GEO‑HISTORICAL indices 3..7 (5→1) -->
+    <a-entity mindar-image-target="targetIndex: 3"
+      id="geo-5"
+      data-name="Geo‑historical Perspectives (5)"
+      data-site="https://unisydneyedu.sharepoint.com/:u:/r/sites/HeartscapesTheStructureofLife/SitePages/Geo-historical.aspx?csf=1&web=1&share=EaZwatfZEN5Lu7CfCKk721MBfjcVJbUcMSLe7-LoiTcWBQ&e=jKh0Xg"
+      data-video="https://unisydneyedu.sharepoint.com/:u:/s/HeartscapesTheStructureofLife/EWH9J_ICS5NCmAIL7qcm2pYBUCAYaB3Z2EXK00DxCbZa0g?e=ybLefg"></a-entity>
+
+    <a-entity mindar-image-target="targetIndex: 4"
+      id="geo-4"
+      data-name="Geo‑historical Perspectives (4)"
+      data-site="https://unisydneyedu.sharepoint.com/:u:/r/sites/HeartscapesTheStructureofLife/SitePages/Geo-historical.aspx?csf=1&web=1&share=EaZwatfZEN5Lu7CfCKk721MBfjcVJbUcMSLe7-LoiTcWBQ&e=jKh0Xg"
+      data-video="https://unisydneyedu.sharepoint.com/:u:/s/HeartscapesTheStructureofLife/EWH9J_ICS5NCmAIL7qcm2pYBUCAYaB3Z2EXK00DxCbZa0g?e=ybLefg"></a-entity>
+
+    <a-entity mindar-image-target="targetIndex: 5"
+      id="geo-3"
+      data-name="Geo‑historical Perspectives (3)"
+      data-site="https://unisydneyedu.sharepoint.com/:u:/r/sites/HeartscapesTheStructureofLife/SitePages/Geo-historical.aspx?csf=1&web=1&share=EaZwatfZEN5Lu7CfCKk721MBfjcVJbUcMSLe7-LoiTcWBQ&e=jKh0Xg"
+      data-video="https://unisydneyedu.sharepoint.com/:u:/s/HeartscapesTheStructureofLife/EWH9J_ICS5NCmAIL7qcm2pYBUCAYaB3Z2EXK00DxCbZa0g?e=ybLefg"></a-entity>
+
+    <a-entity mindar-image-target="targetIndex: 6"
+      id="geo-2"
+      data-name="Geo‑historical Perspectives (2)"
+      data-site="https://unisydneyedu.sharepoint.com/:u:/r/sites/HeartscapesTheStructureofLife/SitePages/Geo-historical.aspx?csf=1&web=1&share=EaZwatfZEN5Lu7CfCKk721MBfjcVJbUcMSLe7-LoiTcWBQ&e=jKh0Xg"
+      data-video="https://unisydneyedu.sharepoint.com/:u:/s/HeartscapesTheStructureofLife/EWH9J_ICS5NCmAIL7qcm2pYBUCAYaB3Z2EXK00DxCbZa0g?e=ybLefg"></a-entity>
+
+    <a-entity mindar-image-target="targetIndex: 7"
+      id="geo-1"
+      data-name="Geo‑historical Perspectives (1)"
+      data-site="https://unisydneyedu.sharepoint.com/:u:/r/sites/HeartscapesTheStructureofLife/SitePages/Geo-historical.aspx?csf=1&web=1&share=EaZwatfZEN5Lu7CfCKk721MBfjcVJbUcMSLe7-LoiTcWBQ&e=jKh0Xg"
+      data-video="https://unisydneyedu.sharepoint.com/:u:/s/HeartscapesTheStructureofLife/EWH9J_ICS5NCmAIL7qcm2pYBUCAYaB3Z2EXK00DxCbZa0g?e=ybLefg"></a-entity>
+
+    <!-- EMBROIDERY indices 8..10 (3→1) -->
+    <a-entity mindar-image-target="targetIndex: 8"
+      id="emb-3"
+      data-name="Trabeculae carneae – Embroidery (3)"
+      data-site="https://unisydneyedu.sharepoint.com/:u:/r/sites/HeartscapesTheStructureofLife/SitePages/Trabeculae-Carnae.aspx?csf=1&web=1&share=ERrwMxWJc7pJpPP2dyiDvX0B6_Se8xV5BdKMBtynhF2vYA&e=LXBomh"
+      data-video="https://unisydneyedu.sharepoint.com/:u:/s/HeartscapesTheStructureofLife/EWH9J_ICS5NCmAIL7qcm2pYBUCAYaB3Z2EXK00DxCbZa0g?e=ybLefg"></a-entity>
+
+    <a-entity mindar-image-target="targetIndex: 9"
+      id="emb-2"
+      data-name="Trabeculae carneae – Embroidery (2)"
+      data-site="https://unisydneyedu.sharepoint.com/:u:/r/sites/HeartscapesTheStructureofLife/SitePages/Trabeculae-Carnae.aspx?csf=1&web=1&share=ERrwMxWJc7pJpPP2dyiDvX0B6_Se8xV5BdKMBtynhF2vYA&e=LXBomh"
+      data-video="https://unisydneyedu.sharepoint.com/:u:/s/HeartscapesTheStructureofLife/EWH9J_ICS5NCmAIL7qcm2pYBUCAYaB3Z2EXK00DxCbZa0g?e=ybLefg"></a-entity>
+
+    <a-entity mindar-image-target="targetIndex: 10"
+      id="emb-1"
+      data-name="Trabeculae carneae – Embroidery (1)"
+      data-site="https://unisydneyedu.sharepoint.com/:u:/r/sites/HeartscapesTheStructureofLife/SitePages/Trabeculae-Carnae.aspx?csf=1&web=1&share=ERrwMxWJc7pJpPP2dyiDvX0B6_Se8xV5BdKMBtynhF2vYA&e=LXBomh"
+      data-video="https://unisydneyedu.sharepoint.com/:u:/s/HeartscapesTheStructureofLife/EWH9J_ICS5NCmAIL7qcm2pYBUCAYaB3Z2EXK00DxCbZa0g?e=ybLefg"></a-entity>
+
+    <!-- CROSS‑SECTIONS indices 11..16 (6→1) -->
+    <a-entity mindar-image-target="targetIndex: 11"
+      id="xsec-6"
+      data-name="Internal Architecture – Level 6"
+      data-site="https://unisydneyedu.sharepoint.com/:u:/r/sites/HeartscapesTheStructureofLife/SitePages/X-sections.aspx?csf=1&web=1&share=EcSKakLg4NJGiL3D56te3UsBuxeW2eKgD97wGfrUvxWOzg&e=J4r2h1"
+      data-video="https://unisydneyedu.sharepoint.com/:u:/s/HeartscapesTheStructureofLife/EWH9J_ICS5NCmAIL7qcm2pYBUCAYaB3Z2EXK00DxCbZa0g?e=ybLefg"></a-entity>
+
+    <a-entity mindar-image-target="targetIndex: 12"
+      id="xsec-5"
+      data-name="Internal Architecture – Level 5"
+      data-site="https://unisydneyedu.sharepoint.com/:u:/r/sites/HeartscapesTheStructureofLife/SitePages/X-sections.aspx?csf=1&web=1&share=EcSKakLg4NJGiL3D56te3UsBuxeW2eKgD97wGfrUvxWOzg&e=J4r2h1"
+      data-video="https://unisydneyedu.sharepoint.com/:u:/s/HeartscapesTheStructureofLife/EWH9J_ICS5NCmAIL7qcm2pYBUCAYaB3Z2EXK00DxCbZa0g?e=ybLefg"></a-entity>
+
+    <a-entity mindar-image-target="targetIndex: 13"
+      id="xsec-4"
+      data-name="Internal Architecture – Level 4"
+      data-site="https://unisydneyedu.sharepoint.com/:u:/r/sites/HeartscapesTheStructureofLife/SitePages/X-sections.aspx?csf=1&web=1&share=EcSKakLg4NJGiL3D56te3UsBuxeW2eKgD97wGfrUvxWOzg&e=J4r2h1"
+      data-video="https://unisydneyedu.sharepoint.com/:u:/s/HeartscapesTheStructureofLife/EWH9J_ICS5NCmAIL7qcm2pYBUCAYaB3Z2EXK00DxCbZa0g?e=ybLefg"></a-entity>
+
+    <a-entity mindar-image-target="targetIndex: 14"
+      id="xsec-3"
+      data-name="Internal Architecture – Level 3"
+      data-site="https://unisydneyedu.sharepoint.com/:u:/r/sites/HeartscapesTheStructureofLife/SitePages/X-sections.aspx?csf=1&web=1&share=EcSKakLg4NJGiL3D56te3UsBuxeW2eKgD97wGfrUvxWOzg&e=J4r2h1"
+      data-video="https://unisydneyedu.sharepoint.com/:u:/s/HeartscapesTheStructureofLife/EWH9J_ICS5NCmAIL7qcm2pYBUCAYaB3Z2EXK00DxCbZa0g?e=ybLefg"></a-entity>
+
+    <a-entity mindar-image-target="targetIndex: 15"
+      id="xsec-2"
+      data-name="Internal Architecture – Level 2"
+      data-site="https://unisydneyedu.sharepoint.com/:u:/r/sites/HeartscapesTheStructureofLife/SitePages/X-sections.aspx?csf=1&web=1&share=EcSKakLg4NJGiL3D56te3UsBuxeW2eKgD97wGfrUvxWOzg&e=J4r2h1"
+      data-video="https://unisydneyedu.sharepoint.com/:u:/s/HeartscapesTheStructureofLife/EWH9J_ICS5NCmAIL7qcm2pYBUCAYaB3Z2EXK00DxCbZa0g?e=ybLefg"></a-entity>
+
+    <a-entity mindar-image-target="targetIndex: 16"
+      id="xsec-1"
+      data-name="Internal Architecture – Level 1"
+      data-site="https://unisydneyedu.sharepoint.com/:u:/r/sites/HeartscapesTheStructureofLife/SitePages/X-sections.aspx?csf=1&web=1&share=EcSKakLg4NJGiL3D56te3UsBuxeW2eKgD97wGfrUvxWOzg&e=J4r2h1"
+      data-video="https://unisydneyedu.sharepoint.com/:u:/s/HeartscapesTheStructureofLife/EWH9J_ICS5NCmAIL7qcm2pYBUCAYaB3Z2EXK00DxCbZa0g?e=ybLefg"></a-entity>
+
+    <!-- WATERCOLOUR / HISTOLOGY indices 17..18 (2→1) -->
+    <a-entity mindar-image-target="targetIndex: 17"
+      id="histology-2"
+      data-name="Histology – Watercolour (2)"
+      data-site="https://unisydneyedu.sharepoint.com/:u:/r/sites/HeartscapesTheStructureofLife/SitePages/Watercolour.aspx?csf=1&web=1&share=EVALhfSyTQJNnNoGlub4dIwB07DS13P4TOtzG12ziGRc2Q&e=usYMb1"
+      data-video="https://unisydneyedu.sharepoint.com/:u:/s/HeartscapesTheStructureofLife/EWH9J_ICS5NCmAIL7qcm2pYBUCAYaB3Z2EXK00DxCbZa0g?e=ybLefg"></a-entity>
+
+    <a-entity mindar-image-target="targetIndex: 18"
+      id="histology-1"
+      data-name="Histology – Watercolour (1)"
+      data-site="https://unisydneyedu.sharepoint.com/:u:/r/sites/HeartscapesTheStructureofLife/SitePages/Watercolour.aspx?csf=1&web=1&share=EVALhfSyTQJNnNoGlub4dIwB07DS13P4TOtzG12ziGRc2Q&e=usYMb1"
+      data-video="https://unisydneyedu.sharepoint.com/:u:/s/HeartscapesTheStructureofLife/EWH9J_ICS5NCmAIL7qcm2pYBUCAYaB3Z2EXK00DxCbZa0g?e=ybLefg"></a-entity>
+
+  </a-scene>
+
+  <script>
+    // --- Config helpers ------------------------------------------------------
+    const labelText = document.getElementById('labelText');
+    const ctaBar = document.getElementById('ctaBar');
+    const openSite = document.getElementById('openSite');
+    const openVideo = document.getElementById('openVideo');
+
+    let currentTarget = null;
+
+    function bindTarget(el){
+      el.addEventListener('targetFound', () => {
+        currentTarget = el;
+        const name = el.dataset.name || el.id;
+        labelText.textContent = name;
+        ctaBar.style.display = 'flex';
+      });
+      el.addEventListener('targetLost', () => {
+        if (currentTarget === el) {
+          currentTarget = null;
+          labelText.textContent = 'Align a target within view…';
+          ctaBar.style.display = 'none';
+        }
+      });
+    }
+
+    // Attach listeners for all declared targets
+    window.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('[mindar-image-target]').forEach(bindTarget);
+
+      // CTA button actions require user gesture (iOS safe)
+      openSite.addEventListener('click', () => {
+        if (!currentTarget) return;
+        const url = currentTarget.dataset.site;
+        if (url && url !== 'REPLACE_WITH_URL') window.location.assign(url);
+      });
+      openVideo.addEventListener('click', () => {
+        if (!currentTarget) return;
+        const url = currentTarget.dataset.video;
+        if (url && url !== 'REPLACE_WITH_VIDEO') window.location.assign(url);
+      });
+
+      // Splash: start camera after user taps Start
+      document.getElementById('start').addEventListener('click', () => {
+        document.getElementById('splash').style.display='none';
+        document.getElementById('scene').style.display='block';
+      });
+    });
+  </script>
+
+  <!-- Deployment notes
+    1) Put your compiled MindAR target file at: ./assets/targets/targets.mind
+       Build with mindar‑cli (Node):
+         npx mindar image-target --input ./targets-src/*.jpg --output ./assets/targets/targets.mind
+       The order of images in --input determines each targetIndex above.
+
+    2) Replace each data-site and data-video with your SharePoint/Sketchfab links (tap-to-open only).
+
+    3) Host on GitHub Pages (HTTPS). Create /assets/targets/ and /targets-src/ folders in repo.
+  -->
+</body>
+</html>
