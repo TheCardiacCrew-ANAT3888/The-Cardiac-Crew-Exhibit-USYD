@@ -7,42 +7,46 @@
   <!-- A‑Frame + MindAR (image tracking) -->
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
   <style>
-  html, body {margin:0; height:100%; overflow:hidden; background:#000; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;}
-  /* Make the AR scene fill the screen */
-  #scene { position:fixed; inset:0; z-index:0; }
+    html, body {margin:0; height:100%; overflow:hidden; background:#000; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;}
+    /* Make the AR scene fill the screen */
+    #scene { position:fixed; inset:0; z-index:0; }
 
-  /* Overlay UI sits above the camera */
-  .hud {position:fixed; left:0; right:0; display:flex; justify-content:center; gap:12px; z-index:10;}
-  #splash {inset:0; position:fixed; background:#000; color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:24px; z-index:20;}
-  #splash h1 {margin:0 0 8px 0; font-size:20px;}
-  #splash p {opacity:.85; max-width:520px;}
-  #start {margin-top:16px; padding:12px 18px; border-radius:12px; border:1px solid #444; background:#111; color:#fff;}
-  #ctaBar {bottom:20px;}
-  .btn {padding:12px 14px; border-radius:12px; border:1px solid #333; background:#111; color:#fff; min-width:140px}
-  .btn:active {transform:scale(0.98)}
-  #label {position:fixed; top:14px; left:14px; right:14px; color:#fff; text-align:center; opacity:.95; z-index:10}
-  #label span {background:rgba(0,0,0,.55); padding:6px 10px; border-radius:10px;}
+    /* Ensure A‑Frame canvas doesn’t hide the camera feed */
+    a-scene, canvas, .a-canvas { background: transparent !important; }
 
-  /* Optional grid overlay to help framing */
-  #grid {position:fixed; inset:0; pointer-events:none; background:
-    linear-gradient(rgba(255,255,255,.12), rgba(255,255,255,.12)) 0 33.33%/100% 1px no-repeat,
-    linear-gradient(rgba(255,255,255,.12), rgba(255,255,255,.12)) 0 66.66%/100% 1px no-repeat,
-    linear-gradient(90deg, rgba(255,255,255,.12), rgba(255,255,255,.12)) 33.33% 0/1px 100% no-repeat,
-    linear-gradient(90deg, rgba(255,255,255,.12), rgba(255,255,255,.12)) 66.66% 0/1px 100% no-repeat;
-    opacity:.35; display:none; z-index:5; }
+    /* Overlay UI sits above the camera */
+    .hud {position:fixed; left:0; right:0; display:flex; justify-content:center; gap:12px; z-index:10;}
+    #splash {inset:0; position:fixed; background:#000; color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:24px; z-index:20;}
+    #splash h1 {margin:0 0 8px 0; font-size:20px;}
+    #splash p {opacity:.85; max-width:520px;}
+    #start {margin-top:16px; padding:12px 18px; border-radius:12px; border:1px solid #444; background:#111; color:#fff;}
+    #ctaBar {bottom:20px;}
+    .btn {padding:12px 14px; border-radius:12px; border:1px solid #333; background:#111; color:#fff; min-width:140px}
+    .btn:active {transform:scale(0.98)}
+    #label {position:fixed; top:14px; left:14px; right:14px; color:#fff; text-align:center; opacity:.95; z-index:10}
+    #label span {background:rgba(0,0,0,.55); padding:6px 10px; border-radius:10px;}
 
-  /* Small floating chip for utility toggle */
-  #vfBar { position:fixed; right:12px; bottom:12px; display:flex; gap:8px; z-index:10; }
-  .chip { padding:8px 10px; border-radius:999px; border:1px solid #333; background:#111; color:#fff; font-size:12px; }
-</style>
+    /* Optional grid overlay to help framing */
+    #grid {position:fixed; inset:0; pointer-events:none; background:
+      linear-gradient(rgba(255,255,255,.12), rgba(255,255,255,.12)) 0 33.33%/100% 1px no-repeat,
+      linear-gradient(rgba(255,255,255,.12), rgba(255,255,255,.12)) 0 66.66%/100% 1px no-repeat,
+      linear-gradient(90deg, rgba(255,255,255,.12), rgba(255,255,255,.12)) 33.33% 0/1px 100% no-repeat,
+      linear-gradient(90deg, rgba(255,255,255,.12), rgba(255,255,255,.12)) 66.66% 0/1px 100% no-repeat;
+      opacity:.35; display:none; z-index:5; }
+
+    /* Small floating chip for utility toggle */
+    #vfBar { position:fixed; right:12px; bottom:12px; display:flex; gap:8px; z-index:10; }
+    .chip { padding:8px 10px; border-radius:999px; border:1px solid #333; background:#111; color:#fff; font-size:12px; }
+  </style>
 </head>
 <body>
   <!-- Splash / permission prompt -->
   <div id="splash">
     <h1>Heartscapes – AR</h1>
     <p>Point your camera at a Heartscapes image plaque (watercolour, cross‑section, embroidery, pathology disc, or geo‑historical globe). When a work is recognised, tap a button to open its page or video.</p>
-    <button id="start">Start</button>
+    <button id="start" onclick="(function(){var s=document.getElementById('splash');var sc=document.getElementById('scene'); if(s) s.style.display='none'; if(sc) sc.style.display='block';})();">Start</button>
   </div>
 
   <div id="label"><span id="labelText">Align a target within view…</span></div>
@@ -53,7 +57,7 @@
     <button class="btn" id="openVideo">Watch video</button>
   </div>
 
-  <!-- Overlays on top of the full-screen camera -->
+  <!-- Utility overlays on top of the full-screen camera -->
   <div id="vfBar">
     <button class="chip" id="toggleGrid">Grid</button>
   </div>
@@ -61,20 +65,19 @@
 
   <!-- Scene: MindAR image tracking -->
   <a-scene
-      mindar-image="imageTargetSrc: ./assets/targets/targets.mind; maxTrack: 1; uiScanning: true;"
-      color-space="sRGB"
-      renderer="colorManagement: true, physicallyCorrectLights: true, logarithmicDepthBuffer: true"
-      vr-mode-ui="enabled: false"
-      device-orientation-permission-ui="enabled: false"
-      embedded
-      id="scene"
-      style="display:none;"
+    id="scene"
+    mindar-image="imageTargetSrc: ./assets/targets/targets.mind; maxTrack: 1; uiScanning: true;"
+    color-space="sRGB"
+    renderer="alpha: true; colorManagement: true; physicallyCorrectLights: true; logarithmicDepthBuffer: true; antialias: true"
+    vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: false"
+    embedded
+    style="display:none;"
   >
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
     <!-- One entity per image target in targets.mind.
-      The targetIndex must match the order used when you compiled the .mind file.
-      Provide data attributes for name and links; the UI will read them on detection. -->
+         The targetIndex must match the order used when you compiled the .mind file. -->
 
     <!-- PATHOLOGY (Aortic stenosis discs) indices 0..2 -->
     <a-entity mindar-image-target="targetIndex: 0"
@@ -227,24 +230,34 @@
       document.querySelectorAll('[mindar-image-target]').forEach(bindTarget);
 
       // CTA button actions require user gesture (iOS safe)
-      openSite.addEventListener('click', () => {
+      if (openSite) openSite.addEventListener('click', () => {
         if (!currentTarget) return;
         const url = currentTarget.dataset.site;
         if (url && url !== 'REPLACE_WITH_URL') window.location.assign(url);
       });
-      openVideo.addEventListener('click', () => {
+      if (openVideo) openVideo.addEventListener('click', () => {
         if (!currentTarget) return;
         const url = currentTarget.dataset.video;
         if (url && url !== 'REPLACE_WITH_VIDEO') window.location.assign(url);
       });
 
-      // Splash: start camera after user taps Start
-      document.getElementById('start').addEventListener('click', () => {
-        document.getElementById('splash').style.display='none';
-        document.getElementById('scene').style.display='block';
+      // Splash: start camera after user taps Start (inline onclick also present as fallback)
+      const startBtn = document.getElementById('start');
+      const splash = document.getElementById('splash');
+      const scene = document.getElementById('scene');
+      if (startBtn) startBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (splash) splash.style.display='none';
+        if (scene) scene.style.display='block';
       });
 
-      // Grid toggle only (camera is full-screen under the overlays)
+      // Make WebGL canvas transparent after scene loads (belt-and-braces)
+      scene.addEventListener('loaded', () => {
+        const r = scene.renderer;
+        if (r && r.setClearColor) r.setClearColor(0x000000, 0); // 0 alpha
+      });
+
+      // Grid toggle
       const grid = document.getElementById('grid');
       document.getElementById('toggleGrid').addEventListener('click', () => {
         grid.style.display = (grid.style.display === 'none' || !grid.style.display) ? 'block' : 'none';
@@ -254,9 +267,7 @@
 
   <!-- Deployment notes
     1) Put your compiled MindAR target file at: ./assets/targets/targets.mind
-       Build with mindar‑cli (Node):
-         npx mindar image-target --input ./targets-src/*.jpg --output ./assets/targets/targets.mind
-       The order of images in --input determines each targetIndex above.
+       The order of images in the compiler determines each targetIndex above.
 
     2) Replace each data-site and data-video with your SharePoint/Sketchfab links (tap-to-open only).
 
@@ -264,4 +275,3 @@
   -->
 </body>
 </html>
-
