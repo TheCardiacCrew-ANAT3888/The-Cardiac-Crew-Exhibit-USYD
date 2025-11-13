@@ -1,4 +1,4 @@
-e <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -13,7 +13,7 @@ e <!DOCTYPE html>
     /* Make the AR scene fill the screen */
     #scene { position:fixed; inset:0; z-index:0; }
 
-    /* Ensure A‑Frame canvas doesn’t hide the camera feed */
+    /* Ensure A‑Frame canvas doesn't hide the camera feed */
     a-scene, canvas, .a-canvas { background: transparent !important; }
 
     /* Overlay UI sits above the camera */
@@ -45,8 +45,8 @@ e <!DOCTYPE html>
   <!-- Splash / permission prompt -->
   <div id="splash">
     <h1>Heartscapes – AR</h1>
-    <p>Point your camera at one of the objects in the Heartscapes exhibit. When a work is recognised, tap a button to see more information on it open its page or video.</p>
-    <button id="start" onclick="(function(){var s=document.getElementById('splash');var sc=document.getElementById('scene'); if(s) s.style.display='none'; if(sc) sc.style.display='block';})();">Start</button>
+    <p>Point your camera at one of the objects in the Heartscapes exhibit. When a work is recognised, tap a button to see more information or watch its video.</p>
+    <button id="start">Start</button>
   </div>
 
   <div id="label"><span id="labelText">Align a target within view…</span></div>
@@ -75,9 +75,6 @@ e <!DOCTYPE html>
     style="display:none;"
   >
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
-
-    <!-- One entity per image target in targets.mind.
-         The targetIndex must match the order used when you compiled the .mind file. -->
 
     <!-- PATHOLOGY (Aortic stenosis discs) indices 0..2 -->
     <a-entity mindar-image-target="targetIndex: 0"
@@ -229,19 +226,19 @@ e <!DOCTYPE html>
     window.addEventListener('DOMContentLoaded', () => {
       document.querySelectorAll('[mindar-image-target]').forEach(bindTarget);
 
-      // CTA button actions require user gesture (iOS safe)
+      // CTA button actions
       if (openSite) openSite.addEventListener('click', () => {
         if (!currentTarget) return;
         const url = currentTarget.dataset.site;
-        if (url && url !== 'REPLACE_WITH_URL') window.location.assign(url);
+        if (url) window.open(url, '_blank');
       });
       if (openVideo) openVideo.addEventListener('click', () => {
         if (!currentTarget) return;
         const url = currentTarget.dataset.video;
-        if (url && url !== 'REPLACE_WITH_VIDEO') window.location.assign(url);
+        if (url) window.open(url, '_blank');
       });
 
-      // Splash: start camera after user taps Start (inline onclick also present as fallback)
+      // Splash: start camera after user taps Start
       const startBtn = document.getElementById('start');
       const splash = document.getElementById('splash');
       const scene = document.getElementById('scene');
@@ -251,10 +248,10 @@ e <!DOCTYPE html>
         if (scene) scene.style.display='block';
       });
 
-      // Make WebGL canvas transparent after scene loads (belt-and-braces)
+      // Make WebGL canvas transparent after scene loads
       scene.addEventListener('loaded', () => {
         const r = scene.renderer;
-        if (r && r.setClearColor) r.setClearColor(0x000000, 0); // 0 alpha
+        if (r && r.setClearColor) r.setClearColor(0x000000, 0);
       });
 
       // Grid toggle
@@ -264,14 +261,5 @@ e <!DOCTYPE html>
       });
     });
   </script>
-
-  <!-- Deployment notes
-    1) Put your compiled MindAR target file at: ./assets/targets/targets.mind
-       The order of images in the compiler determines each targetIndex above.
-
-    2) Replace each data-site and data-video with your SharePoint/Sketchfab links (tap-to-open only).
-
-    3) Host on GitHub Pages (HTTPS). Create /assets/targets/ and /targets-src/ folders in repo.
-  -->
 </body>
 </html>
