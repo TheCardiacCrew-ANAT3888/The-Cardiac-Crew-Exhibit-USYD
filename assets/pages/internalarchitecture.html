@@ -1,0 +1,525 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Heartscapes · Internal Architecture of the Heart (Cross Sections)</title>
+  <meta name="theme-color" content="#8A1538" />
+
+  <style>
+    :root{
+      --syd-maroon:#8A1538;
+      --syd-gold:#F2A900;
+
+      --shadow:0 18px 50px rgba(0,0,0,.28);
+      --radius-xl:22px;
+      --radius-lg:18px;
+      --blur:18px;
+
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+
+      --maxw: 520px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      color: rgba(255,255,255,.92);
+      background:#0b0b10;
+      overflow:auto;
+      -webkit-overflow-scrolling:touch;
+    }
+
+    /* Background system */
+    .bg{position:fixed; inset:0; z-index:-3;
+      background:
+        radial-gradient(1200px 900px at 20% 10%, rgba(242,169,0,.40), transparent 55%),
+        radial-gradient(1100px 850px at 90% 0%, rgba(138,21,56,.55), transparent 55%),
+        radial-gradient(1100px 850px at 80% 80%, rgba(242,169,0,.22), transparent 60%),
+        radial-gradient(900px 700px at 5% 85%, rgba(138,21,56,.35), transparent 60%),
+        linear-gradient(180deg, rgba(15,15,25,1), rgba(10,10,16,1));
+    }
+    .grain{position:fixed; inset:-20%; z-index:-2; pointer-events:none;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='260' height='260' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E");
+      background-size:260px 260px;
+      mix-blend-mode: overlay;
+      opacity:.35;
+      transform:translateZ(0);
+    }
+    .vignette{position:fixed; inset:0; z-index:-1; pointer-events:none;
+      background: radial-gradient(circle at 50% 20%, transparent 35%, rgba(0,0,0,.45) 100%);
+    }
+
+    .app{min-height:100%; display:flex; flex-direction:column;}
+
+    /* Top bar */
+    .topbar{
+      position:sticky; top:0; z-index:60;
+      padding: 10px 14px;
+      padding-top: calc(10px + var(--safe-top));
+      backdrop-filter: blur(var(--blur));
+      -webkit-backdrop-filter: blur(var(--blur));
+      background: linear-gradient(180deg, rgba(12,12,18,.72), rgba(12,12,18,.18));
+      border-bottom:1px solid rgba(255,255,255,.08);
+    }
+    .toprow{display:flex; align-items:center; justify-content:space-between; gap:12px; max-width: var(--maxw); margin:0 auto;}
+    .brand{display:flex; align-items:center; gap:10px; min-width:0}
+    .crest{
+      width:28px; height:28px; border-radius:9px;
+      background: linear-gradient(135deg, var(--syd-maroon), rgba(242,169,0,.65));
+      border:1px solid rgba(255,255,255,.18);
+      box-shadow: 0 10px 22px rgba(0,0,0,.25);
+      flex:0 0 auto;
+    }
+    .brandtext{display:flex; flex-direction:column; line-height:1.05; min-width:0}
+    .brandtext b{font-size:12px; letter-spacing:.08em; text-transform:uppercase; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+    .brandtext span{font-size:12px; opacity:.82; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+    .actions{display:flex; align-items:center; gap:10px}
+    .iconbtn{
+      width:40px; height:40px; border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.08);
+      display:grid; place-items:center;
+      cursor:pointer; user-select:none; touch-action:manipulation;
+      color: rgba(255,255,255,.92);
+      text-decoration:none;
+    }
+    .iconbtn:active{transform:translateY(1px)}
+
+    /* Scroll container */
+    .scrollview{
+      flex:1 1 auto;
+      overflow:visible;
+      padding-bottom: calc(20px + var(--safe-bottom));
+    }
+
+    .section{padding:14px; max-width: var(--maxw); margin:0 auto}
+    .card{
+      border-radius: var(--radius-lg);
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.08);
+      backdrop-filter: blur(var(--blur));
+      -webkit-backdrop-filter: blur(var(--blur));
+      box-shadow: var(--shadow);
+      padding: 14px;
+    }
+
+    h1{margin:0 0 8px 0; font-size:26px; letter-spacing:-.02em}
+    p{margin:0 0 10px 0}
+    .muted{opacity:.82; font-size:13.5px; line-height:1.4}
+
+    .row{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;}
+    .hr{height:1px; background: rgba(255,255,255,.10); margin: 12px 0}
+
+    .tag{
+      display:inline-flex; align-items:center; gap:8px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.14);
+      font-size: 12px;
+      opacity:.92;
+    }
+
+    .helpbox{
+      margin-top: 12px;
+      border-radius: var(--radius-lg);
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.14);
+      padding: 12px;
+    }
+
+    /* ===== Contents strip ===== */
+    .contents{
+      margin-top: 12px;
+      display:flex;
+      gap:10px;
+      overflow-x:auto;
+      padding: 2px 2px 6px;
+      -webkit-overflow-scrolling:touch;
+      scroll-snap-type: x mandatory;
+    }
+    .contents::-webkit-scrollbar{height:0}
+
+    .cbtn{
+      scroll-snap-align:start;
+      flex: 0 0 auto;
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.14);
+      color: rgba(255,255,255,.92);
+      text-decoration:none;
+      font-weight: 700;
+      touch-action: manipulation;
+      white-space: nowrap;
+      transition: background 140ms ease, border-color 140ms ease, transform 140ms ease;
+    }
+    .cbtn:active{transform:translateY(1px)}
+    .cnum{
+      width:26px; height:26px;
+      border-radius:999px;
+      display:grid; place-items:center;
+      font-size: 12px;
+      font-weight: 800;
+      background: rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.18);
+      flex: 0 0 auto;
+    }
+    .ctxt{font-size: 12.5px; opacity:.92}
+
+    /* ✅ Active contents state */
+    .cbtn[aria-current="true"]{
+      background: linear-gradient(135deg, rgba(242,169,0,.22), rgba(138,21,56,.18));
+      border-color: rgba(242,169,0,.28);
+    }
+    .cbtn[aria-current="true"] .cnum{
+      border-color: rgba(242,169,0,.40);
+      background: rgba(242,169,0,.10);
+    }
+
+    /* ===== Page-specific: model list ===== */
+    .models{
+      display:flex;
+      flex-direction:column;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .model{
+      border-radius: var(--radius-lg);
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.14);
+      overflow:hidden;
+      scroll-margin-top: 96px; /* anchors land below sticky header */
+    }
+
+    .model-head{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding: 12px 12px 10px;
+      border-bottom: 1px solid rgba(255,255,255,.10);
+    }
+
+    /* Number in a circle */
+    .num{
+      width:34px; height:34px;
+      border-radius:999px;
+      display:grid; place-items:center;
+      font-weight:800;
+      letter-spacing:-.02em;
+      background: rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.18);
+      box-shadow: 0 10px 22px rgba(0,0,0,.22);
+      flex:0 0 auto;
+    }
+
+    .micon{
+      width:34px; height:34px;
+      border-radius:10px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      flex:0 0 auto;
+      display:grid; place-items:center;
+    }
+    .micon img{width:100%; height:100%; object-fit:cover; display:block;}
+
+    .mtext{min-width:0}
+    .mtext b{
+      display:block;
+      font-size:14px;
+      line-height:1.2;
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    }
+    .mtext span{display:block; font-size:12px; opacity:.78; margin-top:2px}
+
+    .embed{
+      width:100%;
+      aspect-ratio: 16 / 9;
+      position:relative;
+      background: rgba(0,0,0,.18);
+    }
+    .embed iframe{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      border:0;
+    }
+
+    .attrib{
+      margin-top: 14px;
+      font-size: 12.5px;
+      opacity: .84;
+      line-height: 1.45;
+    }
+    .attrib a{color: rgba(255,255,255,.92); text-decoration: underline; text-underline-offset:3px}
+
+    /* Floating word game bubble */
+    .wordgame{
+      position: fixed;
+      right: 14px;
+      bottom: calc(14px + var(--safe-bottom));
+      z-index: 9999;
+
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+
+      padding: 12px 14px;
+      border-radius: 999px;
+      border:1px solid rgba(255,255,255,.14);
+      background: linear-gradient(135deg, rgba(242,169,0,.22), rgba(138,21,56,.22));
+      backdrop-filter: blur(var(--blur));
+      -webkit-backdrop-filter: blur(var(--blur));
+      box-shadow: 0 18px 50px rgba(0,0,0,.38);
+
+      color: rgba(255,255,255,.92);
+      text-decoration:none;
+      font-weight: 700;
+      max-width: calc(100vw - 28px);
+      touch-action: manipulation;
+    }
+    .wordgame:active{transform:translateY(1px)}
+
+    .wgdot{
+      width:10px; height:10px;
+      border-radius:999px;
+      background: rgba(242,169,0,.95);
+      box-shadow: 0 0 0 4px rgba(242,169,0,.18);
+      flex:0 0 auto;
+    }
+    .wgtext{white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-size: 13.5px;}
+  </style>
+</head>
+
+<body>
+  <div class="bg"></div>
+  <div class="grain"></div>
+  <div class="vignette"></div>
+
+  <div class="app">
+    <header class="topbar">
+      <div class="toprow">
+        <div class="brand">
+          <div class="crest" aria-hidden="true"></div>
+          <div class="brandtext">
+            <b>HEARTSCAPES</b>
+            <span>The Structure of Life</span>
+          </div>
+        </div>
+
+        <div class="actions">
+          <a class="iconbtn" href="index.html" aria-label="Back">⟵</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="scrollview">
+      <div class="section">
+        <div class="card">
+
+          <!-- PAGE CONTENT -->
+          <div class="row">
+            <span class="tag">🫀 <b>Internal Architecture</b></span>
+            <span class="tag">🧩 <b>3D Cross Sections</b></span>
+          </div>
+
+          <div class="hr"></div>
+
+          <h1>Internal Architecture of the Heart (Cross Sections)</h1>
+          <p class="muted">
+            Rotate with one finger, pinch to zoom. Tap on-screen annotations to explore key structures.
+          </p>
+
+          <!-- Contents strip -->
+          <nav class="contents" aria-label="Jump to a cross-section model">
+            <a class="cbtn" href="#model-1" aria-current="true"><span class="cnum">1</span><span class="ctxt">Great vessels + atria</span></a>
+            <a class="cbtn" href="#model-2"><span class="cnum">2</span><span class="ctxt">AV + SL valves</span></a>
+            <a class="cbtn" href="#model-3"><span class="cnum">3</span><span class="ctxt">Mid-ventricles</span></a>
+            <a class="cbtn" href="#model-4"><span class="cnum">4</span><span class="ctxt">Apex</span></a>
+          </nav>
+
+          <div class="helpbox">
+            <p class="muted" style="margin:0">
+              Tip: If the model feels “stuck”, tap once on the model, then drag. On some phones,
+              switching to landscape gives a bit more room.
+            </p>
+          </div>
+
+          <div class="models" aria-label="Cross-section models">
+
+            <!-- 1 -->
+            <article class="model" id="model-1">
+              <div class="model-head">
+                <div class="num" aria-label="Model 1">1</div>
+                <div class="micon" aria-hidden="true">
+                  <img src="assets/images/xsection_icon_1.png" alt="" />
+                </div>
+                <div class="mtext">
+                  <b>Great Vessels and Atria</b>
+                  <span>Section 1</span>
+                </div>
+              </div>
+              <div class="embed">
+                <iframe
+                  title="Section 1: Great Vessels And Atria"
+                  allow="autoplay; fullscreen; xr-spatial-tracking"
+                  allowfullscreen
+                  src="https://sketchfab.com/models/1c45cef63a0c4b6ea7313afc30a327ad/embed?autostart=0&camera=0&annotations_visible=1&annotation_cycle=8&transparent=1">
+                </iframe>
+              </div>
+            </article>
+
+            <!-- 2 -->
+            <article class="model" id="model-2">
+              <div class="model-head">
+                <div class="num" aria-label="Model 2">2</div>
+                <div class="micon" aria-hidden="true">
+                  <img src="assets/images/xsection_icon_2.png" alt="" />
+                </div>
+                <div class="mtext">
+                  <b>Anterior View, AV + SL Valves</b>
+                  <span>Section 3</span>
+                </div>
+              </div>
+              <div class="embed">
+                <iframe
+                  title="Section 3: Anterior View, AV + SL Valves"
+                  allow="autoplay; fullscreen; xr-spatial-tracking"
+                  allowfullscreen
+                  src="https://sketchfab.com/models/7a830741181c4aea94ffa56238b6d7da/embed?autostart=0&camera=0&annotations_visible=1&annotation_cycle=8&transparent=1">
+                </iframe>
+              </div>
+            </article>
+
+            <!-- 3 -->
+            <article class="model" id="model-3">
+              <div class="model-head">
+                <div class="num" aria-label="Model 3">3</div>
+                <div class="micon" aria-hidden="true">
+                  <img src="assets/images/xsection_icon_3.png" alt="" />
+                </div>
+                <div class="mtext">
+                  <b>Mid-ventricles</b>
+                  <span>Section 4</span>
+                </div>
+              </div>
+              <div class="embed">
+                <iframe
+                  title="Section 4: Mid-ventricles"
+                  allow="autoplay; fullscreen; xr-spatial-tracking"
+                  allowfullscreen
+                  src="https://sketchfab.com/models/885b792ec14946ed8e1a4b86bd0f7d03/embed?autostart=0&camera=0&annotations_visible=1&annotation_cycle=8&transparent=1">
+                </iframe>
+              </div>
+            </article>
+
+            <!-- 4 -->
+            <article class="model" id="model-4">
+              <div class="model-head">
+                <div class="num" aria-label="Model 4">4</div>
+                <div class="micon" aria-hidden="true">
+                  <img src="assets/images/xsection_icon_4.png" alt="" />
+                </div>
+                <div class="mtext">
+                  <b>Apex of the Heart</b>
+                  <span>Section 5</span>
+                </div>
+              </div>
+              <div class="embed">
+                <iframe
+                  title="Section 5: Apex of the Heart"
+                  allow="autoplay; fullscreen; xr-spatial-tracking"
+                  allowfullscreen
+                  src="https://sketchfab.com/models/33067be94c7b465cbe0c686164c990fb/embed?autostart=0&camera=0&annotations_visible=1&annotation_cycle=8&transparent=1">
+                </iframe>
+              </div>
+            </article>
+
+          </div>
+
+          <div class="attrib">
+            <p style="margin: 12px 0 0 0">
+              <b>Attribution:</b> These models are a derivative of "Cardiac Anatomy: Parasternal Short Axis Apex" by University Medical Center Groningen,
+              University of Groningen, Netherlands, adapted from 'Bodyparts3D' by Database Centre for Life Science (CC BY-SA 2.1 Japan).
+              Licensed under CC BY-SA 4.0. Original models created from clinical 3D images, scanned models, and anatomical references.
+              <a href="https://lifesciencedb.jp/bp3d/info/index.html" target="_blank" rel="noreferrer noopener">https://lifesciencedb.jp/bp3d/info/index.html</a>
+            </p>
+          </div>
+          <!-- /PAGE CONTENT -->
+
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Floating word game bubble -->
+  <a class="wordgame" href="assets/pages/wordgame.html" aria-label="Play the anatomy word game">
+    <span class="wgdot" aria-hidden="true"></span>
+    <span class="wgtext">Play the anatomy word game</span>
+  </a>
+
+  <!-- ✅ Active section highlighting -->
+  <script>
+    (function () {
+      const nav = document.querySelector('.contents');
+      if (!nav) return;
+
+      const links = Array.from(nav.querySelectorAll('a[href^="#"]'));
+      const linkById = new Map();
+
+      links.forEach(a => {
+        const id = (a.getAttribute('href') || '').slice(1);
+        if (id) linkById.set(id, a);
+
+        a.addEventListener('click', () => {
+          links.forEach(x => x.removeAttribute('aria-current'));
+          a.setAttribute('aria-current', 'true');
+        });
+      });
+
+      const sections = Array.from(document.querySelectorAll('.model[id]'));
+      if (!sections.length) return;
+
+      function setActive(id){
+        links.forEach(x => x.removeAttribute('aria-current'));
+        const a = linkById.get(id);
+        if (a){
+          a.setAttribute('aria-current', 'true');
+          a.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        }
+      }
+
+      const observer = new IntersectionObserver((entries) => {
+        const visible = entries
+          .filter(e => e.isIntersecting)
+          .sort((a,b) => (b.intersectionRatio - a.intersectionRatio));
+
+        if (visible.length){
+          setActive(visible[0].target.id);
+        }
+      }, {
+        root: null,
+        rootMargin: '-25% 0px -55% 0px',
+        threshold: [0.12, 0.25, 0.5, 0.75]
+      });
+
+      sections.forEach(sec => observer.observe(sec));
+
+      const initial = location.hash ? location.hash.slice(1) : sections[0].id;
+      setActive(initial);
+    })();
+  </script>
+</body>
+</html>
+
