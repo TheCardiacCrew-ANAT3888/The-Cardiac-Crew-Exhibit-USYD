@@ -187,6 +187,12 @@
       padding: 12px;
     }
 
+    .downloadToggle{
+      border:1px solid rgba(242,169,0,.35);
+      background: linear-gradient(135deg, rgba(242,169,0,.26), rgba(138,21,56,.20));
+    }
+    .downloadPanel{margin-top:12px;}
+
     /* Views */
     .view{display:none}
     .view.active{display:block}
@@ -705,31 +711,32 @@
             <div class="card">
 
               <div class="card" style="box-shadow:none; margin-bottom:12px;">
-                <div class="row">
-                  <span class="tag">⬇ Download our FREE 3D Heart models!</span>
-                </div>
+                <button class="tag downloadToggle" id="aboutDownloadToggle" type="button" aria-expanded="false" aria-controls="aboutDownloadPanel">
+                  ⬇ Download our FREE 3D Heart models!
+                </button>
 
-                <p class="muted" style="margin-top:10px; margin-bottom:10px; display:flex; align-items:center; flex-wrap:wrap;">
-                  If you’d like to download the 3D files designed by us (free) from Sketchfab, here’s the link:
-                  <button class="infoInline" id="dlInfoBtn" aria-label="How to download">i</button>
-                </p>
+                <div class="downloadPanel" id="aboutDownloadPanel" style="display:none;">
+                  <p class="muted" style="margin-top:0; margin-bottom:10px;">
+                    If you’d like to download the 3D files designed by us (free) from Sketchfab, here’s the link:
+                  </p>
 
-                <p class="muted" style="margin:0;">
-                  <a class="link"
-                     href="https://sketchfab.com/acost/collections/heartscape-the-structure-of-life-models-0733c4399a1e4ceaac8f5e5a5d8ef227"
-                     target="_blank" rel="noopener">
-                    Heartscapes 3D model collection (Sketchfab)
-                  </a>
-                </p>
+                  <p class="muted" style="margin:0;">
+                    <a class="link"
+                       href="https://sketchfab.com/acost/collections/heartscape-the-structure-of-life-models-0733c4399a1e4ceaac8f5e5a5d8ef227"
+                       target="_blank" rel="noopener">
+                      Heartscapes 3D model collection (Sketchfab)
+                    </a>
+                  </p>
 
-                <div class="helpbox" id="dlHowBox" style="display:none; margin-top:12px;">
-                  <h2 style="margin:0 0 6px 0;">How to download</h2>
-                  <div class="muted">
-                    1) Open the Sketchfab link above.<br/>
-                    2) Tap a model you want.<br/>
-                    3) Look for <b>Download 3D Model</b> (availability depends on the model’s settings).<br/>
-                    4) Choose the format offered (e.g., .STL / .OBJ / .GLTF) and save to your device.<br/>
-                    5) If you don’t see a download button, that model may be view-only on Sketchfab.
+                  <div class="helpbox" style="margin-top:12px;">
+                    <h2 style="margin:0 0 6px 0;">How to download</h2>
+                    <div class="muted">
+                      1) Open the Sketchfab link above.<br/>
+                      2) Tap a model you want.<br/>
+                      3) Look for <b>Download 3D Model</b> (availability depends on the model’s settings).<br/>
+                      4) Choose the format offered (e.g., .STL / .OBJ / .GLTF) and save to your device.<br/>
+                      5) If you don’t see a download button, that model may be view-only on Sketchfab.
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1266,13 +1273,14 @@ from cardiac muscle to cultural meaning—shapes both the anatomy of the heart a
       $("#helpClose")?.addEventListener("click", closeHelpModal);
       $("#helpOk")?.addEventListener("click", closeHelpModal);
 
-      // About page: download info toggle
-      const dlInfoBtn = document.getElementById("dlInfoBtn");
-      const dlHowBox = document.getElementById("dlHowBox");
-      if (dlInfoBtn && dlHowBox) {
-        dlInfoBtn.addEventListener("click", () => {
-          const show = (dlHowBox.style.display === "none" || !dlHowBox.style.display);
-          dlHowBox.style.display = show ? "block" : "none";
+      // About page: download card toggle
+      const aboutDownloadToggle = document.getElementById("aboutDownloadToggle");
+      const aboutDownloadPanel = document.getElementById("aboutDownloadPanel");
+      if (aboutDownloadToggle && aboutDownloadPanel) {
+        aboutDownloadToggle.addEventListener("click", () => {
+          const isOpen = aboutDownloadToggle.getAttribute("aria-expanded") === "true";
+          aboutDownloadToggle.setAttribute("aria-expanded", isOpen ? "false" : "true");
+          aboutDownloadPanel.style.display = isOpen ? "none" : "block";
         });
       }
     }
