@@ -507,7 +507,8 @@
       <!-- AR VIEW -->
       <div class="arview" id="arview">
         <a-scene
-          mindar-image="imageTargetSrc: ./assets/targets/targets.mind; maxTrack: 1; uiScanning: false; uiLoading: false; autoStart: true;"
+  id="arScene"
+  mindar-image="imageTargetSrc: ./assets/targets/targets.mind; maxTrack: 1; uiScanning: false; uiLoading: false;"
           embedded
           color-space="sRGB"
           renderer="colorManagement: true, physicallyCorrectLights; antialias: true"
@@ -963,29 +964,45 @@ Severe Aortic Stenosis
       setActiveNav(name);
     }
 
-    function setAR(on){
-      state.arOn = on;
-      localStorage.setItem("hs_ar", String(on));
-      $("#arToggle")?.setAttribute("aria-checked", on ? "true" : "false");
-      if($("#arTag")) $("#arTag").textContent = on ? "On" : "Off";
+    async function setAR(on){
+  state.arOn = on;
+  localStorage.setItem("hs_ar", String(on));
 
-      const arview = $("#arview");
-      const webviews = $("#webviews");
+  const arview = $("#arview");
+  const webviews = $("#webviews");
+  const sceneEl = document.querySelector("#arScene");
+  const mindar = sceneEl?.systems["mindar-image-system"];
 
-      if(on){
-        arview?.classList.add("show");
-        if(webviews) webviews.style.visibility = "hidden";
-        if($("#arStatusText")) $("#arStatusText").textContent = "AR ON";
-        toast("AR enabled");
-        startCornerVideo();
-      }else{
-        arview?.classList.remove("show");
-        if(webviews) webviews.style.visibility = "visible";
-        hideExhibitPanel(true);
-        stopAnyAudio();
-        toast("AR disabled (web mode)");
-      }
+  $("#arToggle")?.setAttribute("aria-checked", on ? "true" : "false");
+  $("#arTag") && ($("#arTag").textContent = on ? "On" : "Off");
+
+  if(on){
+    arview?.classList.add("show");
+    if(webviews) webviews.style.visibility = "hidden";
+
+    try {
+      await mindar.start();   
+      sceneEl.renderer.setClearColor(0x000000, 0); 
+      toast("Camera started");
+      startCornerVideo();
+    } catch(e){
+      console.error(e);
+      toast("Camera permission needed");
     }
+
+  } else {
+    arview?.classList.remove("show");
+    if(webviews) webviews.style.visibility = "visible";
+
+    mindar?.stop();
+    sceneEl.renderer?.clear();
+
+    hideExhibitPanel(true);
+    stopAnyAudio();
+    toast("AR disabled");
+  }
+}
+
 
     function startCornerVideo(){
       const wrap = $("#cornerVideo");
@@ -1225,6 +1242,13 @@ $("#homeArBtn")?.addEventListener("click", ()=>{
       if($("#videoScript")) $("#videoScript").textContent = VIDEO_SCRIPT;
 
       wireTargets();
+      // Ensure scene renders transparently over camera
+const sceneEl = document.querySelector("#arScene");
+sceneEl.addEventListener("loaded", () => {
+  const r = sceneEl.renderer;
+  if (r) r.setClearColor(0x000000, 0);
+});
+
       initNav();
       openWelcomeModal(true);
     }
