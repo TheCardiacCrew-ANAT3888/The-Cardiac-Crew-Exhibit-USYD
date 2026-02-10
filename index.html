@@ -97,12 +97,18 @@
     .toprow{display:flex; align-items:center; justify-content:space-between; gap:12px}
     .brand{display:flex; align-items:center; gap:10px; min-width:0}
     .crest{
-      width:28px; height:28px; border-radius:9px;
-      background: linear-gradient(135deg, var(--syd-maroon), rgba(242,169,0,.65));
-      border:1px solid rgba(255,255,255,.18);
-      box-shadow: 0 10px 22px rgba(0,0,0,.25);
-      flex:0 0 auto;
-    }
+  width:28px;
+  height:28px;
+  border-radius:9px;
+  border:1px solid rgba(255,255,255,.18);
+  box-shadow: 0 10px 22px rgba(0,0,0,.25);
+  flex:0 0 auto;
+
+  object-fit: contain;          /* keeps logo proportions */
+  background: rgba(255,255,255,.06); /* subtle backing */
+  padding: 4px;                  /* optional: gives breathing room */
+}
+
     .brandtext{display:flex; flex-direction:column; line-height:1.05; min-width:0}
     .brandtext b{
       font-size:12px; letter-spacing:.08em; text-transform:uppercase;
@@ -522,7 +528,7 @@
     <header class="topbar">
       <div class="toprow">
         <div class="brand">
-          <div class="crest" aria-hidden="true"></div>
+          <img class="crest" src="assets/images/logo.png" alt="Heartscapes logo" />
           <div class="brandtext">
             <b>HEARTSCAPES</b>
             <span>The Structure of Life</span>
