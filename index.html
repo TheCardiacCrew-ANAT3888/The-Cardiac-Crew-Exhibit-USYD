@@ -1,3 +1,4 @@
+```html
 <!doctype html>
 <html lang="en">
 <head>
@@ -163,7 +164,7 @@
       background: linear-gradient(135deg, rgba(242,169,0,.40), rgba(138,21,56,.25));
     }
     .btn:active{transform:translateY(1px)}
-    
+
     .tag{
       display:inline-flex; align-items:center; gap:8px;
       padding: 8px 10px;
@@ -172,7 +173,9 @@
       background: rgba(0,0,0,.14);
       font-size: 12px;
       opacity:.92;
+      cursor:pointer;
     }
+    button.tag{ font:inherit; color:inherit; border:1px solid rgba(255,255,255,.14); }
     .row{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;}
     .hr{height:1px; background: rgba(255,255,255,.10); margin: 12px 0}
     .helpbox{
@@ -182,9 +185,6 @@
       background: rgba(0,0,0,.14);
       padding: 12px;
     }
-    .tag{ cursor:pointer; }
-    button.tag{ font:inherit; color:inherit; }
-    button.tag{ border:1px solid rgba(255,255,255,.14); }
 
     /* Views */
     .view{display:none}
@@ -396,7 +396,7 @@
     .panelFoot .btn{padding:10px 12px}
     .small{font-size:12px; opacity:.82; line-height:1.4}
 
-    /* Corner intro video */
+    /* Corner thumbnail teaser (click -> Video page) */
     .cornerVideo{
       position:absolute;
       right: 12px;
@@ -413,7 +413,6 @@
       transition: opacity .35s ease, transform .35s ease;
     }
     .cornerVideo.fade{opacity:0; transform: translateY(8px); pointer-events:none;}
-    .cornerVideo video{width:100%; height:auto; display:block;}
     .cornerVideo .x{
       position:absolute; top:8px; right:8px;
       width:28px; height:28px; border-radius:999px;
@@ -422,10 +421,10 @@
       color:#fff;
       display:grid; place-items:center;
       cursor:pointer; user-select:none; touch-action:manipulation;
+      z-index:2;
     }
     .thumbWrap{ position:relative; width:100%; }
     .thumbWrap img{ width:100%; height:auto; display:block; }
-    
     .playBadge{
       position:absolute;
       left:50%; top:50%;
@@ -440,6 +439,23 @@
       -webkit-backdrop-filter: blur(var(--blur));
     }
 
+    /* YouTube wrapper */
+    .ytWrap{
+      position:relative;
+      width:100%;
+      padding-top:56.25%; /* 16:9 */
+      border-radius:16px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.18);
+    }
+    .ytWrap iframe{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      border:0;
+    }
 
     /* Toast */
     .toast{
@@ -524,8 +540,8 @@
       <!-- AR VIEW -->
       <div class="arview" id="arview">
         <a-scene
-  id="arScene"
-  mindar-image="imageTargetSrc: ./assets/targets/targets.mind; maxTrack: 1; uiScanning: false; uiLoading: false;"
+          id="arScene"
+          mindar-image="imageTargetSrc: ./assets/targets/targets.mind; maxTrack: 1; uiScanning: false; uiLoading: false;"
           embedded
           color-space="sRGB"
           renderer="colorManagement: true, physicallyCorrectLights; antialias: true"
@@ -590,19 +606,19 @@
             </div>
           </div>
 
-          <div class="cornerVideo" id="cornerVideo" aria-label="Intro video teaser" role="button" tabindex="0">
-  <div class="x" id="cornerVideoClose" aria-label="Close">✕</div>
-
-  <div class="thumbWrap">
-    <img
-      id="cornerThumb"
-      src="assets/images/Thumbnail.png"
-      alt="Play exhibit video"
-      loading="lazy"
-    />
-    <div class="playBadge" aria-hidden="true">▶</div>
-  </div>
-</div>
+          <!-- Thumbnail teaser -->
+          <div class="cornerVideo" id="cornerVideo" aria-label="Open exhibit video" role="button" tabindex="0">
+            <div class="x" id="cornerVideoClose" aria-label="Close">✕</div>
+            <div class="thumbWrap">
+              <img
+                id="cornerThumb"
+                src="assets/images/Thumbnail.png"
+                alt="Play exhibit video"
+                loading="lazy"
+              />
+              <div class="playBadge" aria-hidden="true">▶</div>
+            </div>
+          </div>
 
         </div>
       </div>
@@ -621,22 +637,20 @@
               <div class="hr"></div>
 
               <div class="row">
-  <button class="tag" id="homeLangBtn" type="button" aria-label="Change language">
-    🌐 <span id="langLabel">Language</span>
-  </button>
+                <button class="tag" id="homeLangBtn" type="button" aria-label="Change language">
+                  🌐 <span id="langLabel">Language</span>
+                </button>
 
-  <button class="tag" id="homeArBtn" type="button" aria-label="Toggle AR mode">
-    AR: <b id="arTag">Off</b>
-  </button>
-</div>
-  
+                <button class="tag" id="homeArBtn" type="button" aria-label="Toggle AR mode">
+                  AR: <b id="arTag">Off</b>
+                </button>
+              </div>
 
               <div class="btnrow">
                 <button class="btn primary" id="goExhibitsBtn">Exhibits</button>
                 <button class="btn" id="goAboutBtn">About Us</button>
               </div>
 
-              <!-- KEEP this on Home -->
               <div class="helpbox">
                 <h2>How to use</h2>
                 <div class="muted">
@@ -677,10 +691,6 @@
               <div class="hr"></div>
 
               <p class="muted" id="exhibitCaption"></p>
-
-              <!-- IMPORTANT:
-                   Removed the "How to use" box from exhibit pages
-                   (you want that content in the ? modal instead). -->
             </div>
           </div>
         </section>
@@ -695,17 +705,7 @@
 
               <div class="hr"></div>
 
-              <div style="position:relative; width:100%; aspect-ratio:16/9; border-radius:16px; overflow:hidden; border:1px solid rgba(255,255,255,.12); background: rgba(0,0,0,.18);">
-  <iframe
-    id="ytFull"
-    src=""
-    title="Heartscapes exhibit video"
-    style="position:absolute; inset:0; width:100%; height:100%; border:0;"
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-    allowfullscreen>
-  </iframe>
-</div>
-
+              <div class="ytWrap" id="ytWrap"></div>
 
               <div class="hr"></div>
 
@@ -719,7 +719,6 @@
           <div class="section">
             <div class="card">
 
-              <!-- 3D files download banner -->
               <div class="card" style="box-shadow:none; margin-bottom:12px;">
                 <div class="row">
                   <span class="tag">⬇ Download our FREE 3D Heart models!</span>
@@ -853,7 +852,7 @@
     </div>
   </div>
 
-  <!-- Help modal ( ? button ) -->
+  <!-- Help modal -->
   <div class="modalback" id="helpModal">
     <div class="modal" role="dialog" aria-modal="true" aria-label="Help">
       <header>
@@ -861,8 +860,6 @@
         <button class="close" id="helpClose" aria-label="Close">✕</button>
       </header>
       <main>
-
-        <!-- This is the exact AR/Web guidance you wanted in the ? modal -->
         <div class="helpbox" style="margin-top:0;">
           <div class="muted" style="line-height:1.5">
             <b>To turn AR mode ON/OFF:</b> tap the ⚙️ icon.<br/><br/>
@@ -998,59 +995,81 @@ Severe Aortic Stenosis
       setActiveNav(name);
     }
 
-    async function setAR(on){
-  state.arOn = on;
-  localStorage.setItem("hs_ar", String(on));
+    /* ---------- YouTube ---------- */
+    const YT_ID = "jR68W8_fFZE";
 
-  const arview = $("#arview");
-  const webviews = $("#webviews");
-  const sceneEl = document.querySelector("#arScene");
-  const mindar = sceneEl?.systems["mindar-image-system"];
+    function loadYouTubeFull(){
+      const wrap = document.getElementById("ytWrap");
+      if(!wrap) return;
+      if(wrap.querySelector("iframe")) return; // already loaded
 
-  $("#arToggle")?.setAttribute("aria-checked", on ? "true" : "false");
-  $("#arTag") && ($("#arTag").textContent = on ? "On" : "Off");
-
-  if(on){
-    arview?.classList.add("show");
-    if(webviews) webviews.style.visibility = "hidden";
-
-    try {
-      await mindar.start();   
-      sceneEl.renderer.setClearColor(0x000000, 0); 
-      toast("Camera started");
-      startCornerVideo();
-    } catch(e){
-      console.error(e);
-      toast("Camera permission needed");
+      wrap.innerHTML = `
+        <iframe
+          id="ytFull"
+          src="https://www.youtube.com/embed/${YT_ID}?rel=0&modestbranding=1"
+          title="Heartscapes exhibit video"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen>
+        </iframe>
+      `;
     }
 
-  } else {
-    arview?.classList.remove("show");
-    if(webviews) webviews.style.visibility = "visible";
+    function unloadYouTubeFull(){
+      const wrap = document.getElementById("ytWrap");
+      if(!wrap) return;
+      wrap.innerHTML = "";
+    }
 
-    mindar?.stop();
-    sceneEl.renderer?.clear();
+    /* ---------- AR ---------- */
+    async function setAR(on){
+      state.arOn = on;
+      localStorage.setItem("hs_ar", String(on));
 
-    hideExhibitPanel(true);
-    stopAnyAudio();
-    toast("AR disabled");
-  }
-}
+      const arview = $("#arview");
+      const webviews = $("#webviews");
+      const sceneEl = document.querySelector("#arScene");
+      const mindar = sceneEl?.systems["mindar-image-system"];
 
+      $("#arToggle")?.setAttribute("aria-checked", on ? "true" : "false");
+      $("#arTag") && ($("#arTag").textContent = on ? "On" : "Off");
+
+      if(on){
+        arview?.classList.add("show");
+        if(webviews) webviews.style.visibility = "hidden";
+
+        try {
+          await mindar.start();
+          sceneEl.renderer.setClearColor(0x000000, 0);
+          toast("Camera started");
+          startCornerVideo();
+        } catch(e){
+          console.error(e);
+          toast("Camera permission needed");
+        }
+
+      } else {
+        arview?.classList.remove("show");
+        if(webviews) webviews.style.visibility = "visible";
+
+        mindar?.stop();
+        sceneEl.renderer?.clear();
+
+        hideExhibitPanel(true);
+        stopAnyAudio();
+        toast("AR disabled");
+      }
+    }
 
     function startCornerVideo(){
-  // Now this is just showing the thumbnail teaser
-  const wrap = $("#cornerVideo");
-  if(!wrap) return;
-  wrap.classList.remove("fade");
-}
-
-function closeCornerVideo(){
-  const wrap = $("#cornerVideo");
-  if(!wrap) return;
-  wrap.classList.add("fade");
-}
-
+      const wrap = $("#cornerVideo");
+      if(!wrap) return;
+      wrap.classList.remove("fade");
+    }
+    function closeCornerVideo(){
+      const wrap = $("#cornerVideo");
+      if(!wrap) return;
+      wrap.classList.add("fade");
+    }
 
     function stopAnyAudio(){
       if(state.currentAudio){
@@ -1106,8 +1125,7 @@ function closeCornerVideo(){
     }
 
     function openNonARPage(group){
-      const ex = EXHIBITS[group];
-      if(!ex) return;
+      if(!EXHIBITS[group]) return;
       renderExhibitToPage(group);
       setAR(false);
       setView("exhibit");
@@ -1134,7 +1152,7 @@ function closeCornerVideo(){
       showExhibitPanelForGroup(group);
     }
 
-    function onTargetLost(index){
+    function onTargetLost(){
       hideExhibitPanel(false);
     }
 
@@ -1143,7 +1161,7 @@ function closeCornerVideo(){
         const el = document.getElementById("t"+i);
         if(!el) continue;
         el.addEventListener("targetFound", ()=>onTargetFound(i));
-        el.addEventListener("targetLost", ()=>onTargetLost(i));
+        el.addEventListener("targetLost", ()=>onTargetLost());
       }
     }
 
@@ -1161,21 +1179,6 @@ function closeCornerVideo(){
 
     function openHelpModal(){ $("#helpModal")?.classList.add("show"); }
     function closeHelpModal(){ $("#helpModal")?.classList.remove("show"); }
-const YT_FULL_ID = "jR68W8_fFZE";
-
-function loadYouTubeFull(){
-  const iframe = document.getElementById("ytFull");
-  if(!iframe) return;
-  if(iframe.src) return; // already loaded
-  iframe.src = `https://www.youtube.com/embed/${YT_FULL_ID}?rel=0&modestbranding=1`;
-}
-
-// Optional: stop video when leaving page (prevents audio continuing)
-function unloadYouTubeFull(){
-  const iframe = document.getElementById("ytFull");
-  if(!iframe) return;
-  iframe.src = "";
-}
 
     const VIDEO_SCRIPT =
 `Multimedia Component — The Universal Search for Structure: A Journey Through the Heart
@@ -1186,36 +1189,28 @@ from cardiac muscle to cultural meaning—shapes both the anatomy of the heart a
 
     function initNav(){
       // Home page quick controls
-$("#homeLangBtn")?.addEventListener("click", ()=>{
-  openWelcomeModal(false);
-  // Optional: focus language dropdown
-  setTimeout(()=>$("#langSelect")?.focus(), 50);
-});
+      $("#homeLangBtn")?.addEventListener("click", ()=>{
+        openWelcomeModal(false);
+        setTimeout(()=>$("#langSelect")?.focus(), 50);
+      });
 
-      
+      $("#homeArBtn")?.addEventListener("click", ()=>{
+        setAR(!state.arOn);
+        $("#arToggle")?.setAttribute("aria-checked", state.arOn ? "true" : "false");
+      });
 
-$("#homeArBtn")?.addEventListener("click", ()=>{
-  // toggle AR immediately using the same setAR() pipeline
-  setAR(!state.arOn);
-  // keep the toggle UI in sync in the settings modal too
-  $("#arToggle")?.setAttribute("aria-checked", state.arOn ? "true" : "false");
-});
-
-      // bottom nav
+      // Bottom nav (with YouTube load/unload)
       $$(".navitem").forEach(btn=>{
-  btn.addEventListener("click", ()=>{
-    const target = btn.dataset.target;
+        btn.addEventListener("click", ()=>{
+          const target = btn.dataset.target;
+          const wasVideo = $("#view-video")?.classList.contains("active");
 
-    // if leaving video page, stop playback
-    const wasVideo = $("#view-video")?.classList.contains("active");
+          setView(target);
 
-    setView(target);
-
-    if(target === "video") loadYouTubeFull();
-    if(wasVideo && target !== "video") unloadYouTubeFull();
-  });
-});
-
+          if(target === "video") loadYouTubeFull();
+          if(wasVideo && target !== "video") unloadYouTubeFull();
+        });
+      });
 
       $("#goExhibitsBtn")?.addEventListener("click", ()=> setView("exhibits"));
       $("#goAboutBtn")?.addEventListener("click", ()=> setView("about"));
@@ -1224,59 +1219,54 @@ $("#homeArBtn")?.addEventListener("click", ()=>{
         b.addEventListener("click", ()=>{
           const nav = b.dataset.nav;
           if(nav === "video"){
-  setView("video");
-  loadYouTubeFull();
-  return;
-}
+            setView("video");
+            loadYouTubeFull();
+            return;
+          }
           openNonARPage(b.dataset.id);
         });
       });
 
       $("#backFromExhibit")?.addEventListener("click", ()=> setView("exhibits"));
       $("#backFromVideo")?.addEventListener("click", ()=>{
-  unloadYouTubeFull();
-  setView("exhibits");
-});
+        unloadYouTubeFull();
+        setView("exhibits");
+      });
 
+      // Corner thumbnail -> go to Video page
+      const corner = document.getElementById("cornerVideo");
+      const cornerClose = document.getElementById("cornerVideoClose");
 
-      // Corner thumbnail -> go to Video page (and load YouTube)
-const corner = document.getElementById("cornerVideo");
-const cornerClose = document.getElementById("cornerVideoClose");
+      if(corner){
+        corner.addEventListener("click", (e)=>{
+          if(e.target && e.target.id === "cornerVideoClose") return;
 
-if(corner){
-  corner.addEventListener("click", (e)=>{
-    // If they clicked the X, ignore (handled below)
-    if(e.target && e.target.id === "cornerVideoClose") return;
+          setAR(false);
+          setView("video");
+          loadYouTubeFull();
 
-    // Close AR and go to Video page
-    setAR(false);
-    setView("video");
-    loadYouTubeFull();
+          corner.classList.add("fade");
+        });
 
-    // Hide the corner teaser once used
-    corner.classList.add("fade");
-  });
+        corner.addEventListener("keydown", (e)=>{
+          if(e.key === "Enter" || e.key === " "){
+            e.preventDefault();
+            setAR(false);
+            setView("video");
+            loadYouTubeFull();
+            corner.classList.add("fade");
+          }
+        });
+      }
 
-  // Accessibility: keyboard
-  corner.addEventListener("keydown", (e)=>{
-    if(e.key === "Enter" || e.key === " "){
-      e.preventDefault();
-      setAR(false);
-      setView("video");
-      loadYouTubeFull();
-      corner.classList.add("fade");
-    }
-  });
-}
+      if(cornerClose){
+        cornerClose.addEventListener("click", (e)=>{
+          e.stopPropagation();
+          closeCornerVideo();
+        });
+      }
 
-if(cornerClose){
-  cornerClose.addEventListener("click", (e)=>{
-    e.stopPropagation(); // don't trigger the open action
-    closeCornerVideo();  // reuse your existing function to hide it
-  });
-}
-
-      
+      // Settings/help
       $("#settingsBtn")?.addEventListener("click", ()=> openWelcomeModal(false));
       $("#helpBtn")?.addEventListener("click", openHelpModal);
 
@@ -1300,8 +1290,7 @@ if(cornerClose){
         if($("#arTag")) $("#arTag").textContent = on ? "On" : "Off";
       });
 
-      $("#cornerVideoClose")?.addEventListener("click", closeCornerVideo);
-
+      // Panel actions
       $("#closePanelBtn")?.addEventListener("click", ()=>{
         hideExhibitPanel(true);
         stopAnyAudio();
@@ -1347,12 +1336,13 @@ if(cornerClose){
       if($("#videoScript")) $("#videoScript").textContent = VIDEO_SCRIPT;
 
       wireTargets();
-      // Ensure scene renders transparently over camera
-const sceneEl = document.querySelector("#arScene");
-sceneEl.addEventListener("loaded", () => {
-  const r = sceneEl.renderer;
-  if (r) r.setClearColor(0x000000, 0);
-});
+
+      // Transparent renderer over camera (once scene is loaded)
+      const sceneEl = document.querySelector("#arScene");
+      sceneEl.addEventListener("loaded", () => {
+        const r = sceneEl.renderer;
+        if (r) r.setClearColor(0x000000, 0);
+      });
 
       initNav();
       openWelcomeModal(true);
@@ -1362,3 +1352,4 @@ sceneEl.addEventListener("loaded", () => {
   </script>
 </body>
 </html>
+```
