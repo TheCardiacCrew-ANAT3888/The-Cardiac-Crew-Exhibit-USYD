@@ -102,6 +102,30 @@
       50% { transform: translateY(-10px); }
     }
 
+    .location-pin:hover .pin-circle {
+      r: 7px;
+      fill: rgba(242,169,0,1);
+      filter: drop-shadow(0 0 8px var(--syd-gold));
+    }
+
+    .location-pin .pin-glow {
+      animation: pinPulse 2s infinite;
+    }
+
+    @keyframes pinPulse {
+      0%, 100% { r: 7px; opacity: 0.3; }
+      50% { r: 12px; opacity: 0; }
+    }
+
+    .location-pin:hover .pin-glow {
+      animation: pinPulseActive 0.8s infinite;
+    }
+
+    @keyframes pinPulseActive {
+      0%, 100% { r: 7px; opacity: 0.6; }
+      50% { r: 14px; opacity: 0; }
+    }
+
     .image-placeholder {
       background: linear-gradient(135deg, rgba(138,21,56,.15) 0%, rgba(242,169,0,.1) 100%);
       display: flex;
@@ -170,15 +194,33 @@
   <div class="vignette"></div>
   <div id="app-wrapper" style="position: relative; z-index: 1; height: 100%; width: 100%; overflow-y: auto; overflow-x: hidden;"><!-- Header Section -->
    <header style="position: relative; padding: 2rem 1rem; text-align: center;">
-    <div style="max-width: 520px; margin: 0 auto;"><!-- Decorative Globe SVG -->
-     <div style="display: flex; justify-content: center; margin-bottom: 1.5rem;">
-      <svg width="80" height="80" viewbox="0 0 80 80" class="globe-marker"><defs>
-        <lineargradient id="globeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-         <stop offset="0%" style="stop-color:#F2A900" />
-         <stop offset="100%" style="stop-color:#8A1538" />
-        </lineargradient>
-       </defs> <circle cx="40" cy="40" r="35" fill="none" stroke="url(#globeGradient)" stroke-width="2" /> <ellipse cx="40" cy="40" rx="35" ry="15" fill="none" stroke="url(#globeGradient)" stroke-width="1.5" /> <ellipse cx="40" cy="40" rx="15" ry="35" fill="none" stroke="url(#globeGradient)" stroke-width="1.5" /> <line x1="5" y1="40" x2="75" y2="40" stroke="url(#globeGradient)" stroke-width="1" /> <line x1="40" y1="5" x2="40" y2="75" stroke="url(#globeGradient)" stroke-width="1" /> <!-- Heart symbol in center --> <path d="M40 30 C35 25, 28 25, 28 32 C28 40, 40 48, 40 48 C40 48, 52 40, 52 32 C52 25, 45 25, 40 30" fill="#8A1538" opacity="0.9" />
-      </svg>
+    <div style="max-width: 520px; margin: 0 auto;"><!-- Interactive Globe -->
+     <div style="display: flex; justify-content: center; margin-bottom: 1.5rem; position: relative;">
+      <div style="position: relative; width: 120px; height: 120px;"><!-- Globe SVG -->
+       <svg width="120" height="120" viewbox="0 0 120 120" style="position: absolute; top: 0; left: 0;" class="globe-marker"><defs>
+         <lineargradient id="globeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#F2A900" />
+          <stop offset="100%" style="stop-color:#8A1538" />
+         </lineargradient>
+         <radialgradient id="glowEffect">
+          <stop offset="0%" style="stop-color:rgba(242,169,0,.3)" />
+          <stop offset="100%" style="stop-color:rgba(242,169,0,0)" />
+         </radialgradient>
+        </defs> <!-- Glow effect --> <circle cx="60" cy="60" r="55" fill="url(#glowEffect)" opacity="0.6" /> <!-- Globe outline --> <circle cx="60" cy="60" r="50" fill="none" stroke="url(#globeGradient)" stroke-width="2" /> <!-- Latitude lines --> <ellipse cx="60" cy="60" rx="50" ry="20" fill="none" stroke="url(#globeGradient)" stroke-width="1" opacity="0.5" /> <ellipse cx="60" cy="60" rx="50" ry="35" fill="none" stroke="url(#globeGradient)" stroke-width="1" opacity="0.3" /> <!-- Longitude lines --> <ellipse cx="60" cy="60" rx="20" ry="50" fill="none" stroke="url(#globeGradient)" stroke-width="1" opacity="0.5" /> <ellipse cx="60" cy="60" rx="35" ry="50" fill="none" stroke="url(#globeGradient)" stroke-width="1" opacity="0.3" /> <!-- Center lines --> <line x1="10" y1="60" x2="110" y2="60" stroke="url(#globeGradient)" stroke-width="1" opacity="0.4" /> <line x1="60" y1="10" x2="60" y2="110" stroke="url(#globeGradient)" stroke-width="1" opacity="0.4" /> <!-- Location Pins (clickable) --> <!-- Egypt: 26°N, 30°E --> <g class="location-pin" data-location="egypt" style="cursor: pointer;">
+         <circle cx="81" cy="48" r="5" fill="var(--syd-gold)" opacity="0.8" class="pin-circle" />
+         <circle cx="81" cy="48" r="7" fill="var(--syd-gold)" opacity="0.3" class="pin-glow" />
+        </g> <!-- Greece: 39°N, 22°E --> <g class="location-pin" data-location="greece" style="cursor: pointer;">
+         <circle cx="76" cy="42" r="5" fill="var(--syd-gold)" opacity="0.8" class="pin-circle" />
+         <circle cx="76" cy="42" r="7" fill="var(--syd-gold)" opacity="0.3" class="pin-glow" />
+        </g> <!-- England: 52°N, 2°W --> <g class="location-pin" data-location="england" style="cursor: pointer;">
+         <circle cx="57" cy="35" r="5" fill="var(--syd-gold)" opacity="0.8" class="pin-circle" />
+         <circle cx="57" cy="35" r="7" fill="var(--syd-gold)" opacity="0.3" class="pin-glow" />
+        </g> <!-- Heart symbol in center --> <path d="M60 48 C54 42, 46 42, 46 50 C46 60, 60 70, 60 70 C60 70, 74 60, 74 50 C74 42, 66 42, 60 48" fill="#8A1538" opacity="0.7" />
+       </svg><!-- Info tooltip -->
+       <div id="globe-tooltip" style="position: absolute; bottom: -45px; left: 50%; transform: translateX(-50%); background: rgba(138,21,56,.9); color: var(--syd-gold); padding: 0.5rem 0.75rem; border-radius: 6px; font-size: 0.75rem; font-weight: bold; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.3s; z-index: 10; border: 1px solid rgba(242,169,0,.3);">
+        Click to explore
+       </div>
+      </div>
      </div>
      <h1 id="timeline-title" style="font-size: 2.5rem; font-weight: bold; margin-bottom: 0.75rem; letter-spacing: 0.05em; color: var(--syd-gold);">History of Heart Anatomy</h1>
      <p id="timeline-subtitle" style="font-size: 1.25rem; font-style: italic; color: rgba(242,169,0,.7); margin: 0;">Ancient Civilisations Timeline (3000 BCE – 500 CE)</p><!-- Time Period Indicator -->
@@ -552,6 +594,44 @@
       }
     }
 
+    // Globe pin interactions
+    document.addEventListener('DOMContentLoaded', function() {
+      const pins = document.querySelectorAll('.location-pin');
+      const tooltip = document.getElementById('globe-tooltip');
+      const wrapper = document.getElementById('app-wrapper');
+
+      pins.forEach(pin => {
+        pin.addEventListener('mouseenter', function() {
+          const location = this.getAttribute('data-location');
+          const names = { egypt: '🏛️ Egypt', greece: '🏛️ Greece', england: '🏰 England' };
+          if (tooltip) {
+            tooltip.textContent = names[location] || 'Click to explore';
+            tooltip.style.opacity = '1';
+          }
+        });
+
+        pin.addEventListener('mouseleave', function() {
+          if (tooltip) {
+            tooltip.style.opacity = '0';
+          }
+        });
+
+        pin.addEventListener('click', function(e) {
+          e.preventDefault();
+          const location = this.getAttribute('data-location');
+          const cardId = location;
+          const element = document.getElementById(`${cardId}-content`);
+          
+          if (element) {
+            toggleCard(cardId);
+            setTimeout(() => {
+              element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
+          }
+        });
+      });
+    });
+
     // Config change handler
     async function onConfigChange(config) {
       const titleEl = document.getElementById('timeline-title');
@@ -629,5 +709,5 @@
       });
     }
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9cbb66b4a45bf215',t:'MTc3MDcyNDM1NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9cbb6ab25501f215',t:'MTc3MDcyNDUxOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
