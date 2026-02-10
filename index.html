@@ -32,29 +32,32 @@
       background:#0b0b10;
       overflow:hidden;
     }
-.infoInline{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  width:22px;
-  height:22px;
-  border-radius:999px;
-  font-size:12px;
-  font-weight:700;
-  line-height:1;
-  border:1px solid rgba(255,255,255,.18);
-  background: rgba(255,255,255,.08);
-  color: rgba(255,255,255,.9);
-  cursor:pointer;
-  margin-left:8px;
-  backdrop-filter: blur(var(--blur));
-  -webkit-backdrop-filter: blur(var(--blur));
-  transition: background .15s ease, transform .1s ease;
-}
-.infoInline:active{
-  transform:scale(.95);
-  background: rgba(255,255,255,.16);
-}
+
+    /* Small inline info icon */
+    .infoInline{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width:22px;
+      height:22px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:700;
+      line-height:1;
+      border:1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.08);
+      color: rgba(255,255,255,.9);
+      cursor:pointer;
+      margin-left:8px;
+      backdrop-filter: blur(var(--blur));
+      -webkit-backdrop-filter: blur(var(--blur));
+      transition: background .15s ease, transform .1s ease;
+      touch-action:manipulation;
+    }
+    .infoInline:active{
+      transform:scale(.95);
+      background: rgba(255,255,255,.16);
+    }
 
     /* Grainy gradient backdrop */
     .bg{position:fixed; inset:0; z-index:-3;
@@ -251,7 +254,7 @@
     .modal{
       width:min(var(--maxw), 100%);
       max-height: calc(100svh - 24px - var(--safe-top));
-      border-radius: var(--radius-xl);
+      border-radius: 22px;
       border:1px solid rgba(255,255,255,.16);
       background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.06));
       backdrop-filter: blur(var(--blur));
@@ -272,7 +275,6 @@
       overflow:auto;
       -webkit-overflow-scrolling:touch;
     }
-    .modal h2{margin:0; font-size:16px; letter-spacing:.02em}
     .modal .close{
       width:40px; height:40px; border-radius:999px;
       border:1px solid rgba(255,255,255,.14);
@@ -356,7 +358,7 @@
       bottom: calc(var(--navh) + 12px + var(--safe-bottom));
       max-width: var(--maxw);
       margin: 0 auto;
-      border-radius: var(--radius-xl);
+      border-radius: 22px;
       border:1px solid rgba(255,255,255,.16);
       background: rgba(12,12,18,.70);
       backdrop-filter: blur(var(--blur));
@@ -510,7 +512,7 @@
         >
           <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-          <!-- Targets 0..18 (from your previous version) -->
+          <!-- Targets 0..18 -->
           <a-entity mindar-image-target="targetIndex: 0" id="t0"></a-entity>
           <a-entity mindar-image-target="targetIndex: 1" id="t1"></a-entity>
           <a-entity mindar-image-target="targetIndex: 2" id="t2"></a-entity>
@@ -674,38 +676,37 @@
         <section class="view" id="view-about">
           <div class="section">
             <div class="card">
+
               <!-- 3D files download banner -->
-<div class="card" style="box-shadow:none; margin-bottom:12px;">
-  <div class="row">
-    <span class="tag">⬇ 3D files</span>
-   <button class="infoInline" id="dlInfoBtn" aria-label="How to download">i</button>
-  </div>
+              <div class="card" style="box-shadow:none; margin-bottom:12px;">
+                <div class="row">
+                  <span class="tag">⬇ 3D files</span>
+                </div>
 
-  <p class="muted" style="margin-top:10px; margin-bottom:10px; display:flex; align-items:center; flex-wrap:wrap;">
-  If you’d like to download the 3D files designed by us (free) from Sketchfab, here’s the link:
-  <button class="infoInline" id="dlInfoBtn" aria-label="How to download">i</button>
-</p>
+                <p class="muted" style="margin-top:10px; margin-bottom:10px; display:flex; align-items:center; flex-wrap:wrap;">
+                  If you’d like to download the 3D files designed by us (free) from Sketchfab, here’s the link:
+                  <button class="infoInline" id="dlInfoBtn" aria-label="How to download">i</button>
+                </p>
 
+                <p class="muted" style="margin:0;">
+                  <a class="link"
+                     href="https://sketchfab.com/acost/collections/heartscape-the-structure-of-life-models-0733c4399a1e4ceaac8f5e5a5d8ef227"
+                     target="_blank" rel="noopener">
+                    Heartscapes 3D model collection (Sketchfab)
+                  </a>
+                </p>
 
-  <p class="muted" style="margin:0;">
-    <a class="link"
-       href="https://sketchfab.com/acost/collections/heartscape-the-structure-of-life-models-0733c4399a1e4ceaac8f5e5a5d8ef227"
-       target="_blank" rel="noopener">
-      Heartscapes 3D model collection (Sketchfab)
-    </a>
-  </p>
-
-  <div class="helpbox" id="dlHowBox" style="display:none; margin-top:12px;">
-    <h2 style="margin:0 0 6px 0;">How to download</h2>
-    <div class="muted">
-      1) Open the Sketchfab link above.<br/>
-      2) Tap a model you want.<br/>
-      3) Look for <b>Download 3D Model</b> (availability depends on the model’s settings).<br/>
-      4) Choose the format offered (e.g., .STL / .OBJ / .GLTF) and save to your device.<br/>
-      5) If you don’t see a download button, that model may be view-only on Sketchfab.
-    </div>
-  </div>
-</div>
+                <div class="helpbox" id="dlHowBox" style="display:none; margin-top:12px;">
+                  <h2 style="margin:0 0 6px 0;">How to download</h2>
+                  <div class="muted">
+                    1) Open the Sketchfab link above.<br/>
+                    2) Tap a model you want.<br/>
+                    3) Look for <b>Download 3D Model</b> (availability depends on the model’s settings).<br/>
+                    4) Choose the format offered (e.g., .STL / .OBJ / .GLTF) and save to your device.<br/>
+                    5) If you don’t see a download button, that model may be view-only on Sketchfab.
+                  </div>
+                </div>
+              </div>
 
               <h1>About us</h1>
               <p class="muted">The Cardiac Crew</p>
@@ -731,6 +732,7 @@
                   <b>Jiaxu Jin</b><div class="muted"><a class="link" href="mailto:jjin0455@uni.sydney.edu.au">jjin0455@uni.sydney.edu.au</a></div>
                 </div>
               </div>
+
             </div>
           </div>
         </section>
@@ -745,8 +747,8 @@
           <button class="navitem" data-target="exhibits" aria-label="Exhibits">
             <span class="navicon">🫀</span><span>Exhibits</span>
           </button>
-         <button class="navitem" data-target="video" aria-label="Video">
-           <span class="navicon">🎬</span><span>Video</span>
+          <button class="navitem" data-target="video" aria-label="Video">
+            <span class="navicon">🎬</span><span>Video</span>
           </button>
           <button class="navitem" data-target="about" aria-label="About">
             <span class="navicon">i</span><span>About</span>
@@ -806,49 +808,38 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
-    /* =========================================================
-       TARGET INDICES (0..18) FROM YOUR PREVIOUS VERSION
-       We map multiple targets to ONE non-AR exhibit page.
-       ========================================================= */
-
-    // Exhibit groups (non-AR pages within this site)
     const EXHIBITS = {
-     watercolour: {
-  title: "Watercolour (Histology)",
-  // Two sections on ONE page
-    caption: "Two watercolour histology interpretations: aorta (Cajal–Gallego) and myocardium (H&E).",
-
-  sections: [
-    {
-      heading: "1) Aorta (Cajal–Gallego stain)",
-      body:
+      watercolour: {
+        title: "Watercolour (Histology)",
+        caption: "Two watercolour histology interpretations: aorta (Cajal–Gallego) and myocardium (H&E).",
+        sections: [
+          {
+            heading: "1) Aorta (Cajal–Gallego stain)",
+            body:
 `Watercolour interpretation of a Cajal-Gallego stained aorta histological section.
 
 • Tunica intima (inner layer): single endothelial lining (single layer of cells on the surface) and subendothelial connective tissue.
 • Tunica media (middle layer): rich in smooth muscle and elastic sheets stained magenta by fuchsin, illustrating the vessel's elasticity.
 • Tunica adventitia (outer layer): stained blue by indigo carmine; contains collagen fibers and nerves.`
-    },
-    {
-      heading: "2) Myocardium (H&E stain)",
-      body:
+          },
+          {
+            heading: "2) Myocardium (H&E stain)",
+            body:
 `Watercolour interpretation of a H&E stained myocardium (ventricular wall) histological section.
 
 • Myocardium: densely packed cardiac muscle fibers stained bright pink with centrally located nuclei appearing blue-purple.
 • Endocardium: thin inner lining of endothelium (single layer of cells on the surface) and connective tissue.
 • Purkinje fibers: visible within the endocardium as pale pink fibers.`
-    }
-  ],
-  audio: "assets/audio/watercolour_en.mp3"
-},
-
+          }
+        ],
+        audio: "assets/audio/watercolour_en.mp3"
+      },
       geo: {
         title: "Geo-historical Perspectives",
         caption:
 `This globe traces the origins of how ancient civilisations understood the heart — from spiritual symbols to scientific discovery.
 
-In Ancient Egypt (19th–16th century B.C.), the Edwin Smith Papyrus recorded some of the earliest anatomical and physiological ideas...
-
-(Full text can be inserted here — you already have it.)`,
+(Replace this placeholder with your full text when ready.)`,
         audio: "assets/audio/geo_en.mp3"
       },
       valve: {
@@ -858,7 +849,7 @@ In Ancient Egypt (19th–16th century B.C.), the Edwin Smith Papyrus recorded so
 Moderate Aortic Stenosis
 Severe Aortic Stenosis
 
-(Full figure caption text can be inserted here — you already have it.)`,
+(Replace this placeholder with your full caption when ready.)`,
         audio: "assets/audio/valve_en.mp3"
       },
       trabeculae: {
@@ -866,7 +857,7 @@ Severe Aortic Stenosis
         caption:
 `Patchwork embroidery derived from trabeculae carnea imagery.
 
-(Full figure caption text can be inserted here — you already have it.)`,
+(Replace this placeholder with your full caption when ready.)`,
         audio: "assets/audio/trabeculae_en.mp3"
       },
       xsections: {
@@ -874,14 +865,11 @@ Severe Aortic Stenosis
         caption:
 `3D printed heart cross-sections at sequential depths.
 
-(Full figure caption text can be inserted here — you already have it.)`,
+(Replace this placeholder with your full caption when ready.)`,
         audio: "assets/audio/xsections_en.mp3"
       }
     };
 
-    // Map target indices -> exhibit group
-    // Matches your previous file:
-    // 0..2 valve; 3..7 geo; 8..10 embroidery; 11..16 xsections; 17..18 histology/watercolour
     const TARGET_TO_GROUP = {
       0: "valve", 1: "valve", 2: "valve",
       3: "geo", 4: "geo", 5: "geo", 6: "geo", 7: "geo",
@@ -890,12 +878,7 @@ Severe Aortic Stenosis
       17: "watercolour", 18: "watercolour"
     };
 
-    // Anti-flicker / wrong-panel protection
-    const RECOGNITION = {
-      switchCooldownMs: 900,   // ignore swaps faster than this
-      sameGroupLockMs: 1500,   // if same group is re-detected, extend lock
-      lingerMs: 2500           // keep panel after lost
-    };
+    const RECOGNITION = { switchCooldownMs: 900, sameGroupLockMs: 1500, lingerMs: 2500 };
 
     const state = {
       lang: localStorage.getItem("hs_lang") || "en",
@@ -912,6 +895,7 @@ Severe Aortic Stenosis
 
     function toast(msg){
       const t = $("#toast");
+      if(!t) return;
       t.textContent = msg;
       t.classList.add("show");
       clearTimeout(toast._t);
@@ -919,34 +903,36 @@ Severe Aortic Stenosis
     }
 
     function setActiveNav(target){
-      $$(".navitem").forEach(btn=>{ btn.addEventListener("click", ()=> setView(btn.dataset.target));});
-
+      $$(".navitem").forEach(btn=>{
+        btn.classList.toggle("active", btn.dataset.target === target);
+      });
     }
 
     function setView(name){
       $$(".view").forEach(v=>v.classList.remove("active"));
-      $("#view-" + name).classList.add("active");
+      const next = $("#view-" + name);
+      if(next) next.classList.add("active");
       setActiveNav(name);
     }
 
     function setAR(on){
       state.arOn = on;
       localStorage.setItem("hs_ar", String(on));
-      $("#arToggle").setAttribute("aria-checked", on ? "true" : "false");
-      $("#arTag").textContent = on ? "On" : "Off";
+      $("#arToggle")?.setAttribute("aria-checked", on ? "true" : "false");
+      $("#arTag") && ($("#arTag").textContent = on ? "On" : "Off");
 
       const arview = $("#arview");
       const webviews = $("#webviews");
 
       if(on){
-        arview.classList.add("show");
-        webviews.style.visibility = "hidden";
-        $("#arStatusText").textContent = "AR ON";
+        arview?.classList.add("show");
+        if(webviews) webviews.style.visibility = "hidden";
+        $("#arStatusText") && ($("#arStatusText").textContent = "AR ON");
         toast("AR enabled");
         startCornerVideo();
       }else{
-        arview.classList.remove("show");
-        webviews.style.visibility = "visible";
+        arview?.classList.remove("show");
+        if(webviews) webviews.style.visibility = "visible";
         hideExhibitPanel(true);
         stopAnyAudio();
         toast("AR disabled (web mode)");
@@ -956,13 +942,16 @@ Severe Aortic Stenosis
     function startCornerVideo(){
       const wrap = $("#cornerVideo");
       const vid = $("#introVideo");
+      if(!wrap || !vid) return;
       wrap.classList.remove("fade");
       vid.play().catch(()=>{});
       vid.onended = ()=> wrap.classList.add("fade");
     }
     function closeCornerVideo(){
-      $("#cornerVideo").classList.add("fade");
+      const wrap = $("#cornerVideo");
       const vid = $("#introVideo");
+      if(!wrap || !vid) return;
+      wrap.classList.add("fade");
       vid.pause();
       vid.currentTime = 0;
     }
@@ -990,68 +979,55 @@ Severe Aortic Stenosis
 
       state.currentGroup = group;
 
-      $("#panelTitle").textContent = ex.title;
-      $("#panelText").textContent = ex.caption;
+      $("#panelTitle") && ($("#panelTitle").textContent = ex.title);
+      $("#panelText") && ($("#panelText").textContent = ex.caption || "");
 
-      $("#exhibitPanel").classList.add("show");
+      $("#exhibitPanel")?.classList.add("show");
     }
 
     function hideExhibitPanel(immediate=false){
       clearTimeout(state.hideTimer);
       const panel = $("#exhibitPanel");
+      if(!panel) return;
       if(immediate){
         panel.classList.remove("show");
         return;
       }
       state.hideTimer = setTimeout(()=> panel.classList.remove("show"), RECOGNITION.lingerMs);
     }
-function renderExhibitToPage(group){
-  const ex = EXHIBITS[group];
-  if(!ex) return;
 
-  $("#exhibitName").textContent = ex.title;
+    function renderExhibitToPage(group){
+      const ex = EXHIBITS[group];
+      if(!ex) return;
+      $("#exhibitName") && ($("#exhibitName").textContent = ex.title);
 
-  // If exhibit has "sections", render as a structured page.
-  if(Array.isArray(ex.sections) && ex.sections.length){
-    const combined =
-      ex.sections.map(s => `${s.heading}\n${s.body}`).join("\n\n— — —\n\n");
-    $("#exhibitCaption").textContent = combined;
-  }else{
-    $("#exhibitCaption").textContent = ex.caption || "";
-  }
-}
+      if(Array.isArray(ex.sections) && ex.sections.length){
+        const combined = ex.sections.map(s => `${s.heading}\n${s.body}`).join("\n\n— — —\n\n");
+        $("#exhibitCaption") && ($("#exhibitCaption").textContent = combined);
+      }else{
+        $("#exhibitCaption") && ($("#exhibitCaption").textContent = ex.caption || "");
+      }
+    }
 
-    // Open non-AR page inside this site
-  function openNonARPage(group){
-  const ex = EXHIBITS[group];
-  if(!ex) return;
+    function openNonARPage(group){
+      const ex = EXHIBITS[group];
+      if(!ex) return;
+      renderExhibitToPage(group);
+      setAR(false);
+      setView("exhibit");
+    }
 
-  renderExhibitToPage(group);
-
-  setAR(false);          // switch to web mode
-  setView("exhibit");    // open non-AR view
-}
-
-
-    // MindAR target events with grouping + anti-flicker
     function onTargetFound(index){
       const now = Date.now();
       const group = TARGET_TO_GROUP[index];
       if(!group) return;
 
-      // If currently locked to a group, ignore other groups until lock expires
-      if(now < state.groupLockUntil && state.currentGroup && group !== state.currentGroup){
-        return;
-      }
+      if(now < state.groupLockUntil && state.currentGroup && group !== state.currentGroup) return;
 
-      // If trying to switch groups too fast, ignore (prevents wrong flashes)
       if(state.currentGroup && group !== state.currentGroup){
-        if(now - state.lastSwitchAt < RECOGNITION.switchCooldownMs){
-          return;
-        }
+        if(now - state.lastSwitchAt < RECOGNITION.switchCooldownMs) return;
       }
 
-      // If same group found again, extend lock (stabilises)
       if(state.currentGroup === group){
         state.groupLockUntil = Math.max(state.groupLockUntil, now + RECOGNITION.sameGroupLockMs);
       }else{
@@ -1060,12 +1036,9 @@ function renderExhibitToPage(group){
       }
 
       showExhibitPanelForGroup(group);
-      toast("Exhibit recognised");
     }
 
     function onTargetLost(index){
-      // We linger anyway; if another target is found quickly, it will cancel timer.
-      toast("Marker lost — keeping details briefly");
       hideExhibitPanel(false);
     }
 
@@ -1079,106 +1052,102 @@ function renderExhibitToPage(group){
     }
 
     function openWelcomeModal(firstTime=true){
-      $("#welcomeModal").classList.add("show");
-      $("#langSelect").value = state.lang;
-      $("#arToggle").setAttribute("aria-checked", state.arOn ? "true" : "false");
+      $("#welcomeModal")?.classList.add("show");
+      $("#langSelect") && ($("#langSelect").value = state.lang);
+      $("#arToggle")?.setAttribute("aria-checked", state.arOn ? "true" : "false");
       if(firstTime){
-        $("#arview").classList.remove("show");
-        $("#webviews").style.visibility = "visible";
+        $("#arview")?.classList.remove("show");
+        const web = $("#webviews");
+        if(web) web.style.visibility = "visible";
       }
     }
-    function closeWelcomeModal(){ $("#welcomeModal").classList.remove("show"); }
+    function closeWelcomeModal(){ $("#welcomeModal")?.classList.remove("show"); }
 
-    function initNav(const dlInfoBtn = document.getElementById("dlInfoBtn");
-const dlHowBox = document.getElementById("dlHowBox");
-if (dlInfoBtn && dlHowBox) {
-  dlInfoBtn.addEventListener("click", () => {
-    dlHowBox.style.display = (dlHowBox.style.display === "none" || !dlHowBox.style.display)
-      ? "block"
-      : "none";
-  });
-}
-){
-      $$(".navitem").forEach(btn=>{
-        btn.addEventListener("click", ()=> setView(btn.dataset.target));
-      });
-
-      $("#goExhibitsBtn").addEventListener("click", ()=> setView("exhibits"));
-      $("#goAboutBtn").addEventListener("click", ()=> setView("about"));
-
-      $$("#view-exhibits .listbtn").forEach(b=>{
-        b.addEventListener("click", ()=>{
-          const nav = b.dataset.nav;
-          if(nav === "video"){
-            setView("video");
-            return;
-          }
-          const id = b.dataset.id;
-          openNonARPage(id); // opens our internal page directly
-        });
-      });
-
-      $("#backFromExhibit").addEventListener("click", ()=> setView("exhibits"));
-      $("#backFromVideo").addEventListener("click", ()=> setView("exhibits"));
-
-      $("#settingsBtn").addEventListener("click", ()=> openWelcomeModal(false));
-      $("#helpBtn").addEventListener("click", ()=> openWelcomeModal(false));
-
-      $("#welcomeClose").addEventListener("click", closeWelcomeModal);
-      $("#welcomeContinue").addEventListener("click", ()=>{
-        closeWelcomeModal();
-        setAR(state.arOn);
-      });
-
-      $("#langSelect").addEventListener("change", (e)=>{
-        state.lang = e.target.value;
-        localStorage.setItem("hs_lang", state.lang);
-        toast("Language updated");
-      });
-
-      $("#arToggle").addEventListener("click", ()=>{
-        const on = $("#arToggle").getAttribute("aria-checked") !== "true";
-        $("#arToggle").setAttribute("aria-checked", on ? "true" : "false");
-        state.arOn = on;
-        localStorage.setItem("hs_ar", String(on));
-        $("#arTag").textContent = on ? "On" : "Off";
-      });
-
-      $("#cornerVideoClose").addEventListener("click", closeCornerVideo);
-
-      $("#closePanelBtn").addEventListener("click", ()=>{
-        hideExhibitPanel(true);
-        stopAnyAudio();
-      });
-
-      $("#audioBtn").addEventListener("click", ()=>{
-        if(state.currentGroup) playAudioForGroup(state.currentGroup);
-      });
-
-      $("#stopAudioBtn").addEventListener("click", stopAnyAudio);
-
-      // IMPORTANT: Open page => internal non-AR page
-      $("#openPageBtn").addEventListener("click", ()=>{
-        if(!state.currentGroup) return;
-        openNonARPage(state.currentGroup);
-      });
-
-      // tap outside modal to close
-      $("#welcomeModal").addEventListener("click", (e)=>{
-        if(e.target.id === "welcomeModal") closeWelcomeModal();
-      });
-    }
-
-    // Put your full script here (kept short for now)
     const VIDEO_SCRIPT =
 `The Universal Search for Structure
 
 (Insert full script text here — you already provided it.)`;
 
+    function initNav(){
+      // bottom nav
+      $$(".navitem").forEach(btn=>{
+        btn.addEventListener("click", ()=> setView(btn.dataset.target));
+      });
+
+      $("#goExhibitsBtn")?.addEventListener("click", ()=> setView("exhibits"));
+      $("#goAboutBtn")?.addEventListener("click", ()=> setView("about"));
+
+      $$("#view-exhibits .listbtn").forEach(b=>{
+        b.addEventListener("click", ()=>{
+          const nav = b.dataset.nav;
+          if(nav === "video"){ setView("video"); return; }
+          openNonARPage(b.dataset.id);
+        });
+      });
+
+      $("#backFromExhibit")?.addEventListener("click", ()=> setView("exhibits"));
+      $("#backFromVideo")?.addEventListener("click", ()=> setView("exhibits"));
+
+      $("#settingsBtn")?.addEventListener("click", ()=> openWelcomeModal(false));
+      $("#helpBtn")?.addEventListener("click", ()=> openWelcomeModal(false));
+
+      $("#welcomeClose")?.addEventListener("click", closeWelcomeModal);
+      $("#welcomeContinue")?.addEventListener("click", ()=>{
+        closeWelcomeModal();
+        setAR(state.arOn);
+      });
+
+      $("#langSelect")?.addEventListener("change", (e)=>{
+        state.lang = e.target.value;
+        localStorage.setItem("hs_lang", state.lang);
+        toast("Language updated");
+      });
+
+      $("#arToggle")?.addEventListener("click", ()=>{
+        const on = $("#arToggle").getAttribute("aria-checked") !== "true";
+        $("#arToggle").setAttribute("aria-checked", on ? "true" : "false");
+        state.arOn = on;
+        localStorage.setItem("hs_ar", String(on));
+        $("#arTag") && ($("#arTag").textContent = on ? "On" : "Off");
+      });
+
+      $("#cornerVideoClose")?.addEventListener("click", closeCornerVideo);
+
+      $("#closePanelBtn")?.addEventListener("click", ()=>{
+        hideExhibitPanel(true);
+        stopAnyAudio();
+      });
+
+      $("#audioBtn")?.addEventListener("click", ()=>{
+        if(state.currentGroup) playAudioForGroup(state.currentGroup);
+      });
+
+      $("#stopAudioBtn")?.addEventListener("click", stopAnyAudio);
+
+      $("#openPageBtn")?.addEventListener("click", ()=>{
+        if(!state.currentGroup) return;
+        openNonARPage(state.currentGroup);
+      });
+
+      $("#welcomeModal")?.addEventListener("click", (e)=>{
+        if(e.target && e.target.id === "welcomeModal") closeWelcomeModal();
+      });
+
+      // About page: download info toggle
+      const dlInfoBtn = document.getElementById("dlInfoBtn");
+      const dlHowBox = document.getElementById("dlHowBox");
+      if (dlInfoBtn && dlHowBox) {
+        dlInfoBtn.addEventListener("click", () => {
+          const show = (dlHowBox.style.display === "none" || !dlHowBox.style.display);
+          dlHowBox.style.display = show ? "block" : "none";
+        });
+      }
+    }
+
     function init(){
-      $("#arTag").textContent = state.arOn ? "On" : "Off";
-      $("#arToggle").setAttribute("aria-checked", state.arOn ? "true" : "false");
-      $("#videoScript").textContent = VIDEO_SCRIPT;
+      $("#arTag") && ($("#arTag").textContent = state.arOn ? "On" : "Off");
+      $("#arToggle")?.setAttribute("aria-checked", state.arOn ? "true" : "false");
+      $("#videoScript") && ($("#videoScript").textContent = VIDEO_SCRIPT);
 
       wireTargets();
       initNav();
