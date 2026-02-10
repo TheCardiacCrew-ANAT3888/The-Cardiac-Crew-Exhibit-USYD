@@ -32,6 +32,29 @@
       background:#0b0b10;
       overflow:hidden;
     }
+.infoInline{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:22px;
+  height:22px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:700;
+  line-height:1;
+  border:1px solid rgba(255,255,255,.18);
+  background: rgba(255,255,255,.08);
+  color: rgba(255,255,255,.9);
+  cursor:pointer;
+  margin-left:8px;
+  backdrop-filter: blur(var(--blur));
+  -webkit-backdrop-filter: blur(var(--blur));
+  transition: background .15s ease, transform .1s ease;
+}
+.infoInline:active{
+  transform:scale(.95);
+  background: rgba(255,255,255,.16);
+}
 
     /* Grainy gradient backdrop */
     .bg{position:fixed; inset:0; z-index:-3;
@@ -648,25 +671,42 @@
           </div>
         </section>
 
-        <section class="view" id="view-downloads">
-          <div class="section">
-            <div class="card">
-              <h1>Download 3D files</h1>
-              <p class="muted">3D printed heart models (Sketchfab collection).</p>
-              <div class="hr"></div>
-              <p class="muted">
-                <a class="link" href="https://sketchfab.com/acost/collections/heartscape-the-structure-of-life-models-0733c4399a1e4ceaac8f5e5a5d8ef227"
-                   target="_blank" rel="noopener">
-                  Open the Heartscapes 3D model collection on Sketchfab
-                </a>
-              </p>
-            </div>
-          </div>
-        </section>
-
         <section class="view" id="view-about">
           <div class="section">
             <div class="card">
+              <!-- 3D files download banner -->
+<div class="card" style="box-shadow:none; margin-bottom:12px;">
+  <div class="row">
+    <span class="tag">⬇ 3D files</span>
+   <button class="infoInline" id="dlInfoBtn" aria-label="How to download">i</button>
+  </div>
+
+  <p class="muted" style="margin-top:10px; margin-bottom:10px; display:flex; align-items:center; flex-wrap:wrap;">
+  If you’d like to download the 3D files designed by us (free) from Sketchfab, here’s the link:
+  <button class="infoInline" id="dlInfoBtn" aria-label="How to download">i</button>
+</p>
+
+
+  <p class="muted" style="margin:0;">
+    <a class="link"
+       href="https://sketchfab.com/acost/collections/heartscape-the-structure-of-life-models-0733c4399a1e4ceaac8f5e5a5d8ef227"
+       target="_blank" rel="noopener">
+      Heartscapes 3D model collection (Sketchfab)
+    </a>
+  </p>
+
+  <div class="helpbox" id="dlHowBox" style="display:none; margin-top:12px;">
+    <h2 style="margin:0 0 6px 0;">How to download</h2>
+    <div class="muted">
+      1) Open the Sketchfab link above.<br/>
+      2) Tap a model you want.<br/>
+      3) Look for <b>Download 3D Model</b> (availability depends on the model’s settings).<br/>
+      4) Choose the format offered (e.g., .STL / .OBJ / .GLTF) and save to your device.<br/>
+      5) If you don’t see a download button, that model may be view-only on Sketchfab.
+    </div>
+  </div>
+</div>
+
               <h1>About us</h1>
               <p class="muted">The Cardiac Crew</p>
               <div class="hr"></div>
@@ -705,8 +745,8 @@
           <button class="navitem" data-target="exhibits" aria-label="Exhibits">
             <span class="navicon">🫀</span><span>Exhibits</span>
           </button>
-          <button class="navitem" data-target="downloads" aria-label="Downloads">
-            <span class="navicon">⬇</span><span>Downloads</span>
+         <button class="navitem" data-target="video" aria-label="Video">
+           <span class="navicon">🎬</span><span>Video</span>
           </button>
           <button class="navitem" data-target="about" aria-label="About">
             <span class="navicon">i</span><span>About</span>
@@ -773,16 +813,34 @@
 
     // Exhibit groups (non-AR pages within this site)
     const EXHIBITS = {
-      watercolour: {
-        title: "Watercolour (Histology)",
-        caption:
-`Watercolour interpretation of:
-• Aorta histology (Cajal-Gallego stain)
-• Myocardium histology (H&E stain)
+     watercolour: {
+  title: "Watercolour (Histology)",
+  // Two sections on ONE page
+    caption: "Two watercolour histology interpretations: aorta (Cajal–Gallego) and myocardium (H&E).",
 
-Use AR to recognise either watercolour marker, then open this non-AR page.`,
-        audio: "assets/audio/watercolour_en.mp3"
-      },
+  sections: [
+    {
+      heading: "1) Aorta (Cajal–Gallego stain)",
+      body:
+`Watercolour interpretation of a Cajal-Gallego stained aorta histological section.
+
+• Tunica intima (inner layer): single endothelial lining (single layer of cells on the surface) and subendothelial connective tissue.
+• Tunica media (middle layer): rich in smooth muscle and elastic sheets stained magenta by fuchsin, illustrating the vessel's elasticity.
+• Tunica adventitia (outer layer): stained blue by indigo carmine; contains collagen fibers and nerves.`
+    },
+    {
+      heading: "2) Myocardium (H&E stain)",
+      body:
+`Watercolour interpretation of a H&E stained myocardium (ventricular wall) histological section.
+
+• Myocardium: densely packed cardiac muscle fibers stained bright pink with centrally located nuclei appearing blue-purple.
+• Endocardium: thin inner lining of endothelium (single layer of cells on the surface) and connective tissue.
+• Purkinje fibers: visible within the endocardium as pale pink fibers.`
+    }
+  ],
+  audio: "assets/audio/watercolour_en.mp3"
+},
+
       geo: {
         title: "Geo-historical Perspectives",
         caption:
@@ -861,7 +919,8 @@ Severe Aortic Stenosis
     }
 
     function setActiveNav(target){
-      $$(".navitem").forEach(b=>b.classList.toggle("active", b.dataset.target === target));
+      $$(".navitem").forEach(btn=>{ btn.addEventListener("click", ()=> setView(btn.dataset.target));});
+
     }
 
     function setView(name){
@@ -946,17 +1005,33 @@ Severe Aortic Stenosis
       }
       state.hideTimer = setTimeout(()=> panel.classList.remove("show"), RECOGNITION.lingerMs);
     }
+function renderExhibitToPage(group){
+  const ex = EXHIBITS[group];
+  if(!ex) return;
+
+  $("#exhibitName").textContent = ex.title;
+
+  // If exhibit has "sections", render as a structured page.
+  if(Array.isArray(ex.sections) && ex.sections.length){
+    const combined =
+      ex.sections.map(s => `${s.heading}\n${s.body}`).join("\n\n— — —\n\n");
+    $("#exhibitCaption").textContent = combined;
+  }else{
+    $("#exhibitCaption").textContent = ex.caption || "";
+  }
+}
 
     // Open non-AR page inside this site
-    function openNonARPage(group){
-      const ex = EXHIBITS[group];
-      if(!ex) return;
-      $("#exhibitName").textContent = ex.title;
-      $("#exhibitCaption").textContent = ex.caption;
+  function openNonARPage(group){
+  const ex = EXHIBITS[group];
+  if(!ex) return;
 
-      setAR(false);          // switch to web mode
-      setView("exhibit");    // open non-AR view
-    }
+  renderExhibitToPage(group);
+
+  setAR(false);          // switch to web mode
+  setView("exhibit");    // open non-AR view
+}
+
 
     // MindAR target events with grouping + anti-flicker
     function onTargetFound(index){
@@ -1014,7 +1089,16 @@ Severe Aortic Stenosis
     }
     function closeWelcomeModal(){ $("#welcomeModal").classList.remove("show"); }
 
-    function initNav(){
+    function initNav(const dlInfoBtn = document.getElementById("dlInfoBtn");
+const dlHowBox = document.getElementById("dlHowBox");
+if (dlInfoBtn && dlHowBox) {
+  dlInfoBtn.addEventListener("click", () => {
+    dlHowBox.style.display = (dlHowBox.style.display === "none" || !dlHowBox.style.display)
+      ? "block"
+      : "none";
+  });
+}
+){
       $$(".navitem").forEach(btn=>{
         btn.addEventListener("click", ()=> setView(btn.dataset.target));
       });
