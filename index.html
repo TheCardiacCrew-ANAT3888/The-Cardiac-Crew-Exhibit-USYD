@@ -25,7 +25,7 @@ Languages: English, Vietnamese, Mandarin, Macedonian
 
   <!-- AR.js / A-Frame -->
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar-nft.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.4/dist/mindar-image-aframe.prod.js"></script>
 
   <style>
     :root{
@@ -320,8 +320,31 @@ Languages: English, Vietnamese, Mandarin, Macedonian
     .arview.show{display:block}
 
     /* A-Frame canvas should fill */
-    a-scene{position:absolute !important; inset:0 !important;}
-    canvas{touch-action: none;}
+<a-scene
+  mindar-image="imageTargetSrc: assets/targets/targets.mind; autoStart: true;"
+  color-space="sRGB"
+  renderer="colorManagement: true, physicallyCorrectLights"
+  vr-mode-ui="enabled: false"
+  device-orientation-permission-ui="enabled: false"
+  embedded
+>
+  <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+  <!-- Target 0 -->
+  <a-entity mindar-image-target="targetIndex: 0" id="target0"></a-entity>
+
+  <!-- Target 1 -->
+  <a-entity mindar-image-target="targetIndex: 1" id="target1"></a-entity>
+
+  <!-- Target 2 -->
+  <a-entity mindar-image-target="targetIndex: 2" id="target2"></a-entity>
+
+  <!-- Target 3 -->
+  <a-entity mindar-image-target="targetIndex: 3" id="target3"></a-entity>
+
+  <!-- Target 4 -->
+  <a-entity mindar-image-target="targetIndex: 4" id="target4"></a-entity>
+</a-scene>
 
     /* AR overlay UI (HTML over camera) */
     .arHUD{
