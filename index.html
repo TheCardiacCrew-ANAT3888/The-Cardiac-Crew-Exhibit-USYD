@@ -423,6 +423,23 @@
       display:grid; place-items:center;
       cursor:pointer; user-select:none; touch-action:manipulation;
     }
+    .thumbWrap{ position:relative; width:100%; }
+    .thumbWrap img{ width:100%; height:auto; display:block; }
+    
+    .playBadge{
+      position:absolute;
+      left:50%; top:50%;
+      transform: translate(-50%,-50%);
+      width:48px; height:48px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.22);
+      background: rgba(0,0,0,.45);
+      display:grid; place-items:center;
+      font-size:18px;
+      backdrop-filter: blur(var(--blur));
+      -webkit-backdrop-filter: blur(var(--blur));
+    }
+
 
     /* Toast */
     .toast{
@@ -573,11 +590,20 @@
             </div>
           </div>
 
-          <div class="cornerVideo" id="cornerVideo" aria-label="Intro video">
-            <div class="x" id="cornerVideoClose" aria-label="Close video">✕</div>
-            <video id="introVideo" playsinline muted autoplay preload="metadata"
-                   src="assets/video/exhibit_intro.mp4"></video>
-          </div>
+          <div class="cornerVideo" id="cornerVideo" aria-label="Intro video teaser" role="button" tabindex="0">
+  <div class="x" id="cornerVideoClose" aria-label="Close">✕</div>
+
+  <div class="thumbWrap">
+    <img
+      id="cornerThumb"
+      src="assets/images/Thumbnail.png"
+      alt="Play exhibit video"
+      loading="lazy"
+    />
+    <div class="playBadge" aria-hidden="true">▶</div>
+  </div>
+</div>
+
         </div>
       </div>
 
@@ -669,9 +695,17 @@
 
               <div class="hr"></div>
 
-              <video controls playsinline preload="metadata"
-                     style="width:100%; border-radius:16px; border:1px solid rgba(255,255,255,.12); background: rgba(0,0,0,.18);"
-                     id="fullVideo" src="assets/video/exhibit_full.mp4"></video>
+              <div style="position:relative; width:100%; aspect-ratio:16/9; border-radius:16px; overflow:hidden; border:1px solid rgba(255,255,255,.12); background: rgba(0,0,0,.18);">
+  <iframe
+    id="ytFull"
+    src=""
+    title="Heartscapes exhibit video"
+    style="position:absolute; inset:0; width:100%; height:100%; border:0;"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    allowfullscreen>
+  </iframe>
+</div>
+
 
               <div class="hr"></div>
 
@@ -1005,21 +1039,18 @@ Severe Aortic Stenosis
 
 
     function startCornerVideo(){
-      const wrap = $("#cornerVideo");
-      const vid = $("#introVideo");
-      if(!wrap || !vid) return;
-      wrap.classList.remove("fade");
-      vid.play().catch(()=>{});
-      vid.onended = ()=> wrap.classList.add("fade");
-    }
-    function closeCornerVideo(){
-      const wrap = $("#cornerVideo");
-      const vid = $("#introVideo");
-      if(!wrap || !vid) return;
-      wrap.classList.add("fade");
-      vid.pause();
-      vid.currentTime = 0;
-    }
+  // Now this is just showing the thumbnail teaser
+  const wrap = $("#cornerVideo");
+  if(!wrap) return;
+  wrap.classList.remove("fade");
+}
+
+function closeCornerVideo(){
+  const wrap = $("#cornerVideo");
+  if(!wrap) return;
+  wrap.classList.add("fade");
+}
+
 
     function stopAnyAudio(){
       if(state.currentAudio){
@@ -1130,6 +1161,21 @@ Severe Aortic Stenosis
 
     function openHelpModal(){ $("#helpModal")?.classList.add("show"); }
     function closeHelpModal(){ $("#helpModal")?.classList.remove("show"); }
+const YT_FULL_ID = "jR68W8_fFZE";
+
+function loadYouTubeFull(){
+  const iframe = document.getElementById("ytFull");
+  if(!iframe) return;
+  if(iframe.src) return; // already loaded
+  iframe.src = `https://www.youtube.com/embed/${YT_FULL_ID}?rel=0&modestbranding=1`;
+}
+
+// Optional: stop video when leaving page (prevents audio continuing)
+function unloadYouTubeFull(){
+  const iframe = document.getElementById("ytFull");
+  if(!iframe) return;
+  iframe.src = "";
+}
 
     const VIDEO_SCRIPT =
 `Multimedia Component — The Universal Search for Structure: A Journey Through the Heart
@@ -1146,6 +1192,8 @@ $("#homeLangBtn")?.addEventListener("click", ()=>{
   setTimeout(()=>$("#langSelect")?.focus(), 50);
 });
 
+      
+
 $("#homeArBtn")?.addEventListener("click", ()=>{
   // toggle AR immediately using the same setAR() pipeline
   setAR(!state.arOn);
@@ -1155,8 +1203,19 @@ $("#homeArBtn")?.addEventListener("click", ()=>{
 
       // bottom nav
       $$(".navitem").forEach(btn=>{
-        btn.addEventListener("click", ()=> setView(btn.dataset.target));
-      });
+  btn.addEventListener("click", ()=>{
+    const target = btn.dataset.target;
+
+    // if leaving video page, stop playback
+    const wasVideo = $("#view-video")?.classList.contains("active");
+
+    setView(target);
+
+    if(target === "video") loadYouTubeFull();
+    if(wasVideo && target !== "video") unloadYouTubeFull();
+  });
+});
+
 
       $("#goExhibitsBtn")?.addEventListener("click", ()=> setView("exhibits"));
       $("#goAboutBtn")?.addEventListener("click", ()=> setView("about"));
@@ -1164,14 +1223,60 @@ $("#homeArBtn")?.addEventListener("click", ()=>{
       $$("#view-exhibits .listbtn").forEach(b=>{
         b.addEventListener("click", ()=>{
           const nav = b.dataset.nav;
-          if(nav === "video"){ setView("video"); return; }
+          if(nav === "video"){
+  setView("video");
+  loadYouTubeFull();
+  return;
+}
           openNonARPage(b.dataset.id);
         });
       });
 
       $("#backFromExhibit")?.addEventListener("click", ()=> setView("exhibits"));
-      $("#backFromVideo")?.addEventListener("click", ()=> setView("exhibits"));
+      $("#backFromVideo")?.addEventListener("click", ()=>{
+  unloadYouTubeFull();
+  setView("exhibits");
+});
 
+
+      // Corner thumbnail -> go to Video page (and load YouTube)
+const corner = document.getElementById("cornerVideo");
+const cornerClose = document.getElementById("cornerVideoClose");
+
+if(corner){
+  corner.addEventListener("click", (e)=>{
+    // If they clicked the X, ignore (handled below)
+    if(e.target && e.target.id === "cornerVideoClose") return;
+
+    // Close AR and go to Video page
+    setAR(false);
+    setView("video");
+    loadYouTubeFull();
+
+    // Hide the corner teaser once used
+    corner.classList.add("fade");
+  });
+
+  // Accessibility: keyboard
+  corner.addEventListener("keydown", (e)=>{
+    if(e.key === "Enter" || e.key === " "){
+      e.preventDefault();
+      setAR(false);
+      setView("video");
+      loadYouTubeFull();
+      corner.classList.add("fade");
+    }
+  });
+}
+
+if(cornerClose){
+  cornerClose.addEventListener("click", (e)=>{
+    e.stopPropagation(); // don't trigger the open action
+    closeCornerVideo();  // reuse your existing function to hide it
+  });
+}
+
+      
       $("#settingsBtn")?.addEventListener("click", ()=> openWelcomeModal(false));
       $("#helpBtn")?.addEventListener("click", openHelpModal);
 
