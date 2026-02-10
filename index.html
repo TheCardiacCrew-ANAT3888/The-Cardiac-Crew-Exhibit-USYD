@@ -240,7 +240,7 @@
       font-size: 12px;
     }
 
-    /* Welcome modal */
+    /* Modals */
     .modalback{
       position:fixed; inset:0;
       background: rgba(0,0,0,.55);
@@ -599,6 +599,7 @@
                 <button class="btn" id="goAboutBtn">About Us</button>
               </div>
 
+              <!-- KEEP this on Home -->
               <div class="helpbox">
                 <h2>How to use</h2>
                 <div class="muted">
@@ -640,22 +641,9 @@
 
               <p class="muted" id="exhibitCaption"></p>
 
-              <div class="helpbox">
-                <h2>How to use</h2>
-                <div class="muted">
-                  To turn AR mode ON/OFF, click the ⚙️ icon ^^
-                   <b>AR mode:</b> Use your phone's camera to recognise the exhibit object, then click “Open page” to learn more! You will need to enable your camera permissions.<br/>
-                  <b>Web mode:</b> Browse exhibit pages, without using the camera, from the list. Just click the "Exhibits" page below! (PS - make sure you've turned AR mode OFF) <br/>
-             
-                  <b>Tips:</b><br/>
-              • Hold your phone steady and keep the marker well lit.<br/>
-              • If the marker leaves view, details stay briefly so you can still open the page.<br/>
-              • Use 🔊 in the panel to play audio for each object.
-            </div>
-
-                
-                </div>
-              </div>
+              <!-- IMPORTANT:
+                   Removed the "How to use" box from exhibit pages
+                   (you want that content in the ? modal instead). -->
             </div>
           </div>
         </section>
@@ -693,7 +681,8 @@
                 </div>
 
                 <p class="muted" style="margin-top:10px; margin-bottom:10px; display:flex; align-items:center; flex-wrap:wrap;">
-                  If you’d like to download the 3D files designed by us (free) from Sketchfab, here’s the link: <button class="infoInline" id="dlInfoBtn" aria-label="How to download">i</button>
+                  If you’d like to download the 3D files designed by us (free) from Sketchfab, here’s the link:
+                  <button class="infoInline" id="dlInfoBtn" aria-label="How to download">i</button>
                 </p>
 
                 <p class="muted" style="margin:0;">
@@ -717,29 +706,30 @@
               </div>
 
               <h1>About us</h1>
-              <p class="muted">We, the Cardiac Crew, are a group of USYD undergrad students undertaking the Anatomy and Histology Interdisciplinary Project unit of study (ANAT3888) during semester 2 2025. 
-                
-                "Heartscapes" is our exhibit. 
-                We specifically designed it to present the internal anatomical features of the heart from different perspectives. 
-                We really hope you enjoy (and hopefully learn something) from our exhibit!
-              -The Cardiac Crew</p>
+              <p class="muted">
+                We, the Cardiac Crew, are a group of USYD undergrad students undertaking the Anatomy and Histology
+                Interdisciplinary Project unit of study (ANAT3888) during semester 2 2025.<br/><br/>
+                "Heartscapes" is our exhibit. We specifically designed it to present the internal anatomical features of the heart from different perspectives.<br/><br/>
+                We really hope you enjoy (and hopefully learn something) from our exhibit!<br/>
+                — The Cardiac Crew
+              </p>
               <div class="hr"></div>
 
               <div class="list">
                 <div class="card" style="box-shadow:none">
-                  <b>Eliza </b><div class="muted"><a class="link" href="mailto:eshi0124@uni.sydney.edu.au">eshi0124@uni.sydney.edu.au</a></div>
+                  <b>Eliza</b><div class="muted"><a class="link" href="mailto:eshi0124@uni.sydney.edu.au">eshi0124@uni.sydney.edu.au</a></div>
                 </div>
                 <div class="card" style="box-shadow:none">
-                  <b>Anh </b><div class="muted"><a class="link" href="mailto:hngu2299@uni.sydney.edu.au">hngu2299@uni.sydney.edu.au</a></div>
+                  <b>Anh</b><div class="muted"><a class="link" href="mailto:hngu2299@uni.sydney.edu.au">hngu2299@uni.sydney.edu.au</a></div>
                 </div>
                 <div class="card" style="box-shadow:none">
-                  <b>Janice </b><div class="muted"><a class="link" href="mailto:jmin4533@uni.sydney.edu.au">jmin4533@uni.sydney.edu.au</a></div>
+                  <b>Janice</b><div class="muted"><a class="link" href="mailto:jmin4533@uni.sydney.edu.au">jmin4533@uni.sydney.edu.au</a></div>
                 </div>
                 <div class="card" style="box-shadow:none">
-                  <b>Aoibh </b><div class="muted"><a class="link" href="mailto:acos6856@uni.sydney.edu.au">acos6856@uni.sydney.edu.au</a></div>
+                  <b>Aoibh</b><div class="muted"><a class="link" href="mailto:acos6856@uni.sydney.edu.au">acos6856@uni.sydney.edu.au</a></div>
                 </div>
                 <div class="card" style="box-shadow:none">
-                  <b>Verica </b><div class="muted"><a class="link" href="mailto:vmin5636@uni.sydney.edu.au">vmin5636@uni.sydney.edu.au</a></div>
+                  <b>Verica</b><div class="muted"><a class="link" href="mailto:vmin5636@uni.sydney.edu.au">vmin5636@uni.sydney.edu.au</a></div>
                 </div>
                 <div class="card" style="box-shadow:none">
                   <b>Jiaxu (Josh)</b><div class="muted"><a class="link" href="mailto:jjin0455@uni.sydney.edu.au">jjin0455@uni.sydney.edu.au</a></div>
@@ -774,7 +764,7 @@
 
   <!-- Welcome modal -->
   <div class="modalback" id="welcomeModal">
-    <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-label="Settings">
       <header>
         <h2>Welcome</h2>
         <button class="close" id="welcomeClose" aria-label="Close">✕</button>
@@ -818,31 +808,40 @@
     </div>
   </div>
 
-  <!-- Help modal -->
-<div class="modalback" id="helpModal">
-  <div class="modal" role="dialog" aria-modal="true" aria-label="Help">
-    <header>
-      <h2>How to use</h2>
-      <button class="close" id="helpClose" aria-label="Close">✕</button>
-    </header>
-    <main>
+  <!-- Help modal ( ? button ) -->
+  <div class="modalback" id="helpModal">
+    <div class="modal" role="dialog" aria-modal="true" aria-label="Help">
+      <header>
+        <h2>How to use</h2>
+        <button class="close" id="helpClose" aria-label="Close">✕</button>
+      </header>
+      <main>
 
-
-      <div class="helpbox">
-        <h2 style="margin:0 0 8px 0;">Tips</h2>
-        <div class="muted">
-          • Hold your phone steady and keep the marker well lit.<br/>
-          • If the marker leaves view, details stay briefly so you can still open the page.<br/>
-          • Use 🔊 in the panel to play audio for each object.
+        <!-- This is the exact AR/Web guidance you wanted in the ? modal -->
+        <div class="helpbox" style="margin-top:0;">
+          <div class="muted" style="line-height:1.5">
+            <b>To turn AR mode ON/OFF:</b> tap the ⚙️ icon.<br/><br/>
+            <b>AR mode:</b> Use your phone’s camera to recognise the exhibit object, then tap <b>“Open page”</b> to learn more.
+            You will need to allow camera permissions.<br/>
+            <b>Web mode:</b> Browse exhibit pages from the Exhibits list without using the camera (turn AR <b>Off</b>).
+          </div>
         </div>
-      </div>
 
-      <div class="btnrow">
-        <button class="btn primary" id="helpOk">Got it</button>
-      </div>
-    </main>
+        <div class="helpbox">
+          <h2 style="margin:0 0 8px 0;">Tips</h2>
+          <div class="muted">
+            • Hold your phone steady and keep the marker well lit.<br/>
+            • If the marker leaves view, details stay briefly so you can still open the page.<br/>
+            • Use 🔊 in the panel to play audio for each object.
+          </div>
+        </div>
+
+        <div class="btnrow">
+          <button class="btn primary" id="helpOk">Got it</button>
+        </div>
+      </main>
+    </div>
   </div>
-</div>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
@@ -958,7 +957,7 @@ Severe Aortic Stenosis
       state.arOn = on;
       localStorage.setItem("hs_ar", String(on));
       $("#arToggle")?.setAttribute("aria-checked", on ? "true" : "false");
-      $("#arTag") && ($("#arTag").textContent = on ? "On" : "Off");
+      if($("#arTag")) $("#arTag").textContent = on ? "On" : "Off";
 
       const arview = $("#arview");
       const webviews = $("#webviews");
@@ -966,7 +965,7 @@ Severe Aortic Stenosis
       if(on){
         arview?.classList.add("show");
         if(webviews) webviews.style.visibility = "hidden";
-        $("#arStatusText") && ($("#arStatusText").textContent = "AR ON");
+        if($("#arStatusText")) $("#arStatusText").textContent = "AR ON";
         toast("AR enabled");
         startCornerVideo();
       }else{
@@ -1018,8 +1017,8 @@ Severe Aortic Stenosis
 
       state.currentGroup = group;
 
-      $("#panelTitle") && ($("#panelTitle").textContent = ex.title);
-      $("#panelText") && ($("#panelText").textContent = ex.caption || "");
+      if($("#panelTitle")) $("#panelTitle").textContent = ex.title;
+      if($("#panelText")) $("#panelText").textContent = ex.caption || "";
 
       $("#exhibitPanel")?.classList.add("show");
     }
@@ -1038,13 +1037,13 @@ Severe Aortic Stenosis
     function renderExhibitToPage(group){
       const ex = EXHIBITS[group];
       if(!ex) return;
-      $("#exhibitName") && ($("#exhibitName").textContent = ex.title);
+      if($("#exhibitName")) $("#exhibitName").textContent = ex.title;
 
       if(Array.isArray(ex.sections) && ex.sections.length){
         const combined = ex.sections.map(s => `${s.heading}\n${s.body}`).join("\n\n— — —\n\n");
-        $("#exhibitCaption") && ($("#exhibitCaption").textContent = combined);
+        if($("#exhibitCaption")) $("#exhibitCaption").textContent = combined;
       }else{
-        $("#exhibitCaption") && ($("#exhibitCaption").textContent = ex.caption || "");
+        if($("#exhibitCaption")) $("#exhibitCaption").textContent = ex.caption || "";
       }
     }
 
@@ -1092,7 +1091,7 @@ Severe Aortic Stenosis
 
     function openWelcomeModal(firstTime=true){
       $("#welcomeModal")?.classList.add("show");
-      $("#langSelect") && ($("#langSelect").value = state.lang);
+      if($("#langSelect")) $("#langSelect").value = state.lang;
       $("#arToggle")?.setAttribute("aria-checked", state.arOn ? "true" : "false");
       if(firstTime){
         $("#arview")?.classList.remove("show");
@@ -1101,20 +1100,16 @@ Severe Aortic Stenosis
       }
     }
     function closeWelcomeModal(){ $("#welcomeModal")?.classList.remove("show"); }
-    
-    function openHelpModal(){
-      $("#helpModal")?.classList.add("show");
-    }
-    function closeHelpModal(){
-      $("#helpModal")?.classList.remove("show");
-    }
 
+    function openHelpModal(){ $("#helpModal")?.classList.add("show"); }
+    function closeHelpModal(){ $("#helpModal")?.classList.remove("show"); }
 
     const VIDEO_SCRIPT =
-`Multimedia Component — The Universal Search for Structure: A Journey Through the Heart 
+`Multimedia Component — The Universal Search for Structure: A Journey Through the Heart
 
-A 3-minute storytelling video accompanying The Structure of Life exhibition. 
-It traces the conceptual and creative process behind each anatomical piece, revealing how structure—at every scale, from cardiac muscle to cultural meaning—shapes both the anatomy of the heart and human life. `;
+A 3-minute storytelling video accompanying The Structure of Life exhibition.
+It traces the conceptual and creative process behind each anatomical piece, revealing how structure—at every scale,
+from cardiac muscle to cultural meaning—shapes both the anatomy of the heart and human life.`;
 
     function initNav(){
       // bottom nav
@@ -1137,7 +1132,7 @@ It traces the conceptual and creative process behind each anatomical piece, reve
       $("#backFromVideo")?.addEventListener("click", ()=> setView("exhibits"));
 
       $("#settingsBtn")?.addEventListener("click", ()=> openWelcomeModal(false));
-      $("#helpBtn")?.addEventListener("click", openHelpModal);;
+      $("#helpBtn")?.addEventListener("click", openHelpModal);
 
       $("#welcomeClose")?.addEventListener("click", closeWelcomeModal);
       $("#welcomeContinue")?.addEventListener("click", ()=>{
@@ -1156,7 +1151,7 @@ It traces the conceptual and creative process behind each anatomical piece, reve
         $("#arToggle").setAttribute("aria-checked", on ? "true" : "false");
         state.arOn = on;
         localStorage.setItem("hs_ar", String(on));
-        $("#arTag") && ($("#arTag").textContent = on ? "On" : "Off");
+        if($("#arTag")) $("#arTag").textContent = on ? "On" : "Off";
       });
 
       $("#cornerVideoClose")?.addEventListener("click", closeCornerVideo);
@@ -1177,18 +1172,17 @@ It traces the conceptual and creative process behind each anatomical piece, reve
         openNonARPage(state.currentGroup);
       });
 
+      // close modals on backdrop click
       $("#welcomeModal")?.addEventListener("click", (e)=>{
         if(e.target && e.target.id === "welcomeModal") closeWelcomeModal();
       });
-      
-      $("#helpClose")?.addEventListener("click", closeHelpModal);
-      $("#helpOk")?.addEventListener("click", closeHelpModal);
-      
-      // tap outside help modal to close
       $("#helpModal")?.addEventListener("click", (e)=>{
         if(e.target && e.target.id === "helpModal") closeHelpModal();
       });
 
+      // help modal buttons
+      $("#helpClose")?.addEventListener("click", closeHelpModal);
+      $("#helpOk")?.addEventListener("click", closeHelpModal);
 
       // About page: download info toggle
       const dlInfoBtn = document.getElementById("dlInfoBtn");
@@ -1202,9 +1196,9 @@ It traces the conceptual and creative process behind each anatomical piece, reve
     }
 
     function init(){
-      $("#arTag") && ($("#arTag").textContent = state.arOn ? "On" : "Off");
+      if($("#arTag")) $("#arTag").textContent = state.arOn ? "On" : "Off";
       $("#arToggle")?.setAttribute("aria-checked", state.arOn ? "true" : "false");
-      $("#videoScript") && ($("#videoScript").textContent = VIDEO_SCRIPT);
+      if($("#videoScript")) $("#videoScript").textContent = VIDEO_SCRIPT;
 
       wireTargets();
       initNav();
