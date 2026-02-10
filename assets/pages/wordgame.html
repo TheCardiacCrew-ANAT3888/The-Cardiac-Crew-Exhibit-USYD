@@ -34,7 +34,8 @@
             font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
             color: rgba(255,255,255,.92);
             background: #0b0b10;
-            overflow: hidden;
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         body {
@@ -76,17 +77,17 @@
 
         #app-wrapper {
             width: 100%;
-            height: 100%;
+            min-height: 100%;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
         }
 
         .game-header {
-            position: relative;
+            position: sticky;
+            top: 0;
             z-index: 60;
-            padding: 14px;
-            padding-top: calc(14px + var(--safe-top));
+            padding: 10px 14px;
+            padding-top: calc(10px + var(--safe-top));
             backdrop-filter: blur(var(--blur));
             -webkit-backdrop-filter: blur(var(--blur));
             background: linear-gradient(180deg, rgba(12,12,18,.72), rgba(12,12,18,.18));
@@ -97,7 +98,70 @@
         .header-content {
             max-width: var(--maxw);
             margin: 0 auto;
-            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+        }
+
+        .crest {
+            width: 28px;
+            height: 28px;
+            border-radius: 9px;
+            border: 1px solid rgba(255,255,255,.18);
+            box-shadow: 0 10px 22px rgba(0,0,0,.25);
+            overflow: hidden;
+            background: rgba(255,255,255,.06);
+            flex: 0 0 auto;
+        }
+
+        .crest img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .brandtext {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.05;
+            min-width: 0;
+        }
+
+        .brandtext b {
+            font-size: 12px;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+
+        .brandtext span {
+            font-size: 12px;
+            opacity: .82;
+        }
+
+        .iconbtn {
+            width: 40px;
+            height: 40px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,.14);
+            background: rgba(255,255,255,.08);
+            display: grid;
+            place-items: center;
+            color: rgba(255,255,255,.92);
+            text-decoration: none;
+            touch-action: manipulation;
+        }
+
+        .iconbtn:active {
+            transform: translateY(1px);
         }
 
         .game-title {
@@ -122,25 +186,51 @@
             font-weight: 650;
         }
 
-        .game-content {
-            position: relative;
-            flex: 1 1 auto;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-
         .scrollview {
-            height: 100%;
-            overflow: auto;
-            -webkit-overflow-scrolling: touch;
-            padding-bottom: 24px;
+            flex: 1 1 auto;
+            overflow: visible;
+            padding-bottom: calc(20px + var(--safe-bottom));
         }
 
         .game-section {
-            padding: 12px;
+            padding: 14px;
             max-width: var(--maxw);
             margin: 0 auto;
+        }
+
+        .game-shell {
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(255,255,255,.14);
+            background: rgba(255,255,255,.08);
+            backdrop-filter: blur(var(--blur));
+            -webkit-backdrop-filter: blur(var(--blur));
+            box-shadow: var(--shadow);
+            padding: 14px;
+        }
+
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 10px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,.14);
+            background: rgba(0,0,0,.14);
+            font-size: 12px;
+            opacity: .92;
+        }
+
+        .hr {
+            height: 1px;
+            background: rgba(255,255,255,.10);
+            margin: 12px 0;
+        }
+
+        .muted {
+            opacity: .82;
+            font-size: 13.5px;
+            line-height: 1.4;
+            margin: 8px 0 12px;
         }
 
         .progress-section {
@@ -200,7 +290,7 @@
             backdrop-filter: blur(var(--blur));
             -webkit-backdrop-filter: blur(var(--blur));
             padding: 12px 12px;
-            cursor: grab;
+            cursor: pointer;
             user-select: none;
             transition: all 0.2s ease;
             font-weight: 500;
@@ -225,7 +315,13 @@
 
         .card:active:not(.matched) {
             transform: scale(0.98);
-            cursor: grabbing;
+            cursor: pointer;
+        }
+
+        .card.selected {
+            border-color: rgba(242,169,0,.55);
+            box-shadow: 0 0 0 2px rgba(242,169,0,.2), var(--shadow);
+            transform: translateY(-1px);
         }
 
         .card.matched {
@@ -442,15 +538,23 @@
   <div id="app-wrapper">
    <div class="game-header">
     <div class="header-content">
-     <div id="level-display" class="level-badge">
-      Level 1: Word Parts
-     </div>
-     <h1 id="game-title" class="game-title">Heart Anatomy</h1>
+     <div class="brand">
+      <div class="crest" aria-hidden="true"><img src="../images/logo.png" alt="">
+      </div>
+      <div class="brandtext"><b>HEARTSCAPES</b><span>The Structure of Life</span>
+      </div>
+     </div><a class="iconbtn" id="back-btn" href="crosssections.html" aria-label="Back">⟵</a>
     </div>
    </div>
-   <div class="game-content">
-    <div class="scrollview">
-     <div class="game-section">
+   <div class="scrollview">
+    <div class="game-section">
+     <div class="game-shell"><span class="tag">🧠 <b>Word Match Game</b></span>
+      <div class="hr"></div>
+      <h1 id="game-title" class="game-title">Heart Anatomy</h1>
+      <div id="level-display" class="level-badge">
+       Level 1: Word Parts
+      </div>
+      <p class="muted">Tap a word part in the left column, then tap its matching meaning in the right column.</p>
       <div class="progress-section">
        <div class="progress-bar">
         <div id="progress-fill" class="progress-fill" style="width: 0%"></div>
@@ -501,7 +605,7 @@
         let config = { ...defaultConfig };
         let currentLevel = 1;
         let matchedPairs = new Set();
-        let draggedCard = null;
+        let selectedLeftCard = null;
         let gameData = {
             level1: [
                 { term: "cardi", definition: "heart", hint: "From Greek - sounds like 'cardiac'" },
@@ -585,50 +689,50 @@
             card.dataset.side = side;
             card.dataset.text = text;
             card.dataset.hint = hint || '';
-            card.draggable = true;
+            card.draggable = false;
 
             card.innerHTML = `<div style="width: 100%;">
                 <div>${text}</div>
                 <div class="hint-text" style="display: none;">💡 ${hint || 'No hint available'}</div>
             </div>`;
 
-            card.addEventListener('dragstart', (e) => dragStart(e, card));
-            card.addEventListener('dragend', (e) => dragEnd(e, card));
-            card.addEventListener('dragover', (e) => e.preventDefault());
-            card.addEventListener('drop', (e) => dropCard(e, card));
+            card.addEventListener('click', () => onCardTap(card));
 
             return card;
         }
 
-        function dragStart(e, card) {
+        function onCardTap(card) {
             if (card.classList.contains('matched')) {
-                e.preventDefault();
-                return;
-            }
-            draggedCard = card;
-            card.style.opacity = '0.6';
-            e.dataTransfer.effectAllowed = 'copy';
-        }
-
-        function dragEnd(e, card) {
-            card.style.opacity = '1';
-        }
-
-        function dropCard(e, targetCard) {
-            e.preventDefault();
-            
-            if (!draggedCard || targetCard === draggedCard) return;
-            if (targetCard.classList.contains('matched')) return;
-            if (draggedCard.classList.contains('matched')) return;
-            
-            if (draggedCard.dataset.side === targetCard.dataset.side) {
-                showFeedback('Drag from left column to right column!', 'error');
-                draggedCard = null;
                 return;
             }
 
-            checkMatch(draggedCard, targetCard);
-            draggedCard = null;
+            if (card.dataset.side === 'left') {
+                if (selectedLeftCard === card) {
+                    clearSelection();
+                    return;
+                }
+
+                clearSelection();
+                selectedLeftCard = card;
+                selectedLeftCard.classList.add('selected');
+                return;
+            }
+
+            if (!selectedLeftCard) {
+                showFeedback('Tap a word part in the left column first.', 'error');
+                wiggleCard(card);
+                return;
+            }
+
+            checkMatch(selectedLeftCard, card);
+            clearSelection();
+        }
+
+        function clearSelection() {
+            if (selectedLeftCard) {
+                selectedLeftCard.classList.remove('selected');
+            }
+            selectedLeftCard = null;
         }
 
         function checkMatch(card1, card2) {
@@ -760,7 +864,7 @@
 
         document.getElementById('reset-btn').addEventListener('click', () => {
             matchedPairs.clear();
-            draggedCard = null;
+            clearSelection();
             document.getElementById('game-content').style.display = 'block';
             document.getElementById('end-screen').style.display = 'none';
             createGameBoard();
@@ -780,7 +884,7 @@
             if (currentLevel < 2) {
                 currentLevel++;
                 matchedPairs.clear();
-                draggedCard = null;
+                clearSelection();
                 document.getElementById('game-content').style.display = 'block';
                 document.getElementById('end-screen').style.display = 'none';
                 document.getElementById('level-display').textContent = 
@@ -791,6 +895,12 @@
         });
 
         initializeSDK();
+        document.getElementById('back-btn').addEventListener('click', (event) => {
+            if (window.history.length > 1) {
+                event.preventDefault();
+                window.history.back();
+            }
+        });
         createGameBoard();
         updateProgress();
     </script>
