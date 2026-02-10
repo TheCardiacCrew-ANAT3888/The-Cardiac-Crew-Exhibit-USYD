@@ -614,7 +614,7 @@
           <div class="section">
             <div class="card">
               <h1>Exhibits</h1>
-              <p class="muted">Five main objects plus an exhibit video.</p>
+              <p class="muted">Click on any of the exhibit items below to learn more!</p>
 
               <div class="list">
                 <button class="listbtn" data-nav="exhibit" data-id="watercolour"><span>Watercolour (Histology)</span><span class="chev"></span></button>
@@ -680,7 +680,7 @@
               <!-- 3D files download banner -->
               <div class="card" style="box-shadow:none; margin-bottom:12px;">
                 <div class="row">
-                  <span class="tag">⬇ 3D files</span>
+                  <span class="tag">⬇ Download our FREE 3D Heart models!</span>
                 </div>
 
                 <p class="muted" style="margin-top:10px; margin-bottom:10px; display:flex; align-items:center; flex-wrap:wrap;">
@@ -709,27 +709,27 @@
               </div>
 
               <h1>About us</h1>
-              <p class="muted">The Cardiac Crew</p>
+              <p class="muted">We, the Cardiac Crew, are a group of USYD undergrad students undertaking the Anatomy and Histology Interdisciplinary Project unit of study (ANAT3888) during semester 2 2025. "Heartscapes" is our exhibit, specifically designed to present the internal anatomical features of the heart from different perspectives. We really hope you enjoy (and hopefully learn something) from our exhibit!   </p>
               <div class="hr"></div>
 
               <div class="list">
                 <div class="card" style="box-shadow:none">
-                  <b>Eliza Shields</b><div class="muted"><a class="link" href="mailto:eshi0124@uni.sydney.edu.au">eshi0124@uni.sydney.edu.au</a></div>
+                  <b>Eliza </b><div class="muted"><a class="link" href="mailto:eshi0124@uni.sydney.edu.au">eshi0124@uni.sydney.edu.au</a></div>
                 </div>
                 <div class="card" style="box-shadow:none">
-                  <b>Anh Nguyen</b><div class="muted"><a class="link" href="mailto:hngu2299@uni.sydney.edu.au">hngu2299@uni.sydney.edu.au</a></div>
+                  <b>Anh </b><div class="muted"><a class="link" href="mailto:hngu2299@uni.sydney.edu.au">hngu2299@uni.sydney.edu.au</a></div>
                 </div>
                 <div class="card" style="box-shadow:none">
-                  <b>Janice Minshull</b><div class="muted"><a class="link" href="mailto:jmin4533@uni.sydney.edu.au">jmin4533@uni.sydney.edu.au</a></div>
+                  <b>Janice </b><div class="muted"><a class="link" href="mailto:jmin4533@uni.sydney.edu.au">jmin4533@uni.sydney.edu.au</a></div>
                 </div>
                 <div class="card" style="box-shadow:none">
-                  <b>Aoibh Costello</b><div class="muted"><a class="link" href="mailto:acos6856@uni.sydney.edu.au">acos6856@uni.sydney.edu.au</a></div>
+                  <b>Aoibh </b><div class="muted"><a class="link" href="mailto:acos6856@uni.sydney.edu.au">acos6856@uni.sydney.edu.au</a></div>
                 </div>
                 <div class="card" style="box-shadow:none">
-                  <b>Verica Minovska</b><div class="muted"><a class="link" href="mailto:vmin5636@uni.sydney.edu.au">vmin5636@uni.sydney.edu.au</a></div>
+                  <b>Verica </b><div class="muted"><a class="link" href="mailto:vmin5636@uni.sydney.edu.au">vmin5636@uni.sydney.edu.au</a></div>
                 </div>
                 <div class="card" style="box-shadow:none">
-                  <b>Jiaxu Jin</b><div class="muted"><a class="link" href="mailto:jjin0455@uni.sydney.edu.au">jjin0455@uni.sydney.edu.au</a></div>
+                  <b>Jiaxu (Josh)</b><div class="muted"><a class="link" href="mailto:jjin0455@uni.sydney.edu.au">jjin0455@uni.sydney.edu.au</a></div>
                 </div>
               </div>
 
@@ -804,6 +804,32 @@
       </main>
     </div>
   </div>
+
+  <!-- Help modal -->
+<div class="modalback" id="helpModal">
+  <div class="modal" role="dialog" aria-modal="true" aria-label="Help">
+    <header>
+      <h2>How to use</h2>
+      <button class="close" id="helpClose" aria-label="Close">✕</button>
+    </header>
+    <main>
+
+
+      <div class="helpbox">
+        <h2 style="margin:0 0 8px 0;">Tips</h2>
+        <div class="muted">
+          • Hold your phone steady and keep the marker well lit.<br/>
+          • If the marker leaves view, details stay briefly so you can still open the page.<br/>
+          • Use 🔊 in the panel to play audio for each object.
+        </div>
+      </div>
+
+      <div class="btnrow">
+        <button class="btn primary" id="helpOk">Got it</button>
+      </div>
+    </main>
+  </div>
+</div>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
@@ -1062,11 +1088,20 @@ Severe Aortic Stenosis
       }
     }
     function closeWelcomeModal(){ $("#welcomeModal")?.classList.remove("show"); }
+    
+    function openHelpModal(){
+      $("#helpModal")?.classList.add("show");
+    }
+    function closeHelpModal(){
+      $("#helpModal")?.classList.remove("show");
+    }
+
 
     const VIDEO_SCRIPT =
-`The Universal Search for Structure
+`Multimedia Component — The Universal Search for Structure: A Journey Through the Heart 
 
-(Insert full script text here — you already provided it.)`;
+A 3-minute storytelling video accompanying The Structure of Life exhibition. 
+It traces the conceptual and creative process behind each anatomical piece, revealing how structure—at every scale, from cardiac muscle to cultural meaning—shapes both the anatomy of the heart and human life. `;
 
     function initNav(){
       // bottom nav
@@ -1089,7 +1124,7 @@ Severe Aortic Stenosis
       $("#backFromVideo")?.addEventListener("click", ()=> setView("exhibits"));
 
       $("#settingsBtn")?.addEventListener("click", ()=> openWelcomeModal(false));
-      $("#helpBtn")?.addEventListener("click", ()=> openWelcomeModal(false));
+      $("#helpBtn")?.addEventListener("click", openHelpModal);;
 
       $("#welcomeClose")?.addEventListener("click", closeWelcomeModal);
       $("#welcomeContinue")?.addEventListener("click", ()=>{
@@ -1132,6 +1167,15 @@ Severe Aortic Stenosis
       $("#welcomeModal")?.addEventListener("click", (e)=>{
         if(e.target && e.target.id === "welcomeModal") closeWelcomeModal();
       });
+      
+      $("#helpClose")?.addEventListener("click", closeHelpModal);
+      $("#helpOk")?.addEventListener("click", closeHelpModal);
+      
+      // tap outside help modal to close
+      $("#helpModal")?.addEventListener("click", (e)=>{
+        if(e.target && e.target.id === "helpModal") closeHelpModal();
+      });
+
 
       // About page: download info toggle
       const dlInfoBtn = document.getElementById("dlInfoBtn");
