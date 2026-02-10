@@ -96,18 +96,12 @@
     .toprow{display:flex; align-items:center; justify-content:space-between; gap:12px}
     .brand{display:flex; align-items:center; gap:10px; min-width:0}
     .crest{
-  width:28px;
-  height:28px;
-  border-radius:9px;
-  border:1px solid rgba(255,255,255,.18);
-  box-shadow: 0 10px 22px rgba(0,0,0,.25);
-  flex:0 0 auto;
-
-  object-fit: contain;          /* keeps logo proportions */
-  background: rgba(255,255,255,.06); /* subtle backing */
-  padding: 4px;                  /* optional: gives breathing room */
-}
-
+      width:28px; height:28px; border-radius:9px;
+      background: linear-gradient(135deg, var(--syd-maroon), rgba(242,169,0,.65));
+      border:1px solid rgba(255,255,255,.18);
+      box-shadow: 0 10px 22px rgba(0,0,0,.25);
+      flex:0 0 auto;
+    }
     .brandtext{display:flex; flex-direction:column; line-height:1.05; min-width:0}
     .brandtext b{
       font-size:12px; letter-spacing:.08em; text-transform:uppercase;
@@ -180,7 +174,9 @@
       opacity:.92;
       cursor:pointer;
     }
-    button.tag{ font:inherit; color:inherit; border:1px solid rgba(255,255,255,.14); }
+    button.tag{ font:inherit; color:inherit; }
+    button.tag{ border:1px solid rgba(255,255,255,.14); }
+
     .row{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;}
     .hr{height:1px; background: rgba(255,255,255,.10); margin: 12px 0}
     .helpbox{
@@ -401,7 +397,7 @@
     .panelFoot .btn{padding:10px 12px}
     .small{font-size:12px; opacity:.82; line-height:1.4}
 
-    /* Corner thumbnail teaser (click -> Video page) */
+    /* Corner intro video teaser */
     .cornerVideo{
       position:absolute;
       right: 12px;
@@ -426,7 +422,7 @@
       color:#fff;
       display:grid; place-items:center;
       cursor:pointer; user-select:none; touch-action:manipulation;
-      z-index:2;
+      z-index:5;
     }
     .thumbWrap{ position:relative; width:100%; }
     .thumbWrap img{ width:100%; height:auto; display:block; }
@@ -442,24 +438,6 @@
       font-size:18px;
       backdrop-filter: blur(var(--blur));
       -webkit-backdrop-filter: blur(var(--blur));
-    }
-
-    /* YouTube wrapper */
-    .ytWrap{
-      position:relative;
-      width:100%;
-      padding-top:56.25%; /* 16:9 */
-      border-radius:16px;
-      overflow:hidden;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.18);
-    }
-    .ytWrap iframe{
-      position:absolute;
-      inset:0;
-      width:100%;
-      height:100%;
-      border:0;
     }
 
     /* Toast */
@@ -527,7 +505,7 @@
     <header class="topbar">
       <div class="toprow">
         <div class="brand">
-          <img class="crest" src="assets/images/logo.png" alt="Heartscapes logo" />
+          <div class="crest" aria-hidden="true"></div>
           <div class="brandtext">
             <b>HEARTSCAPES</b>
             <span>The Structure of Life</span>
@@ -607,20 +585,14 @@
             </div>
 
             <div class="small" style="margin-top:10px" id="panelHint">
-              If you lose sight of the marker, this panel will stay briefly so you can open the non-AR page.
+              If you lose sight of the marker, this panel will stay briefly so you can open the page.
             </div>
           </div>
 
-          <!-- Thumbnail teaser -->
-          <div class="cornerVideo" id="cornerVideo" aria-label="Open exhibit video" role="button" tabindex="0">
+          <div class="cornerVideo" id="cornerVideo" aria-label="Intro video teaser" role="button" tabindex="0">
             <div class="x" id="cornerVideoClose" aria-label="Close">✕</div>
             <div class="thumbWrap">
-              <img
-                id="cornerThumb"
-                src="assets/images/Thumbnail.png"
-                alt="Play exhibit video"
-                loading="lazy"
-              />
+              <img id="cornerThumb" src="assets/images/Thumbnail.png" alt="Play exhibit video" loading="lazy" />
               <div class="playBadge" aria-hidden="true">▶</div>
             </div>
           </div>
@@ -636,7 +608,7 @@
             <div class="card">
               <h1>Heartscapes: The Structure of Life</h1>
               <p class="muted">
-                Use AR to recognise an object and open its non-AR page, or browse everything in web mode.
+                Use AR to recognise an object and open its page, or browse everything in web mode.
               </p>
 
               <div class="hr"></div>
@@ -685,6 +657,7 @@
           </div>
         </section>
 
+        <!-- (kept but unused now; all exhibits are external) -->
         <section class="view" id="view-exhibit">
           <div class="section">
             <div class="card">
@@ -692,9 +665,7 @@
                 <span class="tag">🫀 <b id="exhibitName">Exhibit</b></span>
                 <button class="iconbtn" id="backFromExhibit" aria-label="Back">⟵</button>
               </div>
-
               <div class="hr"></div>
-
               <p class="muted" id="exhibitCaption"></p>
             </div>
           </div>
@@ -710,7 +681,16 @@
 
               <div class="hr"></div>
 
-              <div class="ytWrap" id="ytWrap"></div>
+              <div style="position:relative; width:100%; aspect-ratio:16/9; border-radius:16px; overflow:hidden; border:1px solid rgba(255,255,255,.12); background: rgba(0,0,0,.18);">
+                <iframe
+                  id="ytFull"
+                  src=""
+                  title="Heartscapes exhibit video"
+                  style="position:absolute; inset:0; width:100%; height:100%; border:0;"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowfullscreen>
+                </iframe>
+              </div>
 
               <div class="hr"></div>
 
@@ -857,7 +837,7 @@
     </div>
   </div>
 
-  <!-- Help modal -->
+  <!-- Help modal ( ? button ) -->
   <div class="modalback" id="helpModal">
     <div class="modal" role="dialog" aria-modal="true" aria-label="Help">
       <header>
@@ -893,64 +873,41 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
+    // ===== External exhibit pages =====
+    // Create these files under assets/pages/ (or rename these paths to match your actual filenames)
+    const EXTERNAL_PAGES = {
+      watercolour: "assets/pages/watercolour.html",
+      geo:        "assets/pages/geo.html",
+      valve:      "assets/pages/valve.html",
+      trabeculae: "assets/pages/trabeculae.html",
+      xsections:  "assets/pages/crosssections.html" // you already have this one
+    };
+
+    // ===== Exhibit metadata (still used for AR panel text + audio) =====
     const EXHIBITS = {
       watercolour: {
         title: "Watercolour (Histology)",
         caption: "Two watercolour histology interpretations: aorta (Cajal–Gallego) and myocardium (H&E).",
-        sections: [
-          {
-            heading: "1) Aorta (Cajal–Gallego stain)",
-            body:
-`Watercolour interpretation of a Cajal-Gallego stained aorta histological section.
-
-• Tunica intima (inner layer): single endothelial lining (single layer of cells on the surface) and subendothelial connective tissue.
-• Tunica media (middle layer): rich in smooth muscle and elastic sheets stained magenta by fuchsin, illustrating the vessel's elasticity.
-• Tunica adventitia (outer layer): stained blue by indigo carmine; contains collagen fibers and nerves.`
-          },
-          {
-            heading: "2) Myocardium (H&E stain)",
-            body:
-`Watercolour interpretation of a H&E stained myocardium (ventricular wall) histological section.
-
-• Myocardium: densely packed cardiac muscle fibers stained bright pink with centrally located nuclei appearing blue-purple.
-• Endocardium: thin inner lining of endothelium (single layer of cells on the surface) and connective tissue.
-• Purkinje fibers: visible within the endocardium as pale pink fibers.`
-          }
-        ],
         audio: "assets/audio/watercolour_en.mp3"
       },
       geo: {
         title: "Geo-historical Perspectives",
-        caption:
-`This globe traces the origins of how ancient civilisations understood the heart — from spiritual symbols to scientific discovery.
-
-(Replace this placeholder with your full text when ready.)`,
+        caption: "This globe traces the origins of how ancient civilisations understood the heart — from spiritual symbols to scientific discovery.",
         audio: "assets/audio/geo_en.mp3"
       },
       valve: {
         title: "Valve Pathology — Aortic Stenosis",
-        caption:
-`Healthy Aortic Valve
-Moderate Aortic Stenosis
-Severe Aortic Stenosis
-
-(Replace this placeholder with your full caption when ready.)`,
+        caption: "Healthy Aortic Valve → Moderate AS → Severe AS",
         audio: "assets/audio/valve_en.mp3"
       },
       trabeculae: {
         title: "Trabeculae Carneae (Embroidery)",
-        caption:
-`Patchwork embroidery derived from trabeculae carnea imagery.
-
-(Replace this placeholder with your full caption when ready.)`,
+        caption: "Patchwork embroidery derived from trabeculae carnea imagery.",
         audio: "assets/audio/trabeculae_en.mp3"
       },
       xsections: {
         title: "Internal Architecture (Cross-sections)",
-        caption:
-`3D printed heart cross-sections at sequential depths.
-
-(Replace this placeholder with your full caption when ready.)`,
+        caption: "3D printed heart cross-sections at sequential depths.",
         audio: "assets/audio/xsections_en.mp3"
       }
     };
@@ -1000,32 +957,6 @@ Severe Aortic Stenosis
       setActiveNav(name);
     }
 
-    /* ---------- YouTube ---------- */
-    const YT_ID = "jR68W8_fFZE";
-
-    function loadYouTubeFull(){
-      const wrap = document.getElementById("ytWrap");
-      if(!wrap) return;
-      if(wrap.querySelector("iframe")) return; // already loaded
-
-      wrap.innerHTML = `
-        <iframe
-          id="ytFull"
-          src="https://www.youtube.com/embed/${YT_ID}?rel=0&modestbranding=1"
-          title="Heartscapes exhibit video"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowfullscreen>
-        </iframe>
-      `;
-    }
-
-    function unloadYouTubeFull(){
-      const wrap = document.getElementById("ytWrap");
-      if(!wrap) return;
-      wrap.innerHTML = "";
-    }
-
-    /* ---------- AR ---------- */
     async function setAR(on){
       state.arOn = on;
       localStorage.setItem("hs_ar", String(on));
@@ -1056,8 +987,8 @@ Severe Aortic Stenosis
         arview?.classList.remove("show");
         if(webviews) webviews.style.visibility = "visible";
 
-        mindar?.stop();
-        sceneEl.renderer?.clear();
+        try { mindar?.stop(); } catch(e){}
+        try { sceneEl.renderer?.clear(); } catch(e){}
 
         hideExhibitPanel(true);
         stopAnyAudio();
@@ -1116,24 +1047,23 @@ Severe Aortic Stenosis
       state.hideTimer = setTimeout(()=> panel.classList.remove("show"), RECOGNITION.lingerMs);
     }
 
-    function renderExhibitToPage(group){
-      const ex = EXHIBITS[group];
-      if(!ex) return;
-      if($("#exhibitName")) $("#exhibitName").textContent = ex.title;
-
-      if(Array.isArray(ex.sections) && ex.sections.length){
-        const combined = ex.sections.map(s => `${s.heading}\n${s.body}`).join("\n\n— — —\n\n");
-        if($("#exhibitCaption")) $("#exhibitCaption").textContent = combined;
-      }else{
-        if($("#exhibitCaption")) $("#exhibitCaption").textContent = ex.caption || "";
+    function goToExternalExhibit(group){
+      const url = EXTERNAL_PAGES[group];
+      if(!url){
+        toast("Missing page for: " + group);
+        return;
       }
+      // Stop AR/audio cleanly, then navigate
+      stopAnyAudio();
+      if(state.arOn) {
+        try { setAR(false); } catch(e){}
+      }
+      window.location.href = url;
     }
 
+    // Called from AR + from Exhibits list (now external for all exhibits)
     function openNonARPage(group){
-      if(!EXHIBITS[group]) return;
-      renderExhibitToPage(group);
-      setAR(false);
-      setView("exhibit");
+      goToExternalExhibit(group);
     }
 
     function onTargetFound(index){
@@ -1157,7 +1087,7 @@ Severe Aortic Stenosis
       showExhibitPanelForGroup(group);
     }
 
-    function onTargetLost(){
+    function onTargetLost(index){
       hideExhibitPanel(false);
     }
 
@@ -1166,7 +1096,7 @@ Severe Aortic Stenosis
         const el = document.getElementById("t"+i);
         if(!el) continue;
         el.addEventListener("targetFound", ()=>onTargetFound(i));
-        el.addEventListener("targetLost", ()=>onTargetLost());
+        el.addEventListener("targetLost", ()=>onTargetLost(i));
       }
     }
 
@@ -1184,6 +1114,21 @@ Severe Aortic Stenosis
 
     function openHelpModal(){ $("#helpModal")?.classList.add("show"); }
     function closeHelpModal(){ $("#helpModal")?.classList.remove("show"); }
+
+    // ===== YouTube =====
+    const YT_FULL_ID = "jR68W8_fFZE";
+
+    function loadYouTubeFull(){
+      const iframe = document.getElementById("ytFull");
+      if(!iframe) return;
+      if(iframe.src) return;
+      iframe.src = `https://www.youtube.com/embed/${YT_FULL_ID}?rel=0&modestbranding=1&playsinline=1`;
+    }
+    function unloadYouTubeFull(){
+      const iframe = document.getElementById("ytFull");
+      if(!iframe) return;
+      iframe.src = "";
+    }
 
     const VIDEO_SCRIPT =
 `Multimedia Component — The Universal Search for Structure: A Journey Through the Heart
@@ -1204,7 +1149,7 @@ from cardiac muscle to cultural meaning—shapes both the anatomy of the heart a
         $("#arToggle")?.setAttribute("aria-checked", state.arOn ? "true" : "false");
       });
 
-      // Bottom nav (with YouTube load/unload)
+      // Bottom nav
       $$(".navitem").forEach(btn=>{
         btn.addEventListener("click", ()=>{
           const target = btn.dataset.target;
@@ -1220,6 +1165,7 @@ from cardiac muscle to cultural meaning—shapes both the anatomy of the heart a
       $("#goExhibitsBtn")?.addEventListener("click", ()=> setView("exhibits"));
       $("#goAboutBtn")?.addEventListener("click", ()=> setView("about"));
 
+      // Exhibits list: ALL exhibits => external page, video stays internal
       $$("#view-exhibits .listbtn").forEach(b=>{
         b.addEventListener("click", ()=>{
           const nav = b.dataset.nav;
@@ -1232,24 +1178,22 @@ from cardiac muscle to cultural meaning—shapes both the anatomy of the heart a
         });
       });
 
-      $("#backFromExhibit")?.addEventListener("click", ()=> setView("exhibits"));
+      // back buttons (video only used internally now)
       $("#backFromVideo")?.addEventListener("click", ()=>{
         unloadYouTubeFull();
         setView("exhibits");
       });
 
-      // Corner thumbnail -> go to Video page
+      // Corner teaser -> go to Video page
       const corner = document.getElementById("cornerVideo");
       const cornerClose = document.getElementById("cornerVideoClose");
 
       if(corner){
         corner.addEventListener("click", (e)=>{
           if(e.target && e.target.id === "cornerVideoClose") return;
-
           setAR(false);
           setView("video");
           loadYouTubeFull();
-
           corner.classList.add("fade");
         });
 
@@ -1271,7 +1215,6 @@ from cardiac muscle to cultural meaning—shapes both the anatomy of the heart a
         });
       }
 
-      // Settings/help
       $("#settingsBtn")?.addEventListener("click", ()=> openWelcomeModal(false));
       $("#helpBtn")?.addEventListener("click", openHelpModal);
 
@@ -1295,7 +1238,6 @@ from cardiac muscle to cultural meaning—shapes both the anatomy of the heart a
         if($("#arTag")) $("#arTag").textContent = on ? "On" : "Off";
       });
 
-      // Panel actions
       $("#closePanelBtn")?.addEventListener("click", ()=>{
         hideExhibitPanel(true);
         stopAnyAudio();
@@ -1307,6 +1249,7 @@ from cardiac muscle to cultural meaning—shapes both the anatomy of the heart a
 
       $("#stopAudioBtn")?.addEventListener("click", stopAnyAudio);
 
+      // AR panel Open page -> external page for the recognised group
       $("#openPageBtn")?.addEventListener("click", ()=>{
         if(!state.currentGroup) return;
         openNonARPage(state.currentGroup);
@@ -1320,7 +1263,6 @@ from cardiac muscle to cultural meaning—shapes both the anatomy of the heart a
         if(e.target && e.target.id === "helpModal") closeHelpModal();
       });
 
-      // help modal buttons
       $("#helpClose")?.addEventListener("click", closeHelpModal);
       $("#helpOk")?.addEventListener("click", closeHelpModal);
 
@@ -1342,7 +1284,7 @@ from cardiac muscle to cultural meaning—shapes both the anatomy of the heart a
 
       wireTargets();
 
-      // Transparent renderer over camera (once scene is loaded)
+      // Ensure scene renders transparently over camera
       const sceneEl = document.querySelector("#arScene");
       sceneEl.addEventListener("loaded", () => {
         const r = sceneEl.renderer;
@@ -1357,4 +1299,3 @@ from cardiac muscle to cultural meaning—shapes both the anatomy of the heart a
   </script>
 </body>
 </html>
-```
