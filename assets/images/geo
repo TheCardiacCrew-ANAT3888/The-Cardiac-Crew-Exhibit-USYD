@@ -271,7 +271,7 @@
           <div style="text-align: center; padding: 1rem;">
            <svg width="48" height="48" viewbox="0 0 48 48" fill="none" style="margin: 0 auto 0.5rem; display: block;"><rect x="4" y="8" width="40" height="32" rx="2" stroke="rgba(242,169,0,.4)" stroke-width="2" fill="none" /> <circle cx="16" cy="20" r="4" stroke="rgba(242,169,0,.4)" stroke-width="2" fill="none" /> <path d="M4 32l12-8 8 6 12-10 8 6" stroke="rgba(242,169,0,.4)" stroke-width="2" fill="none" />
            </svg>
-           <p style="color: var(--syd-gold); font-size: 0.875rem; font-weight: 500; margin: 0;">📷 Paste Image Here</p>
+           <p style="color: var(--syd-gold); font-size: 0.875rem; font-weight: 500; margin: 0;"> assets/images/edwinsmithpapyrus.png </p>
           </div>
          </div>
          <p style="color: var(--syd-gold); font-size: 0.875rem; text-align: center; font-style: italic; margin: 0;">Edwin Smith Papyrus</p>
