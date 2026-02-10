@@ -3,40 +3,43 @@
  <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Group Photo Wall</title>
+  <title>About Us</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <script src="/_sdk/element_sdk.js"></script>
   <style>
     body {
       box-sizing: border-box;
       font-family: 'DM Sans', sans-serif;
     }
-    
+
+    .team-hero {
+      position: relative;
+      border-radius: 1.5rem;
+      overflow: hidden;
+      box-shadow: 0 20px 45px -18px rgba(15, 23, 42, 0.35);
+      min-height: 220px;
+      background-image: linear-gradient(to right, rgba(79, 70, 229, 0.45), rgba(15, 23, 42, 0.4)),
+        url('/assets/images/groupphoto.jpeg');
+      background-size: cover;
+      background-position: center;
+    }
+
     .member-card {
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    
+
     .member-card:hover {
-      transform: translateY(-8px) scale(1.02);
+      transform: translateY(-6px) scale(1.01);
     }
-    
-    .member-card:hover .photo-frame {
-      box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.25);
-    }
-    
+
     .photo-frame {
       transition: box-shadow 0.3s ease;
+      box-shadow: 0 12px 26px -12px rgba(0, 0, 0, 0.45);
     }
-    
-    .photo-placeholder {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2.5rem;
-      color: white;
-      font-weight: 600;
+
+    .member-card:hover .photo-frame {
+      box-shadow: 0 20px 36px -14px rgba(0, 0, 0, 0.5);
     }
   </style>
   <style>@view-transition { navigation: auto; }</style>
@@ -44,12 +47,30 @@
  </head>
  <body class="h-full">
   <div id="app-container" class="w-full h-full overflow-auto p-6 md:p-10">
-   <div class="max-w-4xl mx-auto">
-    <div id="members-grid" class="grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-8"><!-- Member cards will be generated here -->
+   <div class="max-w-5xl mx-auto space-y-8 md:space-y-10">
+    <section class="team-hero flex items-end p-6 md:p-8">
+     <div class="bg-black/35 text-white backdrop-blur-sm rounded-xl px-4 py-3">
+      <h1 class="text-2xl md:text-3xl font-semibold">Meet The Cardiac Crew</h1>
+      <p class="text-sm md:text-base opacity-90">The team behind the exhibit.</p>
+     </div>
+    </section>
+
+    <div id="members-grid" class="grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
+     <!-- Member cards will be generated here -->
     </div>
    </div>
   </div>
+
   <script>
+    const memberImages = {
+      1: '/assets/images/eliza.jpeg',
+      2: '/assets/images/janice.jpeg',
+      3: '/assets/images/verica.jpeg',
+      4: '/assets/images/anh.jpeg',
+      5: '/assets/images/aoibh.jpeg',
+      6: '/assets/images/josh.jpeg'
+    };
+
     const defaultConfig = {
       background_color: '#f8fafc',
       card_color: '#ffffff',
@@ -58,39 +79,33 @@
       email_color: '#64748b',
       font_family: 'DM Sans',
       font_size: 16,
-      member_1_name: 'Alex Johnson',
-      member_1_email: 'alex@example.com',
-      member_2_name: 'Sam Williams',
-      member_2_email: 'sam@example.com',
-      member_3_name: 'Jordan Lee',
-      member_3_email: 'jordan@example.com',
-      member_4_name: 'Taylor Brown',
-      member_4_email: 'taylor@example.com',
-      member_5_name: 'Casey Davis',
-      member_5_email: 'casey@example.com',
-      member_6_name: 'Morgan Wilson',
-      member_6_email: 'morgan@example.com'
+      member_1_name: 'Eliza',
+      member_1_email: 'eliza@example.com',
+      member_2_name: 'Janice',
+      member_2_email: 'janice@example.com',
+      member_3_name: 'Verica',
+      member_3_email: 'verica@example.com',
+      member_4_name: 'Anh',
+      member_4_email: 'anh@example.com',
+      member_5_name: 'Aoibh',
+      member_5_email: 'aoibh@example.com',
+      member_6_name: 'Josh',
+      member_6_email: 'josh@example.com'
     };
 
     let config = { ...defaultConfig };
 
-    function getInitials(name) {
-      return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-    }
-
     function createMemberCards() {
       const grid = document.getElementById('members-grid');
       grid.innerHTML = '';
-      
+
       for (let i = 1; i <= 6; i++) {
         const card = document.createElement('div');
-        card.className = 'member-card cursor-pointer';
+        card.className = 'member-card';
         card.id = `member-${i}`;
         card.innerHTML = `
-          <div class="photo-frame rounded-2xl overflow-hidden shadow-lg">
-            <div class="photo-placeholder aspect-square" id="photo-${i}">
-              <span id="initials-${i}"></span>
-            </div>
+          <div class="photo-frame rounded-2xl overflow-hidden bg-white">
+            <img src="${memberImages[i]}" alt="Team member ${i}" class="w-full aspect-square object-cover" loading="lazy">
           </div>
           <div class="mt-4 text-center">
             <h3 id="name-${i}" class="font-semibold"></h3>
@@ -103,29 +118,27 @@
 
     async function onConfigChange(cfg) {
       config = cfg;
-      
+
       const container = document.getElementById('app-container');
       container.style.backgroundColor = cfg.background_color || defaultConfig.background_color;
-      
+
       const fontFamily = cfg.font_family || defaultConfig.font_family;
       const baseSize = cfg.font_size || defaultConfig.font_size;
-      
+
       for (let i = 1; i <= 6; i++) {
         const name = cfg[`member_${i}_name`] || defaultConfig[`member_${i}_name`];
         const email = cfg[`member_${i}_email`] || defaultConfig[`member_${i}_email`];
-        
+
         const nameEl = document.getElementById(`name-${i}`);
         const emailEl = document.getElementById(`email-${i}`);
-        const initialsEl = document.getElementById(`initials-${i}`);
-        const photoEl = document.getElementById(`photo-${i}`);
-        
+
         if (nameEl) {
           nameEl.textContent = name;
           nameEl.style.color = cfg.text_color || defaultConfig.text_color;
           nameEl.style.fontFamily = `${fontFamily}, sans-serif`;
           nameEl.style.fontSize = `${baseSize * 1.125}px`;
         }
-        
+
         if (emailEl) {
           emailEl.textContent = email;
           emailEl.href = `mailto:${email}`;
@@ -133,16 +146,8 @@
           emailEl.style.fontFamily = `${fontFamily}, sans-serif`;
           emailEl.style.fontSize = `${baseSize * 0.875}px`;
         }
-        
-        if (initialsEl) {
-          initialsEl.textContent = getInitials(name);
-        }
-        
-        if (photoEl) {
-          photoEl.style.background = `linear-gradient(135deg, ${cfg.accent_color || defaultConfig.accent_color} 0%, #764ba2 100%)`;
-        }
       }
-      
+
       const cards = document.querySelectorAll('.photo-frame');
       cards.forEach(card => {
         card.style.backgroundColor = cfg.card_color || defaultConfig.card_color;
@@ -202,9 +207,8 @@
       ]);
     }
 
-    // Initialize
     createMemberCards();
-    
+
     if (window.elementSdk) {
       window.elementSdk.init({
         defaultConfig,
@@ -216,5 +220,5 @@
       onConfigChange(defaultConfig);
     }
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9cbee30a16430d19',t:'MTc3MDc2MDkwNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ </body>
 </html>
