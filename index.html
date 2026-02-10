@@ -475,6 +475,55 @@
 
     /* List buttons */
     .list{display:flex; flex-direction:column; gap:10px; margin-top:10px}
+    .about-hero{
+      position:relative;
+      width:100%;
+      min-height:220px;
+      border-radius:16px;
+      overflow:hidden;
+      background-image:
+        linear-gradient(135deg, rgba(138,21,56,.55), rgba(11,11,16,.35)),
+        url('assets/images/groupphoto.jpeg');
+      background-size:cover;
+      background-position:center;
+      box-shadow: 0 16px 40px rgba(0,0,0,.28);
+      display:flex;
+      align-items:flex-end;
+      margin-top:12px;
+    }
+    .about-hero-text{
+      margin:12px;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.18);
+      background: rgba(0,0,0,.22);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    .about-team-grid{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0,1fr));
+      gap:10px;
+      margin-top:10px;
+    }
+    .about-member-card{
+      text-align:center;
+      border-radius:16px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.08);
+      padding:10px;
+    }
+    .about-member-card img{
+      width:100%;
+      aspect-ratio:1/1;
+      object-fit:cover;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.2);
+      margin-bottom:8px;
+    }
+    @media (min-width:460px){
+      .about-team-grid{ grid-template-columns:repeat(3, minmax(0,1fr)); }
+    }
     .listbtn{
       width:100%;
       display:flex; align-items:center; justify-content:space-between;
@@ -752,25 +801,39 @@
                 We really hope you enjoy (and hopefully learn something) from our exhibit!<br/>
                 — The Cardiac Crew
               </p>
+
+              <div class="about-hero" aria-label="Cardiac Crew group photo">
+                <div class="about-hero-text">
+                  <b>Meet The Cardiac Crew</b>
+                  <div class="muted" style="margin-top:2px">The team behind Heartscapes.</div>
+                </div>
+              </div>
+
               <div class="hr"></div>
 
-              <div class="list">
-                <div class="card" style="box-shadow:none">
+              <div class="about-team-grid">
+                <div class="about-member-card">
+                  <img src="assets/images/eliza.jpeg" alt="Eliza" loading="lazy" />
                   <b>Eliza</b><div class="muted"><a class="link" href="mailto:eshi0124@uni.sydney.edu.au">eshi0124@uni.sydney.edu.au</a></div>
                 </div>
-                <div class="card" style="box-shadow:none">
-                  <b>Anh</b><div class="muted"><a class="link" href="mailto:hngu2299@uni.sydney.edu.au">hngu2299@uni.sydney.edu.au</a></div>
-                </div>
-                <div class="card" style="box-shadow:none">
+                <div class="about-member-card">
+                  <img src="assets/images/janice.jpeg" alt="Janice" loading="lazy" />
                   <b>Janice</b><div class="muted"><a class="link" href="mailto:jmin4533@uni.sydney.edu.au">jmin4533@uni.sydney.edu.au</a></div>
                 </div>
-                <div class="card" style="box-shadow:none">
-                  <b>Aoibh</b><div class="muted"><a class="link" href="mailto:acos6856@uni.sydney.edu.au">acos6856@uni.sydney.edu.au</a></div>
-                </div>
-                <div class="card" style="box-shadow:none">
+                <div class="about-member-card">
+                  <img src="assets/images/verica.jpeg" alt="Verica" loading="lazy" />
                   <b>Verica</b><div class="muted"><a class="link" href="mailto:vmin5636@uni.sydney.edu.au">vmin5636@uni.sydney.edu.au</a></div>
                 </div>
-                <div class="card" style="box-shadow:none">
+                <div class="about-member-card">
+                  <img src="assets/images/anh.jpeg" alt="Anh" loading="lazy" />
+                  <b>Anh</b><div class="muted"><a class="link" href="mailto:hngu2299@uni.sydney.edu.au">hngu2299@uni.sydney.edu.au</a></div>
+                </div>
+                <div class="about-member-card">
+                  <img src="assets/images/aoibh.jpeg" alt="Aoibh" loading="lazy" />
+                  <b>Aoibh</b><div class="muted"><a class="link" href="mailto:acos6856@uni.sydney.edu.au">acos6856@uni.sydney.edu.au</a></div>
+                </div>
+                <div class="about-member-card">
+                  <img src="assets/images/josh.jpeg" alt="Josh" loading="lazy" />
                   <b>Jiaxu (Josh)</b><div class="muted"><a class="link" href="mailto:jjin0455@uni.sydney.edu.au">jjin0455@uni.sydney.edu.au</a></div>
                 </div>
               </div>
