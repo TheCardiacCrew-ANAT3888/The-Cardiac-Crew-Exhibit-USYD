@@ -1,20 +1,3 @@
-<!--
-Heartscapes: The Structure of Life — Mobile site (GitHub Pages-ready)
-AR: AR.js (NFT / image targets) + non-AR web view
-Languages: English, Vietnamese, Mandarin, Macedonian
-
-✅ Features implemented:
-- Welcome popup: Language toggle + AR toggle only
-- If AR ON: camera view (AR.js) + auto-playing corner intro video (closable; fades out at end)
-- NFT recognition: overlays exhibit details when target found
-- If target lost: keep details visible for ~2.5s (clickable “Open page”)
-- Audio icon to play exhibit audio
-- Exit icon to dismiss details overlay
-- Web-only mode: full site without camera
-- Pages: Home, Exhibits (5 objects + Exhibit video), Exhibit detail pages, About Us, Downloads (Sketchfab link)
-- How-to guides on relevant screens
--->
-
 <!doctype html>
 <html lang="en">
 <head>
@@ -23,9 +6,9 @@ Languages: English, Vietnamese, Mandarin, Macedonian
   <title>Heartscapes: The Structure of Life</title>
   <meta name="theme-color" content="#8A1538" />
 
-  <!-- AR.js / A-Frame -->
+  <!-- A-Frame + MindAR (because .mind file => MindAR image targets) -->
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.4/dist/mindar-image-aframe.prod.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
   <style>
     :root{
@@ -34,7 +17,6 @@ Languages: English, Vietnamese, Mandarin, Macedonian
       --ink:#0b0b10;
       --paper:rgba(255,255,255,.86);
       --glass:rgba(255,255,255,.14);
-      --glass2:rgba(255,255,255,.10);
       --stroke:rgba(255,255,255,.18);
       --shadow:0 18px 50px rgba(0,0,0,.28);
       --radius-xl:22px;
@@ -43,7 +25,12 @@ Languages: English, Vietnamese, Mandarin, Macedonian
       --blur:18px;
       --safe-top: env(safe-area-inset-top, 0px);
       --safe-bottom: env(safe-area-inset-bottom, 0px);
+
+      /* Mobile-safe sizing */
+      --maxw: 520px;
+      --navh: 78px; /* approximate; actual includes safe-bottom */
     }
+
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
@@ -51,7 +38,7 @@ Languages: English, Vietnamese, Mandarin, Macedonian
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
       color: rgba(255,255,255,.92);
       background:#0b0b10;
-      overflow:hidden; /* we manage scrolling per view */
+      overflow:hidden;
     }
 
     /* Grainy gradient backdrop */
@@ -76,16 +63,11 @@ Languages: English, Vietnamese, Mandarin, Macedonian
     }
 
     /* App shell */
-    .app{
-      height:100%;
-      display:flex;
-      flex-direction:column;
-    }
+    .app{height:100%; display:flex; flex-direction:column;}
 
     /* Top bar */
     .topbar{
-      position:relative;
-      z-index:60;
+      position:relative; z-index:60;
       padding: 10px 14px;
       padding-top: calc(10px + var(--safe-top));
       backdrop-filter: blur(var(--blur));
@@ -120,22 +102,21 @@ Languages: English, Vietnamese, Mandarin, Macedonian
       display:grid; place-items:center;
       cursor:pointer;
       user-select:none;
+      touch-action:manipulation;
     }
     .iconbtn:active{transform:translateY(1px)}
 
-    /* Main content area (scrollable in web-mode views) */
-    .content{
-      position:relative;
-      flex:1 1 auto;
-      overflow:hidden;
-    }
+    /* Main content area */
+    .content{position:relative; flex:1 1 auto; overflow:hidden;}
+
+    /* Web-mode scroll container */
     .scrollview{
       height:100%;
       overflow:auto;
       -webkit-overflow-scrolling:touch;
-      padding-bottom: calc(90px + var(--safe-bottom));
+      padding-bottom: calc(var(--navh) + 18px + var(--safe-bottom));
     }
-    .section{padding:14px; max-width: 520px; margin:0 auto}
+    .section{padding:14px; max-width: var(--maxw); margin:0 auto}
     .card{
       border-radius: var(--radius-lg);
       border:1px solid rgba(255,255,255,.14);
@@ -148,9 +129,9 @@ Languages: English, Vietnamese, Mandarin, Macedonian
     h1{margin:0 0 8px 0; font-size:26px; letter-spacing:-.02em}
     h2{margin:0 0 8px 0; font-size:18px}
     .muted{opacity:.82; font-size:13.5px; line-height:1.4}
-    .btnrow{display:flex; gap:10px; margin-top:12px}
+    .btnrow{display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;}
     .btn{
-      width:100%;
+      flex:1 1 160px;
       padding:12px 14px;
       border-radius:999px;
       border:1px solid rgba(255,255,255,.14);
@@ -158,6 +139,7 @@ Languages: English, Vietnamese, Mandarin, Macedonian
       color: rgba(255,255,255,.92);
       font-weight: 650;
       cursor:pointer;
+      touch-action:manipulation;
     }
     .btn.primary{
       border-color: rgba(242,169,0,.35);
@@ -175,7 +157,26 @@ Languages: English, Vietnamese, Mandarin, Macedonian
       -webkit-backdrop-filter: blur(var(--blur));
       user-select:none;
     }
-    .row{display:flex; align-items:center; justify-content:space-between; gap:10px}
+    .row{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;}
+    .hr{height:1px; background: rgba(255,255,255,.10); margin: 12px 0}
+    .small{font-size:12px; opacity:.82; line-height:1.4}
+    .link{color: rgba(255,255,255,.92); text-decoration: underline; text-underline-offset:3px}
+    .tag{
+      display:inline-flex; align-items:center; gap:8px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.14);
+      font-size: 12px;
+      opacity:.92;
+    }
+    .helpbox{
+      margin-top: 12px;
+      border-radius: var(--radius-lg);
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.14);
+      padding: 12px;
+    }
 
     /* Toggle switch */
     .toggle{
@@ -186,6 +187,7 @@ Languages: English, Vietnamese, Mandarin, Macedonian
       border: 1px solid rgba(255,255,255,.18);
       cursor:pointer;
       flex:0 0 auto;
+      touch-action:manipulation;
     }
     .toggle::after{
       content:"";
@@ -200,7 +202,6 @@ Languages: English, Vietnamese, Mandarin, Macedonian
       border-color: rgba(242,169,0,.35);
     }
     .toggle[aria-checked="true"]::after{transform:translateX(22px)}
-
     select{
       appearance:none;
       border:none;
@@ -210,6 +211,10 @@ Languages: English, Vietnamese, Mandarin, Macedonian
       outline:none;
       cursor:pointer;
     }
+
+    /* Views */
+    .view{display:none}
+    .view.active{display:block}
 
     /* Bottom nav */
     .bottomnav{
@@ -222,7 +227,7 @@ Languages: English, Vietnamese, Mandarin, Macedonian
       pointer-events:none;
     }
     .navwrap{
-      width:min(520px, calc(100% - 18px));
+      width:min(var(--maxw), calc(100% - 18px));
       border-radius: 20px;
       border:1px solid rgba(255,255,255,.14);
       background: rgba(12,12,18,.62);
@@ -248,6 +253,8 @@ Languages: English, Vietnamese, Mandarin, Macedonian
       gap:6px;
       cursor:pointer;
       user-select:none;
+      touch-action:manipulation;
+      min-width:0;
     }
     .navitem.active{
       color: rgba(255,255,255,.96);
@@ -263,22 +270,20 @@ Languages: English, Vietnamese, Mandarin, Macedonian
       font-size: 12px;
     }
 
-    /* Views */
-    .view{display:none}
-    .view.active{display:block}
-
-    /* Welcome modal (language + AR only) */
+    /* Welcome modal (mobile compliant) */
     .modalback{
       position:fixed; inset:0;
       background: rgba(0,0,0,.55);
       display:none;
-      align-items:center; justify-content:center;
-      padding: 18px;
+      align-items:flex-end;   /* mobile bottom-sheet style */
+      justify-content:center;
+      padding: 12px;
       z-index: 1000;
     }
     .modalback.show{display:flex}
     .modal{
-      width:min(520px, 100%);
+      width:min(var(--maxw), 100%);
+      max-height: calc(100svh - 24px - var(--safe-top));
       border-radius: var(--radius-xl);
       border:1px solid rgba(255,255,255,.16);
       background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.06));
@@ -286,13 +291,20 @@ Languages: English, Vietnamese, Mandarin, Macedonian
       -webkit-backdrop-filter: blur(var(--blur));
       box-shadow: var(--shadow);
       overflow:hidden;
+      display:flex;
+      flex-direction:column;
     }
     .modal header{
-      padding: 14px;
+      padding: 12px 14px;
       border-bottom: 1px solid rgba(255,255,255,.10);
       display:flex; align-items:center; justify-content:space-between; gap:10px;
+      flex:0 0 auto;
     }
-    .modal main{padding: 14px}
+    .modal main{
+      padding: 14px;
+      overflow:auto; /* crucial for mobile */
+      -webkit-overflow-scrolling:touch;
+    }
     .modal h2{margin:0; font-size:16px; letter-spacing:.02em}
     .modal .close{
       width:40px; height:40px; border-radius:999px;
@@ -300,14 +312,12 @@ Languages: English, Vietnamese, Mandarin, Macedonian
       background: rgba(255,255,255,.08);
       display:grid; place-items:center;
       cursor:pointer;
+      touch-action:manipulation;
     }
-    .modal .setting{display:flex; align-items:center; justify-content:space-between; gap:12px; margin: 10px 0}
-    .helpbox{
-      margin-top: 12px;
-      border-radius: var(--radius-lg);
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.14);
-      padding: 12px;
+    .modal .setting{
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      margin: 10px 0;
+      flex-wrap:wrap; /* avoid overflow on narrow phones */
     }
 
     /* AR View */
@@ -319,45 +329,25 @@ Languages: English, Vietnamese, Mandarin, Macedonian
     }
     .arview.show{display:block}
 
-    /* A-Frame canvas should fill */
-<a-scene
-  mindar-image="imageTargetSrc: assets/targets/targets.mind; autoStart: true;"
-  color-space="sRGB"
-  renderer="colorManagement: true, physicallyCorrectLights"
-  vr-mode-ui="enabled: false"
-  device-orientation-permission-ui="enabled: false"
-  embedded
->
-  <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
-
-  <!-- Target 0 -->
-  <a-entity mindar-image-target="targetIndex: 0" id="target0"></a-entity>
-
-  <!-- Target 1 -->
-  <a-entity mindar-image-target="targetIndex: 1" id="target1"></a-entity>
-
-  <!-- Target 2 -->
-  <a-entity mindar-image-target="targetIndex: 2" id="target2"></a-entity>
-
-  <!-- Target 3 -->
-  <a-entity mindar-image-target="targetIndex: 3" id="target3"></a-entity>
-
-  <!-- Target 4 -->
-  <a-entity mindar-image-target="targetIndex: 4" id="target4"></a-entity>
-</a-scene>
+    a-scene{position:absolute !important; inset:0 !important;}
+    canvas{touch-action:none;}
 
     /* AR overlay UI (HTML over camera) */
     .arHUD{
       position:absolute; inset:0;
-      pointer-events:none; /* we will enable on specific components */
-      z-index: 40;
+      pointer-events:none;
+      z-index:40;
     }
     .hudTop{
       position:absolute;
       left:12px; right:12px;
       top: calc(12px + var(--safe-top));
-      display:flex; justify-content:space-between; gap:10px;
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
       pointer-events:none;
+      max-width: var(--maxw);
+      margin: 0 auto;
     }
     .hudTop .badge{
       pointer-events:auto;
@@ -369,23 +359,29 @@ Languages: English, Vietnamese, Mandarin, Macedonian
       backdrop-filter: blur(var(--blur));
       -webkit-backdrop-filter: blur(var(--blur));
       font-size:12.5px;
+      max-width: 58vw;          /* prevent overflow on small phones */
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
     }
     .dot{
       width:8px; height:8px; border-radius:999px;
       background: var(--syd-gold);
       box-shadow: 0 0 0 4px rgba(242,169,0,.18);
+      flex:0 0 auto;
     }
 
-    /* Exhibit detail overlay panel (clickable) */
+    /* Exhibit overlay panel (mobile compliant) */
     .exhibitPanel{
       position:absolute;
       left:12px; right:12px;
-      bottom: calc(90px + var(--safe-bottom));
-      max-width: 520px;
+      bottom: calc(var(--navh) + 12px + var(--safe-bottom));
+      width: auto;
+      max-width: var(--maxw);
       margin: 0 auto;
       border-radius: var(--radius-xl);
       border:1px solid rgba(255,255,255,.16);
-      background: rgba(12,12,18,.62);
+      background: rgba(12,12,18,.70);
       backdrop-filter: blur(var(--blur));
       -webkit-backdrop-filter: blur(var(--blur));
       box-shadow: var(--shadow);
@@ -394,15 +390,11 @@ Languages: English, Vietnamese, Mandarin, Macedonian
       pointer-events:auto;
     }
     .exhibitPanel.show{display:block}
+
     .panelHead{display:flex; align-items:flex-start; justify-content:space-between; gap:12px}
-    .panelTitle{
-      font-weight:800;
-      letter-spacing:-.01em;
-      font-size:16px;
-      margin:0;
-    }
+    .panelTitle{font-weight:800; letter-spacing:-.01em; font-size:16px; margin:0}
     .panelMeta{opacity:.82; font-size:12.5px; margin-top:4px}
-    .panelActions{display:flex; align-items:center; gap:8px}
+    .panelActions{display:flex; align-items:center; gap:8px; flex:0 0 auto}
     .miniBtn{
       width:40px; height:40px;
       border-radius: 999px;
@@ -411,19 +403,27 @@ Languages: English, Vietnamese, Mandarin, Macedonian
       display:grid; place-items:center;
       cursor:pointer;
       user-select:none;
+      touch-action:manipulation;
+      flex:0 0 auto;
     }
     .miniBtn:active{transform:translateY(1px)}
     .panelBody{margin-top:10px}
-    .panelBody p{margin:0; opacity:.88; font-size:13px; line-height:1.42}
-    .panelFoot{margin-top:12px; display:flex; gap:10px}
+    .panelBody .scroll{
+      max-height: min(32svh, 260px); /* critical: prevents off-screen panel on small phones */
+      overflow:auto;
+      -webkit-overflow-scrolling:touch;
+      padding-right: 6px;
+    }
+    .panelBody p{margin:0; opacity:.90; font-size:13px; line-height:1.42; white-space:pre-wrap}
+    .panelFoot{margin-top:12px; display:flex; gap:10px; flex-wrap:wrap}
     .panelFoot .btn{padding:10px 12px}
 
-    /* Corner intro video (AR on) */
+    /* Corner intro video (AR on) — kept unobtrusive and mobile safe */
     .cornerVideo{
       position:absolute;
       right: 12px;
-      bottom: calc(90px + var(--safe-bottom));
-      width: 160px;
+      bottom: calc(var(--navh) + 12px + var(--safe-bottom));
+      width: min(44vw, 180px);
       border-radius: 16px;
       border:1px solid rgba(255,255,255,.16);
       background: rgba(0,0,0,.35);
@@ -439,11 +439,7 @@ Languages: English, Vietnamese, Mandarin, Macedonian
       transform: translateY(8px);
       pointer-events:none;
     }
-    .cornerVideo video{
-      width:100%;
-      height:auto;
-      display:block;
-    }
+    .cornerVideo video{width:100%; height:auto; display:block;}
     .cornerVideo .x{
       position:absolute; top:8px; right:8px;
       width:28px; height:28px;
@@ -454,13 +450,14 @@ Languages: English, Vietnamese, Mandarin, Macedonian
       display:grid; place-items:center;
       cursor:pointer;
       user-select:none;
+      touch-action:manipulation;
     }
 
     /* Toast */
     .toast{
       position: fixed;
       left:50%;
-      bottom: calc(98px + var(--safe-bottom));
+      bottom: calc(var(--navh) + 18px + var(--safe-bottom));
       transform: translateX(-50%);
       background: rgba(0,0,0,.55);
       border:1px solid rgba(255,255,255,.14);
@@ -474,10 +471,14 @@ Languages: English, Vietnamese, Mandarin, Macedonian
       pointer-events:none;
       transition: opacity .18s ease, transform .18s ease;
       z-index: 2000;
+      max-width: calc(100% - 24px);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
     }
     .toast.show{opacity:1; transform:translateX(-50%) translateY(-2px)}
 
-    /* Simple list */
+    /* Exhibit list */
     .list{display:flex; flex-direction:column; gap:10px; margin-top:10px}
     .listbtn{
       width:100%;
@@ -490,6 +491,7 @@ Languages: English, Vietnamese, Mandarin, Macedonian
       cursor:pointer;
       text-align:left;
       color: rgba(255,255,255,.92);
+      touch-action:manipulation;
     }
     .chev{
       width: 10px; height: 10px;
@@ -499,25 +501,10 @@ Languages: English, Vietnamese, Mandarin, Macedonian
       opacity:.8;
       flex:0 0 auto;
     }
-    .tag{
-      display:inline-flex; align-items:center; gap:8px;
-      padding: 8px 10px;
-      border-radius: 999px;
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(0,0,0,.14);
-      font-size: 12px;
-      opacity:.92;
-    }
-    .hr{height:1px; background: rgba(255,255,255,.10); margin: 12px 0}
-    .small{font-size:12px; opacity:.82; line-height:1.4}
-    .link{color: rgba(255,255,255,.92); text-decoration: underline; text-underline-offset:3px}
-    .kbd{
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      font-size: 12px;
-      padding: 2px 6px;
-      border-radius: 8px;
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(0,0,0,.18);
+
+    /* Make sure we use safe viewport units on modern mobile */
+    @supports (height: 100svh){
+      .scrollview{height:100svh;}
     }
   </style>
 </head>
@@ -528,7 +515,6 @@ Languages: English, Vietnamese, Mandarin, Macedonian
   <div class="vignette"></div>
 
   <div class="app">
-
     <header class="topbar">
       <div class="toprow">
         <div class="brand">
@@ -547,42 +533,24 @@ Languages: English, Vietnamese, Mandarin, Macedonian
 
     <div class="content">
 
-      <!-- AR CAMERA VIEW -->
+      <!-- AR CAMERA VIEW (MindAR) -->
       <div class="arview" id="arview">
-        <!-- A-Frame AR Scene -->
         <a-scene
-          vr-mode-ui="enabled: false"
+          mindar-image="imageTargetSrc: assets/targets/targets.mind; autoStart: true; uiScanning: false; uiLoading: false;"
           embedded
-          renderer="logarithmicDepthBuffer: true; antialias: true; alpha: true"
-          arjs="sourceType: webcam; debugUIEnabled: false; trackingMethod: best;"
+          color-space="sRGB"
+          renderer="colorManagement: true, physicallyCorrectLights"
+          vr-mode-ui="enabled: false"
+          device-orientation-permission-ui="enabled: false"
         >
-          <a-assets>
-            <!-- Optional: preload audio -->
-          </a-assets>
+          <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-          <!-- NFT targets (each "url" points to your generated NFT dataset basename) -->
-          <!-- NOTE: you must generate these .fset/.iset/.fset3 files using AR.js NFT tools -->
-          <a-nft id="nft-1" type="nft" url="assets/nft/object1_aorta_histology/object1" smooth="true" smoothCount="10" smoothTolerance="0.01" smoothThreshold="5">
-            <a-entity position="0 0 0" rotation="-90 0 0"></a-entity>
-          </a-nft>
-
-          <a-nft id="nft-2" type="nft" url="assets/nft/object2_myocardium_histology/object2" smooth="true" smoothCount="10" smoothTolerance="0.01" smoothThreshold="5">
-            <a-entity position="0 0 0" rotation="-90 0 0"></a-entity>
-          </a-nft>
-
-          <a-nft id="nft-3" type="nft" url="assets/nft/object3_history_globe/object3" smooth="true" smoothCount="10" smoothTolerance="0.01" smoothThreshold="5">
-            <a-entity position="0 0 0" rotation="-90 0 0"></a-entity>
-          </a-nft>
-
-          <a-nft id="nft-4" type="nft" url="assets/nft/object4_aortic_valve_models/object4" smooth="true" smoothCount="10" smoothTolerance="0.01" smoothThreshold="5">
-            <a-entity position="0 0 0" rotation="-90 0 0"></a-entity>
-          </a-nft>
-
-          <a-nft id="nft-5" type="nft" url="assets/nft/object5_trabeculae_embroidery_and_slices/object5" smooth="true" smoothCount="10" smoothTolerance="0.01" smoothThreshold="5">
-            <a-entity position="0 0 0" rotation="-90 0 0"></a-entity>
-          </a-nft>
-
-          <a-entity camera></a-entity>
+          <!-- Targets: indices 0-4 (match the order inside targets.mind) -->
+          <a-entity mindar-image-target="targetIndex: 0" id="target0"></a-entity>
+          <a-entity mindar-image-target="targetIndex: 1" id="target1"></a-entity>
+          <a-entity mindar-image-target="targetIndex: 2" id="target2"></a-entity>
+          <a-entity mindar-image-target="targetIndex: 3" id="target3"></a-entity>
+          <a-entity mindar-image-target="targetIndex: 4" id="target4"></a-entity>
         </a-scene>
 
         <!-- HUD -->
@@ -601,39 +569,44 @@ Languages: English, Vietnamese, Mandarin, Macedonian
           <!-- Exhibit overlay panel -->
           <div class="exhibitPanel" id="exhibitPanel">
             <div class="panelHead">
-              <div>
+              <div style="min-width:0">
                 <div class="panelTitle" id="panelTitle">Exhibit</div>
-                <div class="panelMeta" id="panelMeta">Heartscapes</div>
+                <div class="panelMeta" id="panelMeta">Heartscapes: The Structure of Life</div>
               </div>
               <div class="panelActions">
-                <!-- Audio -->
                 <button class="miniBtn" id="audioBtn" aria-label="Play audio">🔊</button>
-                <!-- Close panel -->
                 <button class="miniBtn" id="closePanelBtn" aria-label="Close">✕</button>
               </div>
             </div>
+
             <div class="panelBody">
-              <p id="panelText"></p>
+              <div class="scroll">
+                <p id="panelText"></p>
+              </div>
             </div>
+
             <div class="panelFoot">
               <button class="btn primary" id="openPageBtn">Open page</button>
               <button class="btn" id="stopAudioBtn">Stop audio</button>
             </div>
+
             <div class="small" style="margin-top:10px" id="panelHint">
-              If you lose sight of the marker, this panel will stay for a moment so you can open the web page.
+              If you lose sight of the marker, this panel will stay briefly so you can open the web page.
             </div>
           </div>
 
           <!-- Corner autoplay intro video (AR only) -->
           <div class="cornerVideo" id="cornerVideo" aria-label="Intro video">
             <div class="x" id="cornerVideoClose" aria-label="Close video">✕</div>
-            <!-- Replace src with your real mp4; autoplay requires muted on mobile -->
-            <video id="introVideo" playsinline muted autoplay preload="metadata" src="assets/video/exhibit_intro.mp4"></video>
+
+            <!-- IMPORTANT: For large videos, host externally & replace src with a URL -->
+            <video id="introVideo" playsinline muted autoplay preload="metadata"
+                   src="assets/video/exhibit_intro.mp4"></video>
           </div>
         </div>
       </div>
 
-      <!-- WEB MODE VIEWS (NO CAMERA) -->
+      <!-- WEB MODE VIEWS -->
       <div class="scrollview" id="webviews">
 
         <!-- HOME -->
@@ -660,8 +633,8 @@ Languages: English, Vietnamese, Mandarin, Macedonian
               <div class="helpbox">
                 <h2 style="margin:0 0 6px 0" id="howTitle">How to use</h2>
                 <div class="muted" id="howBody">
-                  <b>AR mode:</b> choose AR in the welcome popup → allow camera → point at an exhibit marker → tap “Open page” for details.<br/>
-                  <b>Web mode:</b> browse exhibits without using the camera.
+                  <b>AR mode:</b> choose AR in the welcome popup → allow camera → point at a marker → details appear → tap “Open page”.<br/>
+                  <b>Web mode:</b> browse exhibit pages without using the camera.
                 </div>
               </div>
             </div>
@@ -707,8 +680,8 @@ Languages: English, Vietnamese, Mandarin, Macedonian
 
               <div class="hr"></div>
 
-              <!-- Optional image (replace src) -->
-              <img id="exhibitImg" alt="" style="width:100%; border-radius:16px; border:1px solid rgba(255,255,255,.12); background: rgba(0,0,0,.18); display:none;" />
+              <img id="exhibitImg" alt=""
+                   style="width:100%; border-radius:16px; border:1px solid rgba(255,255,255,.12); background: rgba(0,0,0,.18); display:none;" />
 
               <p class="muted" id="exhibitCaption"></p>
 
@@ -716,7 +689,7 @@ Languages: English, Vietnamese, Mandarin, Macedonian
 
               <div class="row">
                 <span class="tag">🔊 <span id="audioLabel">Audio</span></span>
-                <div style="display:flex; gap:10px">
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
                   <button class="btn primary" id="playAudioWeb">Play</button>
                   <button class="btn" id="stopAudioWeb">Stop</button>
                 </div>
@@ -725,7 +698,7 @@ Languages: English, Vietnamese, Mandarin, Macedonian
               <div class="helpbox">
                 <h2 style="margin:0 0 6px 0" id="howAudioTitle">How to use audio</h2>
                 <div class="muted" id="howAudioBody">
-                  Tap <span class="kbd">Play</span> to listen. If your phone is on silent, you may need to raise the media volume.
+                  Tap <b>Play</b> to listen. If your phone is on silent, raise media volume.
                 </div>
               </div>
             </div>
@@ -743,7 +716,10 @@ Languages: English, Vietnamese, Mandarin, Macedonian
 
               <div class="hr"></div>
 
-              <video controls playsinline preload="metadata" style="width:100%; border-radius:16px; border:1px solid rgba(255,255,255,.12); background: rgba(0,0,0,.18);" id="fullVideo" src="assets/video/exhibit_full.mp4"></video>
+              <!-- IMPORTANT: Replace with a hosted URL if GitHub is too small -->
+              <video controls playsinline preload="metadata"
+                     style="width:100%; border-radius:16px; border:1px solid rgba(255,255,255,.12); background: rgba(0,0,0,.18);"
+                     id="fullVideo" src="assets/video/exhibit_full.mp4"></video>
 
               <div class="hr"></div>
 
@@ -768,14 +744,15 @@ Languages: English, Vietnamese, Mandarin, Macedonian
               <p class="muted" id="dlSub">3D printed heart models (Sketchfab collection).</p>
               <div class="hr"></div>
               <p class="muted">
-                <a class="link" href="https://sketchfab.com/acost/collections/heartscape-the-structure-of-life-models-0733c4399a1e4ceaac8f5e5a5d8ef227" target="_blank" rel="noopener">
+                <a class="link" href="https://sketchfab.com/acost/collections/heartscape-the-structure-of-life-models-0733c4399a1e4ceaac8f5e5a5d8ef227"
+                   target="_blank" rel="noopener">
                   Open the Heartscapes 3D model collection on Sketchfab
                 </a>
               </p>
               <div class="helpbox">
                 <h2 style="margin:0 0 6px 0" id="howDlTitle">How to download</h2>
                 <div class="muted" id="howDlBody">
-                  On Sketchfab, open a model → use the Download button (if enabled) → choose your preferred file format (e.g., STL/OBJ).
+                  On Sketchfab: open a model → use <b>Download</b> (if enabled) → choose STL/OBJ as needed.
                 </div>
               </div>
             </div>
@@ -817,7 +794,7 @@ Languages: English, Vietnamese, Mandarin, Macedonian
               <div class="helpbox">
                 <h2 style="margin:0 0 6px 0" id="howAboutTitle">How to contact</h2>
                 <div class="muted" id="howAboutBody">
-                  Tap any email address to open your mail app.
+                  Tap an email address to open your mail app.
                 </div>
               </div>
             </div>
@@ -847,7 +824,7 @@ Languages: English, Vietnamese, Mandarin, Macedonian
     </div>
   </div>
 
-  <!-- Welcome / Settings Modal (language + AR only, as requested) -->
+  <!-- Welcome / Settings Modal (language + AR only) -->
   <div class="modalback" id="welcomeModal">
     <div class="modal" role="dialog" aria-modal="true">
       <header>
@@ -861,7 +838,7 @@ Languages: English, Vietnamese, Mandarin, Macedonian
             <div class="muted" id="welcomeLangHint">Choose your preferred language.</div>
           </div>
           <div class="pill">
-            <select id="langSelect">
+            <select id="langSelect" aria-label="Language">
               <option value="en">English</option>
               <option value="vi">Tiếng Việt</option>
               <option value="zh">中文</option>
@@ -896,11 +873,17 @@ Languages: English, Vietnamese, Mandarin, Macedonian
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
-    // -----------------------------
-    // CONTENT (EN + translations scaffold)
-    // Replace translations as you like; English is complete per your supplied text.
-    // -----------------------------
+    /* =========================================================
+       IMPORTANT: Targets + file paths
+       - You said: assets/targets/targets.mind
+       - Target indices 0..4 are mapped below.
+       If your "previous version" had a different order,
+       JUST swap the mapping in targetMap.
+       ========================================================= */
 
+    // -----------------------------
+    // Content (English complete; translations scaffold)
+    // -----------------------------
     const CONTENT = {
       exhibits: {
         obj1: {
@@ -1088,23 +1071,24 @@ Your heart will beat another 100,000 times today. Now you know what makes each b
     };
 
     // -----------------------------
-    // UI STRINGS (minimal)
+    // UI strings (minimal)
     // -----------------------------
     const UI = {
       en: {
-        home: "Home", exhibits:"Exhibits", downloads:"Downloads", about:"About",
+        home:"Home", exhibits:"Exhibits", downloads:"Downloads", about:"About",
         welcome:"Welcome", continue:"Continue",
         language:"Language", ar:"Augmented Reality (AR)",
         arOn:"AR ON", arOff:"AR OFF",
         guide:"Point your camera at an exhibit marker",
         play:"Play", stop:"Stop",
         openPage:"Open page",
-        scanHint:"If you lose sight of the marker, this panel will stay for a moment so you can open the web page.",
+        scanHint:"If you lose sight of the marker, this panel will stay briefly so you can open the web page.",
         howToUse:"How to use",
         howEx:"How to use exhibits",
         howAudio:"How to use audio",
         howVid:"How to use",
-        toastAROn:"AR enabled", toastAROff:"AR disabled (web mode)",
+        toastAROn:"AR enabled",
+        toastAROff:"AR disabled (web mode)",
         toastFound:"Exhibit recognised",
         toastLost:"Marker lost — keeping details briefly",
         toastLang:"Language updated"
@@ -1122,7 +1106,8 @@ Your heart will beat another 100,000 times today. Now you know what makes each b
         howEx:"Cách xem hiện vật",
         howAudio:"Cách nghe âm thanh",
         howVid:"Cách sử dụng",
-        toastAROn:"Đã bật AR", toastAROff:"Đã tắt AR (chế độ web)",
+        toastAROn:"Đã bật AR",
+        toastAROff:"Đã tắt AR (chế độ web)",
         toastFound:"Đã nhận diện hiện vật",
         toastLost:"Mất dấu — giữ thông tin trong giây lát",
         toastLang:"Đã đổi ngôn ngữ"
@@ -1140,7 +1125,8 @@ Your heart will beat another 100,000 times today. Now you know what makes each b
         howEx:"如何查看展品",
         howAudio:"如何播放音频",
         howVid:"使用方法",
-        toastAROn:"已开启 AR", toastAROff:"已关闭 AR（网页模式）",
+        toastAROn:"已开启 AR",
+        toastAROff:"已关闭 AR（网页模式）",
         toastFound:"已识别展品",
         toastLost:"丢失识别—短暂停留",
         toastLang:"语言已更新"
@@ -1158,7 +1144,8 @@ Your heart will beat another 100,000 times today. Now you know what makes each b
         howEx:"Како да ги користите експонатите",
         howAudio:"Како да користите аудио",
         howVid:"Како да користите",
-        toastAROn:"AR е вклучен", toastAROff:"AR е исклучен (веб режим)",
+        toastAROn:"AR е вклучен",
+        toastAROff:"AR е исклучен (веб режим)",
         toastFound:"Експонат препознаен",
         toastLost:"Маркер изгубен — кратко задржување",
         toastLang:"Јазикот е ажуриран"
@@ -1166,7 +1153,7 @@ Your heart will beat another 100,000 times today. Now you know what makes each b
     };
 
     // -----------------------------
-    // STATE
+    // State
     // -----------------------------
     const state = {
       lang: localStorage.getItem("hs_lang") || "en",
@@ -1175,6 +1162,16 @@ Your heart will beat another 100,000 times today. Now you know what makes each b
       currentExhibitId: null,
       currentAudio: null,
       hideTimer: null
+    };
+
+    // Targets mapping (EDIT THIS if your target order differs)
+    // "targets from previous version": swap obj ids to match your old order.
+    const targetMap = {
+      target0: "obj1",
+      target1: "obj2",
+      target2: "obj3",
+      target3: "obj4",
+      target4: "obj5"
     };
 
     // -----------------------------
@@ -1208,47 +1205,34 @@ Your heart will beat another 100,000 times today. Now you know what makes each b
 
       const u = UI[lang] || UI.en;
 
-      // Nav labels
       $("#navHome").textContent = u.home;
       $("#navExhibits").textContent = u.exhibits;
       $("#navDownloads").textContent = u.downloads;
       $("#navAbout").textContent = u.about;
 
-      // Brand stays English title (but you can localise if you want)
-      $("#brandTitle").textContent = "HEARTSCAPES";
-      $("#brandSub").textContent = "The Structure of Life";
-
-      // Home labels
       $("#langLabel").textContent = u.language;
       $("#arStatusText").textContent = state.arOn ? u.arOn : u.arOff;
       $("#arGuideText").textContent = u.guide;
 
-      // Buttons/labels
       $("#openPageBtn").textContent = u.openPage;
       $("#stopAudioBtn").textContent = u.stop;
       $("#panelHint").textContent = u.scanHint;
 
-      // Welcome modal
       $("#welcomeTitle").textContent = u.welcome;
       $("#welcomeLangLabel").textContent = u.language;
       $("#welcomeArLabel").textContent = u.ar;
       $("#welcomeContinue").textContent = u.continue;
 
-      // Web exhibit page
-      $("#audioLabel").textContent = u.play; // label tag
+      $("#audioLabel").textContent = "Audio";
       $("#playAudioWeb").textContent = u.play;
       $("#stopAudioWeb").textContent = u.stop;
 
-      // How-to titles
       $("#howTitle").textContent = u.howToUse;
       $("#howExTitle").textContent = u.howEx;
       $("#howAudioTitle").textContent = u.howAudio;
       $("#howVidTitle").textContent = u.howVid;
 
-      // Update any currently loaded exhibit / video script
-      if(state.currentExhibitId){
-        loadExhibitToWeb(state.currentExhibitId);
-      }
+      if(state.currentExhibitId) loadExhibitToWeb(state.currentExhibitId);
       loadVideoPage();
 
       toast(u.toastLang);
@@ -1263,13 +1247,12 @@ Your heart will beat another 100,000 times today. Now you know what makes each b
       const u = UI[state.lang] || UI.en;
       $("#arStatusText").textContent = on ? u.arOn : u.arOff;
 
-      // Show/hide camera view
       const arview = $("#arview");
       const webviews = $("#webviews");
 
       if(on){
         arview.classList.add("show");
-        webviews.style.visibility = "hidden"; // keep layout but not interactive behind camera
+        webviews.style.visibility = "hidden";
         toast(u.toastAROn);
         startCornerVideo();
       }else{
@@ -1281,21 +1264,15 @@ Your heart will beat another 100,000 times today. Now you know what makes each b
       }
     }
 
-    // Corner video behaviours
+    // Corner video
     function startCornerVideo(){
       const wrap = $("#cornerVideo");
       const vid = $("#introVideo");
-
       wrap.classList.remove("fade");
 
-      // Mobile autoplay needs muted + playsinline (set in HTML)
-      // Attempt play:
-      vid.play().catch(()=>{ /* user gesture may be required on some devices */ });
-
-      // Fade away at end
+      vid.play().catch(()=>{ /* may require user gesture on some devices */ });
       vid.onended = ()=> wrap.classList.add("fade");
     }
-
     function closeCornerVideo(){
       $("#cornerVideo").classList.add("fade");
       const vid = $("#introVideo");
@@ -1303,21 +1280,17 @@ Your heart will beat another 100,000 times today. Now you know what makes each b
       vid.currentTime = 0;
     }
 
-    // Exhibit panel show/hide with "linger" after marker lost
+    // Exhibit panel show/hide with linger after target lost
     function showExhibitPanel(exhibitId){
       clearTimeout(state.hideTimer);
-
       const ex = CONTENT.exhibits[exhibitId];
       if(!ex) return;
 
       state.currentExhibitId = exhibitId;
 
-      const title = ex.title[state.lang] || ex.title.en;
-      const caption = ex.caption[state.lang] || ex.caption.en;
-
-      $("#panelTitle").textContent = title;
+      $("#panelTitle").textContent = ex.title[state.lang] || ex.title.en;
       $("#panelMeta").textContent = "Heartscapes: The Structure of Life";
-      $("#panelText").textContent = caption;
+      $("#panelText").textContent = ex.caption[state.lang] || ex.caption.en;
 
       $("#exhibitPanel").classList.add("show");
 
@@ -1327,23 +1300,17 @@ Your heart will beat another 100,000 times today. Now you know what makes each b
 
     function hideExhibitPanel(immediate=false){
       clearTimeout(state.hideTimer);
-
       const panel = $("#exhibitPanel");
       if(immediate){
         panel.classList.remove("show");
         return;
       }
-
-      // keep visible for 2.5 seconds after marker lost
       const u = UI[state.lang] || UI.en;
       toast(u.toastLost);
-
-      state.hideTimer = setTimeout(()=>{
-        panel.classList.remove("show");
-      }, 2500);
+      state.hideTimer = setTimeout(()=> panel.classList.remove("show"), 2500);
     }
 
-    // Audio controls
+    // Audio
     function stopAnyAudio(){
       if(state.currentAudio){
         state.currentAudio.pause();
@@ -1351,18 +1318,16 @@ Your heart will beat another 100,000 times today. Now you know what makes each b
         state.currentAudio = null;
       }
     }
-
     function playAudioFor(exhibitId){
       stopAnyAudio();
       const ex = CONTENT.exhibits[exhibitId];
       if(!ex) return;
-      const src = ex.audio; // simplest; you can make per-language audio later
-      const a = new Audio(src);
-      a.play().catch(()=>{ /* needs user gesture on iOS; panel has button so ok */ });
+      const a = new Audio(ex.audio);
+      a.play().catch(()=>{});
       state.currentAudio = a;
     }
 
-    // Web exhibit page loader
+    // Web exhibit loader
     function loadExhibitToWeb(exhibitId){
       const ex = CONTENT.exhibits[exhibitId];
       if(!ex) return;
@@ -1381,63 +1346,43 @@ Your heart will beat another 100,000 times today. Now you know what makes each b
       }
     }
 
-    // Video page loader
     function loadVideoPage(){
       const v = CONTENT.video;
       $("#videoTitle").textContent = v.title[state.lang] || v.title.en;
-      $("#scriptTitle").textContent = (state.lang === "en") ? "Script" :
+      $("#scriptTitle").textContent =
         (state.lang === "vi") ? "Kịch bản" :
-        (state.lang === "zh") ? "脚本" : "Скрипта";
-
+        (state.lang === "zh") ? "脚本" :
+        (state.lang === "mk") ? "Скрипта" : "Script";
       $("#videoScript").textContent = v.script[state.lang] || v.script.en;
     }
 
-    // -----------------------------
-    // AR.js recognition wiring
-    // We map each NFT entity id to an exhibit id.
-    // -----------------------------
-    const nftMap = {
-      "nft-1": "obj1",
-      "nft-2": "obj2",
-      "nft-3": "obj3",
-      "nft-4": "obj4",
-      "nft-5": "obj5"
-    };
-
-    function wireARTargets(){
-      Object.keys(nftMap).forEach(nftId=>{
-        const el = document.getElementById(nftId);
+    // Wire MindAR targets
+    function wireTargets(){
+      Object.keys(targetMap).forEach(targetId=>{
+        const el = document.getElementById(targetId);
         if(!el) return;
 
-        el.addEventListener("markerFound", ()=>{
-          const exhibitId = nftMap[nftId];
-          showExhibitPanel(exhibitId);
+        el.addEventListener("targetFound", ()=>{
+          showExhibitPanel(targetMap[targetId]);
         });
 
-        el.addEventListener("markerLost", ()=>{
-          // Keep panel for 2.5 sec
-          hideExhibitPanel(false);
+        el.addEventListener("targetLost", ()=>{
+          hideExhibitPanel(false); // linger 2.5s
         });
       });
     }
 
-    // -----------------------------
-    // Navigation handlers
-    // -----------------------------
+    // Navigation and buttons
     function initNav(){
-      // Bottom nav (web views)
       $$(".navitem").forEach(btn=>{
         btn.addEventListener("click", ()=>{
-          const target = btn.dataset.target;
-          setView(target);
+          setView(btn.dataset.target);
         });
       });
 
-      // Home quick buttons
       $("#goExhibitsBtn").addEventListener("click", ()=> setView("exhibits"));
       $("#goAboutBtn").addEventListener("click", ()=> setView("about"));
 
-      // Exhibits list
       $$("#view-exhibits .listbtn").forEach(b=>{
         b.addEventListener("click", ()=>{
           const nav = b.dataset.nav;
@@ -1452,75 +1397,68 @@ Your heart will beat another 100,000 times today. Now you know what makes each b
         });
       });
 
-      // Back buttons
       $("#backFromExhibit").addEventListener("click", ()=> setView("exhibits"));
       $("#backFromVideo").addEventListener("click", ()=> setView("exhibits"));
 
-      // Settings / Help
       $("#settingsBtn").addEventListener("click", ()=> openWelcomeModal(false));
-      $("#helpBtn").addEventListener("click", ()=>{
-        // simple: open modal as "help"
-        openWelcomeModal(false);
-      });
+      $("#helpBtn").addEventListener("click", ()=> openWelcomeModal(false));
 
-      // Welcome modal
       $("#welcomeClose").addEventListener("click", closeWelcomeModal);
       $("#welcomeContinue").addEventListener("click", ()=>{
         closeWelcomeModal();
-        // If AR ON, show camera; otherwise show web mode
         setAR(state.arOn);
       });
 
-      // Language select
       $("#langSelect").addEventListener("change", (e)=> applyLang(e.target.value));
 
-      // AR toggle in welcome
       $("#arToggle").addEventListener("click", ()=>{
         const on = $("#arToggle").getAttribute("aria-checked") !== "true";
         $("#arToggle").setAttribute("aria-checked", on ? "true" : "false");
-        state.arOn = on; // not applied until continue, but we persist too
+        state.arOn = on;
         localStorage.setItem("hs_ar", String(on));
         $("#arTag").textContent = on ? "On" : "Off";
       });
 
-      // Corner video close
       $("#cornerVideoClose").addEventListener("click", closeCornerVideo);
 
-      // Panel buttons (AR overlay)
       $("#closePanelBtn").addEventListener("click", ()=>{
         hideExhibitPanel(true);
         stopAnyAudio();
       });
+
       $("#audioBtn").addEventListener("click", ()=>{
         if(state.currentExhibitId) playAudioFor(state.currentExhibitId);
       });
+
       $("#stopAudioBtn").addEventListener("click", stopAnyAudio);
+
       $("#openPageBtn").addEventListener("click", ()=>{
-        // Open web exhibit page for current exhibit
         if(!state.currentExhibitId) return;
         loadExhibitToWeb(state.currentExhibitId);
-        // If AR is on, we keep camera running but allow web browsing by toggling AR off,
-        // OR you can overlay a web sheet. Easiest: toggle AR off and go to exhibit page.
+
+        // As requested: if AR lost, keep details briefly so user can click to web view.
+        // We switch to web mode when opening page so it’s clean and usable.
         setAR(false);
         setView("exhibit");
       });
 
-      // Web exhibit audio
       $("#playAudioWeb").addEventListener("click", ()=>{
         if(state.currentExhibitId) playAudioFor(state.currentExhibitId);
       });
       $("#stopAudioWeb").addEventListener("click", stopAnyAudio);
+
+      // If user taps outside modal card, close (mobile-friendly)
+      $("#welcomeModal").addEventListener("click", (e)=>{
+        if(e.target.id === "welcomeModal") closeWelcomeModal();
+      });
     }
 
-    // -----------------------------
     // Welcome modal open/close
-    // -----------------------------
     function openWelcomeModal(firstTime=true){
-      const m = $("#welcomeModal");
-      m.classList.add("show");
-      // sync controls
+      $("#welcomeModal").classList.add("show");
       $("#langSelect").value = state.lang;
       $("#arToggle").setAttribute("aria-checked", state.arOn ? "true" : "false");
+
       if(firstTime){
         // ensure web is visible until they continue
         $("#arview").classList.remove("show");
@@ -1531,23 +1469,18 @@ Your heart will beat another 100,000 times today. Now you know what makes each b
       $("#welcomeModal").classList.remove("show");
     }
 
-    // -----------------------------
     // Init
-    // -----------------------------
     function init(){
-      wireARTargets();
-      initNav();
+      // sync UI from storage
+      $("#arToggle").setAttribute("aria-checked", state.arOn ? "true" : "false");
+      $("#arTag").textContent = state.arOn ? "On" : "Off";
 
       applyLang(state.lang);
-
-      // set labels
-      $("#arTag").textContent = state.arOn ? "On" : "Off";
-      $("#arToggle").setAttribute("aria-checked", state.arOn ? "true" : "false");
-
-      // Populate video page once
       loadVideoPage();
+      wireTargets();
+      initNav();
 
-      // Show welcome on first load (always; you can gate this via localStorage if you want)
+      // Always show welcome popup on load (your request)
       openWelcomeModal(true);
     }
 
@@ -1556,16 +1489,20 @@ Your heart will beat another 100,000 times today. Now you know what makes each b
 
   <!--
   ===========================================================
-  ASSET LIST + WHERE TO PUT THINGS (GitHub Pages)
+  YOUR PATHS (as you gave them)
   ===========================================================
 
-  Put this index.html at your repo root (or /docs if using Pages from docs).
+  targets.mind:
+    The-Cardiac-Crew-Exhibit-USYD/assets/targets/targets.mind
+  In GitHub Pages, that becomes:
+    assets/targets/targets.mind
 
   Recommended repo structure:
-
   /
     index.html
     assets/
+      targets/
+        targets.mind
       images/
         obj1_aorta_watercolour.jpg
         obj2_myocardium_watercolour.jpg
@@ -1578,53 +1515,11 @@ Your heart will beat another 100,000 times today. Now you know what makes each b
         obj3_en.mp3
         obj4_en.mp3
         obj5_en.mp3
-        (optional) obj1_vi.mp3 ... obj5_mk.mp3 etc (if you add per-language)
       video/
-        exhibit_intro.mp4     (short auto-corner video; MUST be muted autoplay)
-        exhibit_full.mp4      (full page video with audio)
-      nft/
-        object1_aorta_histology/
-          object1.fset
-          object1.fset3
-          object1.iset
-        object2_myocardium_histology/
-          object2.fset
-          object2.fset3
-          object2.iset
-        object3_history_globe/
-          object3.fset
-          object3.fset3
-          object3.iset
-        object4_aortic_valve_models/
-          object4.fset
-          object4.fset3
-          object4.iset
-        object5_trabeculae_embroidery_and_slices/
-          object5.fset
-          object5.fset3
-          object5.iset
+        exhibit_intro.mp4     (small, muted autoplay)
+        exhibit_full.mp4      (large videos: host externally instead)
 
-  How AR recognition works (AR.js NFT):
-  - Each object needs a printed “image target” (e.g., a high-contrast photo/graphic near the exhibit).
-  - Use AR.js NFT tools to generate the .fset/.fset3/.iset files from each target image.
-  - The "url" in <a-nft> points to the path WITHOUT extension:
-      url="assets/nft/object1_aorta_histology/object1"
-    That means AR.js will fetch:
-      object1.fset, object1.fset3, object1.iset
-
-  GitHub Pages:
-  - Repo → Settings → Pages
-  - Source: "Deploy from a branch"
-  - Branch: main (or master) / root
-  - Save. Your site appears at:
-      https://<username>.github.io/<repo>/
-
-  Notes:
-  - iOS Safari requires HTTPS (GitHub Pages is HTTPS ✔).
-  - Autoplay video must be muted; the “full video” on the video page can include audio with user tap.
-  - Audio playback often requires a user gesture (tap Play). This is why audio is on a button.
-
-  ===========================================================
+ 
   -->
 </body>
 </html>
