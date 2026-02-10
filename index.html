@@ -163,6 +163,7 @@
       background: linear-gradient(135deg, rgba(242,169,0,.40), rgba(138,21,56,.25));
     }
     .btn:active{transform:translateY(1px)}
+    
     .tag{
       display:inline-flex; align-items:center; gap:8px;
       padding: 8px 10px;
@@ -181,6 +182,9 @@
       background: rgba(0,0,0,.14);
       padding: 12px;
     }
+    .tag{ cursor:pointer; }
+    button.tag{ font:inherit; color:inherit; }
+    button.tag{ border:1px solid rgba(255,255,255,.14); }
 
     /* Views */
     .view{display:none}
@@ -590,9 +594,15 @@
               <div class="hr"></div>
 
               <div class="row">
-                <span class="tag">🌐 <span id="langLabel">Language</span></span>
-                <span class="tag">AR: <b id="arTag">Off</b></span>
-              </div>
+  <button class="tag" id="homeLangBtn" type="button" aria-label="Change language">
+    🌐 <span id="langLabel">Language</span>
+  </button>
+
+  <button class="tag" id="homeArBtn" type="button" aria-label="Toggle AR mode">
+    AR: <b id="arTag">Off</b>
+  </button>
+</div>
+  
 
               <div class="btnrow">
                 <button class="btn primary" id="goExhibitsBtn">Exhibits</button>
@@ -1112,6 +1122,20 @@ It traces the conceptual and creative process behind each anatomical piece, reve
 from cardiac muscle to cultural meaning—shapes both the anatomy of the heart and human life.`;
 
     function initNav(){
+      // Home page quick controls
+$("#homeLangBtn")?.addEventListener("click", ()=>{
+  openWelcomeModal(false);
+  // Optional: focus language dropdown
+  setTimeout(()=>$("#langSelect")?.focus(), 50);
+});
+
+$("#homeArBtn")?.addEventListener("click", ()=>{
+  // toggle AR immediately using the same setAR() pipeline
+  setAR(!state.arOn);
+  // keep the toggle UI in sync in the settings modal too
+  $("#arToggle")?.setAttribute("aria-checked", state.arOn ? "true" : "false");
+});
+
       // bottom nav
       $$(".navitem").forEach(btn=>{
         btn.addEventListener("click", ()=> setView(btn.dataset.target));
