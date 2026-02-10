@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Before After Slider</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+  <script src="/_sdk/element_sdk.js"></script>
+  <style>
+    body {
+      box-sizing: border-box;
+    }
+    
+    * {
+      font-family: 'Space Grotesk', sans-serif;
+    }
+    
+    .before-image {
+      background: linear-gradient(135deg, #6b7280 0%, #374151 50%, #1f2937 100%);
+    }
+    
+    .after-image {
+      background: linear-gradient(135deg, #f97316 0%, #ec4899 50%, #8b5cf6 100%);
+    }
+    
+    .slider-handle {
+      cursor: ew-resize;
+      touch-action: none;
+    }
+    
+    .slider-handle::before,
+    .slider-handle::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 8px;
+      height: 8px;
+      border-style: solid;
+      border-color: currentColor;
+    }
+    
+    .slider-handle::before {
+      left: 10px;
+      border-width: 3px 0 3px 3px;
+      border-right: none;
+    }
+    
+    .slider-handle::after {
+      right: 10px;
+      border-width: 3px 3px 3px 0;
+      border-left: none;
+    }
+    
+    .label-tag {
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full m-0 overflow-auto">
+  <div id="app-wrapper" class="w-full h-full flex flex-col items-center justify-center p-6" style="background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);">
+   <h1 id="title" class="text-2xl md:text-3xl font-bold text-white mb-6 text-center">Drag to Compare</h1>
+   <div class="relative w-full max-w-3xl aspect-video rounded-2xl overflow-hidden shadow-2xl select-none"><!-- After Image (Bottom Layer - Full) -->
+    <div class="after-image absolute inset-0 flex items-center justify-center">
+     <div class="text-center">
+      <svg class="w-20 h-20 mx-auto mb-4 text-white/80" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+      </svg>
+      <p class="text-white/60 text-lg font-medium">Enhanced</p>
+     </div><span id="after-label" class="label-tag absolute bottom-4 right-4 bg-white/20 text-white px-4 py-2 rounded-full text-sm font-semibold uppercase tracking-wider">After</span>
+    </div><!-- Before Image (Top Layer - Clipped) -->
+    <div id="before-container" class="before-image absolute inset-0 flex items-center justify-center" style="clip-path: inset(0 50% 0 0);">
+     <div class="text-center">
+      <svg class="w-20 h-20 mx-auto mb-4 text-white/60" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+      </svg>
+      <p class="text-white/40 text-lg font-medium">Original</p>
+     </div><span id="before-label" class="label-tag absolute bottom-4 left-4 bg-black/30 text-white px-4 py-2 rounded-full text-sm font-semibold uppercase tracking-wider">Before</span>
+    </div><!-- Slider Handle -->
+    <div id="slider-handle" class="slider-handle absolute top-0 bottom-0 w-1 bg-white shadow-lg" style="left: 50%; transform: translateX(-50%);">
+     <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full shadow-xl flex items-center justify-center text-gray-700">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
+      </svg>
+     </div>
+    </div>
+   </div>
+   <p class="text-gray-400 mt-6 text-sm text-center">👆 Drag the slider or click anywhere to compare</p>
+  </div>
+  <script>
+    const defaultConfig = {
+      before_label: 'Before',
+      after_label: 'After',
+      title_text: 'Drag to Compare',
+      background_color: '#0f172a',
+      accent_color: '#ffffff',
+      text_color: '#94a3b8'
+    };
+
+    let config = { ...defaultConfig };
+
+    const sliderHandle = document.getElementById('slider-handle');
+    const beforeContainer = document.getElementById('before-container');
+    const appWrapper = document.getElementById('app-wrapper');
+    let isDragging = false;
+
+    function updateSliderPosition(percentage) {
+      const clampedPercentage = Math.max(0, Math.min(100, percentage));
+      sliderHandle.style.left = `${clampedPercentage}%`;
+      beforeContainer.style.clipPath = `inset(0 ${100 - clampedPercentage}% 0 0)`;
+    }
+
+    function getPercentageFromEvent(e, container) {
+      const rect = container.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const x = clientX - rect.left;
+      return (x / rect.width) * 100;
+    }
+
+    const sliderContainer = beforeContainer.parentElement;
+
+    sliderContainer.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      updateSliderPosition(getPercentageFromEvent(e, sliderContainer));
+    });
+
+    sliderContainer.addEventListener('touchstart', (e) => {
+      isDragging = true;
+      updateSliderPosition(getPercentageFromEvent(e, sliderContainer));
+    }, { passive: true });
+
+    document.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      updateSliderPosition(getPercentageFromEvent(e, sliderContainer));
+    });
+
+    document.addEventListener('touchmove', (e) => {
+      if (!isDragging) return;
+      updateSliderPosition(getPercentageFromEvent(e, sliderContainer));
+    }, { passive: true });
+
+    document.addEventListener('mouseup', () => {
+      isDragging = false;
+    });
+
+    document.addEventListener('touchend', () => {
+      isDragging = false;
+    });
+
+    async function onConfigChange(newConfig) {
+      config = { ...config, ...newConfig };
+      
+      document.getElementById('before-label').textContent = config.before_label || defaultConfig.before_label;
+      document.getElementById('after-label').textContent = config.after_label || defaultConfig.after_label;
+      document.getElementById('title').textContent = config.title_text || defaultConfig.title_text;
+    }
+
+    function mapToCapabilities(cfg) {
+      return {
+        recolorables: [],
+        borderables: [],
+        fontEditable: undefined,
+        fontSizeable: undefined
+      };
+    }
+
+    function mapToEditPanelValues(cfg) {
+      return new Map([
+        ['before_label', cfg.before_label || defaultConfig.before_label],
+        ['after_label', cfg.after_label || defaultConfig.after_label],
+        ['title_text', cfg.title_text || defaultConfig.title_text]
+      ]);
+    }
+
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange,
+        mapToCapabilities,
+        mapToEditPanelValues
+      });
+    }
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9cbb461b5118a814',t:'MTc3MDcyMzAyMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
