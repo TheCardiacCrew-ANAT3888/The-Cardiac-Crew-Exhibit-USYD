@@ -144,7 +144,8 @@
       overflow: hidden;
       background: #000;
       user-select: none;
-      touch-action: pan-y pinch-zoom;
+      touch-action: none; }
+
     }
 
     .img-wrapper{
@@ -224,7 +225,7 @@
       background: rgba(242,169,0,.9);
       transform: translateX(-50%);
       z-index: 10;
-      pointer-events: none;
+   
     }
 
     .slider-handle::before{
@@ -603,113 +604,59 @@
 
     document.getElementById('popupClose').addEventListener('click', closePopup);
     document.getElementById('popupBackdrop').addEventListener('click', closePopup);
+<script>
+  // --- Slider functionality (mobile-first, robust) ---
+  const handle = document.getElementById('sliderHandle');
+  const topImage = document.getElementById('topImage');
+  const slider = document.getElementById('comparisonSlider');
+  const containerEl = document.getElementById('comparisonContainer');
 
-    // Slider functionality (rebuilt to use native range input for robust cross-device support)
-    const handle = document.getElementById('sliderHandle');
-    const topImage = document.getElementById('topImage');
-    const slider = document.getElementById('comparisonSlider');
+  function applyComparisonSplit(value) {
+    const percentage = Math.max(0, Math.min(100, Number(value) || 0));
+    const clipInset = `inset(0 ${100 - percentage}% 0 0)`;
 
-    function applyComparisonSplit(value) {
-      const percentage = Number(value);
-      const clipInset = `inset(0 ${100 - percentage}% 0 0)`;
-      handle.style.left = `${percentage}%`;
-      topImage.style.clipPath = clipInset;
-      topImage.style.webkitClipPath = clipInset;
-    }
+    // Move the visible handle line
+    handle.style.left = `${percentage}%`;
 
-    slider.addEventListener('input', (event) => {
-      applyComparisonSplit(event.target.value);
-      const clipInset = `inset(0 ${100 - percentage}% 0 0)`;
-      topImage.style.clipPath = clipInset;
-      topImage.style.webkitClipPath = clipInset;
-    }
+    // Reveal left part of the top image
+    topImage.style.clipPath = clipInset;
+    topImage.style.webkitClipPath = clipInset;
+  }
 
+  // Native range input: best support on iOS/Android
+  slider.addEventListener('input', (event) => {
+    applyComparisonSplit(event.target.value);
+  });
 
-    function getClientXFromTouch(event) {
-      if (event.touches && event.touches.length > 0) {
-        return event.touches[0].clientX;
-      }
-      if (event.changedTouches && event.changedTouches.length > 0) {
-        return event.changedTouches[0].clientX;
-      }
-      return null;
-    }
-
-    function isHotspotTarget(target) {
-      return !!target.closest('.hotspot-circle');
-    }
-
-    function startDrag(clientX) {
-      isDragging = true;
-      updateSlider(clientX);
-    }
-
-    function stopDrag() {
-      isDragging = false;
-    }
-
-    // Pointer events (covers mouse, touch, stylus)
-    handle.addEventListener('pointerdown', (event) => {
-      event.preventDefault();
-      handle.setPointerCapture(event.pointerId);
-      startDrag(event.clientX);
-    });
-
-    container.addEventListener('pointerdown', (event) => {
-      if (isHotspotTarget(event.target)) {
-        return;
-      }
-      event.preventDefault();
-      startDrag(event.clientX);
-    });
-
-    document.addEventListener('pointermove', (event) => {
-      if (!isDragging) {
-        return;
-      }
-      event.preventDefault();
-      updateSlider(event.clientX);
-    });
-
-    document.addEventListener('pointerup', stopDrag);
-
-    // Touch fallback for browsers/environments where Pointer Events are unreliable
-    container.addEventListener('touchstart', (event) => {
-      if (isHotspotTarget(event.target)) {
-        return;
-      }
-      const clientX = getClientXFromTouch(event);
-      if (clientX === null) {
-        return;
-      }
-      event.preventDefault();
-      startDrag(clientX);
-    }, { passive: false });
-
-    document.addEventListener('touchmove', (event) => {
-      if (!isDragging) {
-        return;
-      }
-      const clientX = getClientXFromTouch(event);
-      if (clientX === null) {
-        return;
-      }
-      event.preventDefault();
-      updateSlider(clientX);
-    }, { passive: false });
-
-    document.addEventListener('touchend', stopDrag);
-    document.addEventListener('touchcancel', stopDrag);
-
-    document.addEventListener('pointercancel', stopDrag);
-    container.addEventListener('pointerleave', () => {
-      if (isDragging) {
-        stopDrag();
-      }
-    });
-
-    // Set default split to center on load.
+  // Bonus: tap/drag anywhere on the image to move slider (nice on mobile)
+  function setFromClientX(clientX) {
+    const rect = containerEl.getBoundingClientRect();
+    const x = clientX - rect.left;
+    const pct = (x / rect.width) * 100;
+    slider.value = String(Math.max(0, Math.min(100, pct)));
     applyComparisonSplit(slider.value);
-  </script>
-</body>
-</html>
+  }
+
+  // Pointer events for tap/drag on the container (mobile + desktop)
+  let isDown = false;
+
+  containerEl.addEventListener('pointerdown', (e) => {
+    // Allow hotspot clicks to still work
+    if (e.target.closest('.hotspot-circle')) return;
+
+    isDown = true;
+    containerEl.setPointerCapture(e.pointerId);
+    setFromClientX(e.clientX);
+  });
+
+  containerEl.addEventListener('pointermove', (e) => {
+    if (!isDown) return;
+    setFromClientX(e.clientX);
+  });
+
+  containerEl.addEventListener('pointerup', () => { isDown = false; });
+  containerEl.addEventListener('pointercancel', () => { isDown = false; });
+
+  // Initialise
+  applyComparisonSplit(slider.value);
+</script>
