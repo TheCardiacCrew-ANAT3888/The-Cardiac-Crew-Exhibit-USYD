@@ -50,16 +50,10 @@
     }
 
     /* Container */
-    .app{
-      min-height:100%;
-      display:flex;
-      flex-direction:column;
-    }
+    .app{min-height:100%; display:flex; flex-direction:column;}
 
     .topbar{
-      position:sticky;
-      top:0;
-      z-index:60;
+      position:sticky; top:0; z-index:60;
       padding: 10px 14px;
       padding-top: calc(10px + var(--safe-top));
       backdrop-filter: blur(var(--blur));
@@ -103,10 +97,7 @@
     }
 
     /* Header */
-    .header{
-      text-align: center;
-      margin-bottom: 24px;
-    }
+    .header{text-align:center; margin-bottom:24px;}
     h1{
       margin:0 0 8px 0;
       font-size:28px;
@@ -116,11 +107,7 @@
       background-clip: text;
       -webkit-text-fill-color: transparent;
     }
-    .subtitle{
-      opacity:.82;
-      font-size:14px;
-      line-height:1.4;
-    }
+    .subtitle{opacity:.82; font-size:14px; line-height:1.4;}
 
     /* Card */
     .card{
@@ -144,48 +131,30 @@
       overflow: hidden;
       background: #000;
       user-select: none;
-      touch-action: none; }
 
+      /* IMPORTANT: enables smooth dragging on mobile */
+      touch-action: none;
     }
 
-    .img-wrapper{
-      position: absolute;
-      inset: 0;
-    }
-
+    .img-wrapper{position:absolute; inset:0;}
     .img-wrapper img{
-      width: 100%;
-      height: 100%;
+      width:100%; height:100%;
       object-fit: contain;
-      display: block;
-      pointer-events: none;
+      display:block;
+      pointer-events:none;
     }
 
-    /* Top image (embroidered) with clip */
-    .img-top{
-      z-index: 2;
-      clip-path: inset(0 50% 0 0);
-      -webkit-clip-path: inset(0 50% 0 0);
-    }
+    /* Top image with dynamic clip */
+    .img-top{z-index:2;}
+    .img-bottom{z-index:1;}
 
-    /* Bottom image (textbook) */
-    .img-bottom{
-      z-index: 1;
-    }
-
-    /* SVG overlay for hotspots */
+    /* Hotspot overlay */
     .hotspot-overlay{
-      position: absolute;
-      inset: 0;
-      z-index: 3;
-      pointer-events: none;
+      position:absolute; inset:0;
+      z-index:3;
+      pointer-events:none;
     }
-
-    .hotspot-overlay svg{
-      width: 100%;
-      height: 100%;
-    }
-
+    .hotspot-overlay svg{width:100%; height:100%;}
     .hotspot-circle{
       fill: rgba(242,169,0,.15);
       stroke: rgba(242,169,0,.85);
@@ -194,14 +163,12 @@
       pointer-events: all;
       transition: all 0.2s ease;
     }
-
     .hotspot-circle:hover,
     .hotspot-circle:active{
       fill: rgba(242,169,0,.35);
       stroke: rgba(242,169,0,1);
       stroke-width: 3;
     }
-
     .hotspot-label{
       fill: rgba(255,255,255,.95);
       font-size: 12px;
@@ -215,43 +182,40 @@
       stroke-linejoin: round;
     }
 
-    /* Slider handle */
+    /* Visual handle line (not a control; slider below controls it) */
     .slider-handle{
-      position: absolute;
-      left: 50%;
-      top: 0;
-      bottom: 0;
-      width: 4px;
+      position:absolute;
+      top:0; bottom:0;
+      width:4px;
       background: rgba(242,169,0,.9);
       transform: translateX(-50%);
-      z-index: 10;
-   
+      z-index:10;
+      pointer-events:none;
+      left:50%;
     }
-
     .slider-handle::before{
-      content: '';
-      position: absolute;
-      left: 50%;
-      top: 50%;
+      content:'';
+      position:absolute;
+      left:50%;
+      top:50%;
       transform: translate(-50%, -50%);
-      width: 44px;
-      height: 44px;
+      width:44px;
+      height:44px;
       background: rgba(242,169,0,.95);
-      border-radius: 50%;
-      border: 3px solid rgba(255,255,255,.9);
+      border-radius:50%;
+      border:3px solid rgba(255,255,255,.9);
       box-shadow: 0 4px 12px rgba(0,0,0,.4);
     }
-
     .slider-handle::after{
-      content: '⟷';
-      position: absolute;
-      left: 50%;
-      top: 50%;
+      content:'⟷';
+      position:absolute;
+      left:50%;
+      top:50%;
       transform: translate(-50%, -50%);
-      font-size: 18px;
-      color: #fff;
-      font-weight: bold;
-      pointer-events: none;
+      font-size:18px;
+      color:#fff;
+      font-weight:bold;
+      pointer-events:none;
     }
 
     .comparison-slider{
@@ -279,84 +243,44 @@
       display: none;
       animation: popIn 0.2s ease;
     }
-
-    .annotation-popup.show{
-      display: block;
-    }
-
+    .annotation-popup.show{display:block;}
     @keyframes popIn {
-      from {
-        opacity: 0;
-        transform: translate(-50%, -50%) scale(0.9);
-      }
-      to {
-        opacity: 1;
-        transform: translate(-50%, -50%) scale(1);
-      }
+      from {opacity:0; transform: translate(-50%, -50%) scale(0.9);}
+      to   {opacity:1; transform: translate(-50%, -50%) scale(1);}
     }
-
     .popup-header{
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 12px;
+      display:flex; align-items:flex-start; justify-content:space-between;
+      gap:12px; margin-bottom:12px;
     }
-
     .popup-title{
-      font-size: 18px;
-      font-weight: 700;
-      margin: 0;
-      color: var(--syd-gold);
+      font-size:18px; font-weight:700;
+      margin:0; color: var(--syd-gold);
     }
-
     .popup-close{
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      border: 1px solid rgba(255,255,255,.14);
+      width:32px; height:32px; border-radius:50%;
+      border:1px solid rgba(255,255,255,.14);
       background: rgba(255,255,255,.08);
-      color: #fff;
-      font-size: 18px;
-      display: grid;
-      place-items: center;
-      cursor: pointer;
-      flex-shrink: 0;
+      color:#fff; font-size:18px;
+      display:grid; place-items:center;
+      cursor:pointer; flex-shrink:0;
       touch-action: manipulation;
     }
-
-    .popup-close:active{
-      transform: scale(0.95);
-    }
-
-    .popup-body{
-      font-size: 14px;
-      line-height: 1.5;
-      opacity: .92;
-    }
-
+    .popup-close:active{transform: scale(0.95);}
+    .popup-body{font-size:14px; line-height:1.5; opacity:.92;}
     .popup-body strong{
       color: rgba(255,255,255,1);
-      display: block;
-      margin-top: 10px;
-      margin-bottom: 4px;
+      display:block;
+      margin-top:10px;
+      margin-bottom:4px;
     }
-
-    .popup-body strong:first-child{
-      margin-top: 0;
-    }
-
+    .popup-body strong:first-child{margin-top:0;}
     .popup-backdrop{
-      position: fixed;
-      inset: 0;
+      position: fixed; inset:0;
       background: rgba(0,0,0,.5);
-      z-index: 999;
-      display: none;
+      z-index:999;
+      display:none;
     }
-
-    .popup-backdrop.show{
-      display: block;
-    }
+    .popup-backdrop.show{display:block;}
 
     /* Instructions */
     .instructions{
@@ -368,36 +292,25 @@
       line-height: 1.5;
       opacity: .88;
     }
-
     .instructions strong{
       color: var(--syd-gold);
-      display: block;
-      margin-bottom: 6px;
+      display:block;
+      margin-bottom:6px;
     }
 
     /* Legend */
     .legend{
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px solid rgba(255,255,255,.08);
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top:12px;
+      padding-top:12px;
+      border-top:1px solid rgba(255,255,255,.08);
     }
-
-    .legend-item{
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 12px;
-      opacity: .82;
-    }
-
+    .legend-item{display:flex; align-items:center; gap:6px; font-size:12px; opacity:.82;}
     .legend-color{
-      width: 16px;
-      height: 16px;
-      border-radius: 4px;
-      border: 1px solid rgba(255,255,255,.2);
+      width:16px; height:16px; border-radius:4px;
+      border:1px solid rgba(255,255,255,.2);
     }
   </style>
 </head>
@@ -422,59 +335,53 @@
     </header>
 
     <div class="container">
-    <div class="header">
-      <h1>Trabeculae Carneae</h1>
-      <p class="subtitle">Interactive Embroidery & Textbook Comparison</p>
-    </div>
-
-    <div class="card">
-      <div class="comparison-container" id="comparisonContainer">
-        <!-- Bottom image (textbook) -->
-        <div class="img-wrapper img-bottom">
-          <img src="../images/netters_L.png" alt="Textbook reference on the right" id="textbookImg">
-        </div>
-
-        <!-- Top image (embroidered) with clip -->
-        <div class="img-wrapper img-top" id="topImage">
-          <img src="../images/trabeculae_L.png" alt="Embroidered version on the left" id="embroideredImg">
-        </div>
-
-        <!-- Slider handle -->
-        <div class="slider-handle" id="sliderHandle"></div>
-
-        <!-- Hotspot overlay -->
-        <div class="hotspot-overlay">
-          <svg id="hotspotSvg" viewBox="0 0 100 100" preserveAspectRatio="none">
-            <!-- Hotspots will be added here via JavaScript -->
-          </svg>
-        </div>
+      <div class="header">
+        <h1>Trabeculae Carneae</h1>
+        <p class="subtitle">Interactive Embroidery & Textbook Comparison</p>
       </div>
 
-      <input
-        type="range"
-        min="0"
-        max="100"
-        value="50"
-        class="comparison-slider"
-        id="comparisonSlider"
-        aria-label="Image comparison slider"
-      >
+      <div class="card">
+        <div class="comparison-container" id="comparisonContainer">
+          <div class="img-wrapper img-bottom">
+            <img src="../images/netters_L.png" alt="Textbook reference" id="textbookImg">
+          </div>
 
-      <div class="instructions">
-        <strong>How to use:</strong>
-        • Drag the slider to compare embroidered vs textbook images<br>
-        • Tap any yellow circle to see detailed annotations<br>
-        • Works on mobile and desktop!
-      </div>
+          <div class="img-wrapper img-top" id="topImage">
+            <img src="../images/trabeculae_L.png" alt="Embroidered version" id="embroideredImg">
+          </div>
 
-      <div class="legend">
-        <div class="legend-item">
-          <div class="legend-color" style="background: rgba(242,169,0,.3); border-color: var(--syd-gold);"></div>
-          <span>Clickable structures</span>
+          <div class="slider-handle" id="sliderHandle"></div>
+
+          <div class="hotspot-overlay">
+            <svg id="hotspotSvg" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
+          </div>
+        </div>
+
+        <input
+          type="range"
+          min="0"
+          max="100"
+          value="50"
+          class="comparison-slider"
+          id="comparisonSlider"
+          aria-label="Image comparison slider"
+        >
+
+        <div class="instructions">
+          <strong>How to use:</strong>
+          • Drag the slider to compare embroidered vs textbook images<br>
+          • Tap any yellow circle to see detailed annotations<br>
+          • Works on mobile and desktop!
+        </div>
+
+        <div class="legend">
+          <div class="legend-item">
+            <div class="legend-color" style="background: rgba(242,169,0,.3); border-color: var(--syd-gold);"></div>
+            <span>Clickable structures</span>
+          </div>
         </div>
       </div>
     </div>
-  </div>
   </div>
 
   <!-- Annotation popup -->
@@ -493,110 +400,88 @@
   </div>
 
   <script>
-    // Anatomical structure data with positions and annotations
+    // ---------- Data ----------
     const structures = [
       {
         id: 'trabeculae',
         name: 'Trabeculae Carneae',
-        x: 35,  // percentage from left
-        y: 55,  // percentage from top
-        radius: 8, // percentage
+        x: 35, y: 55, radius: 8,
         whatTheyAre: 'Irregular ridges and muscular bumps lining the inside wall of the ventricle.',
         function: 'They help the heart muscle contract more efficiently and stop the ventricle walls from sticking together when the heart squeezes.'
       },
       {
         id: 'papillary',
         name: 'Papillary Muscles',
-        x: 50,
-        y: 70,
-        radius: 7,
+        x: 50, y: 70, radius: 7,
         whatTheyAre: 'Strong cone-shaped muscles sticking out from the ventricular wall (you can see superior and inferior ones in the image).',
         function: 'They tighten during each heartbeat to stop the valve from flipping backwards.'
       },
       {
         id: 'chordae',
         name: 'Chordae Tendineae',
-        x: 48,
-        y: 45,
-        radius: 6,
+        x: 48, y: 45, radius: 6,
         whatTheyAre: 'Thin, strong string-like cords connecting papillary muscles to the valve flaps.',
-        function: 'They act like parachute cords, holding the valve in place so blood doesn't leak backward.'
+        function: 'They act like parachute cords, holding the valve in place so blood doesn’t leak backward.'
       },
       {
         id: 'mitral',
         name: 'Mitral Valve Leaflets',
-        x: 50,
-        y: 28,
-        radius: 7,
+        x: 50, y: 28, radius: 7,
         whatTheyAre: 'The two flexible flaps of the valve between the left atrium and left ventricle (anterior & posterior leaflets).',
         function: 'They open to let blood flow forward into the ventricle and close to stop blood going backward.'
       },
       {
         id: 'myocardium',
         name: 'Left Ventricular Wall (Myocardium)',
-        x: 20,
-        y: 50,
-        radius: 8,
+        x: 20, y: 50, radius: 8,
         whatTheyAre: 'The thick muscular wall forming the chamber.',
         function: 'This is the main pump — it contracts powerfully to push blood to the body.'
       },
       {
         id: 'septum',
         name: 'Interventricular Septum',
-        x: 70,
-        y: 50,
-        radius: 7,
+        x: 70, y: 50, radius: 7,
         whatTheyAre: 'The wall separating the left and right ventricles.',
-        function: 'Keeps oxygen-rich and oxygen-poor blood separate and helps with the heart's pumping action.'
+        function: 'Keeps oxygen-rich and oxygen-poor blood separate and helps with the heart’s pumping action.'
       }
     ];
 
-    // Initialize hotspots
+    // ---------- Hotspots ----------
     const svg = document.getElementById('hotspotSvg');
-    
-    structures.forEach(structure => {
-      // Create circle
+
+    structures.forEach((structure, idx) => {
       const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
       circle.setAttribute('cx', structure.x);
       circle.setAttribute('cy', structure.y);
       circle.setAttribute('r', structure.radius);
       circle.classList.add('hotspot-circle');
-      circle.dataset.structureId = structure.id;
-      
-      // Create label (number)
+
       const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
       label.setAttribute('x', structure.x);
       label.setAttribute('y', structure.y + 1);
       label.classList.add('hotspot-label');
-      label.textContent = structures.indexOf(structure) + 1;
-      
+      label.textContent = String(idx + 1);
+
       svg.appendChild(circle);
       svg.appendChild(label);
-      
-      // Click handler
+
       circle.addEventListener('click', () => showAnnotation(structure));
     });
 
-    // Show annotation popup
     function showAnnotation(structure) {
       const popup = document.getElementById('annotationPopup');
       const backdrop = document.getElementById('popupBackdrop');
-      const title = document.getElementById('popupTitle');
-      const body = document.getElementById('popupBody');
-      
-      title.textContent = structure.name;
-      body.innerHTML = `
+      document.getElementById('popupTitle').textContent = structure.name;
+      document.getElementById('popupBody').innerHTML = `
         <strong>What they are:</strong>
         ${structure.whatTheyAre}
         <strong>Function:</strong>
         ${structure.function}
       `;
-      
       popup.classList.add('show');
       backdrop.classList.add('show');
     }
 
-    // Close popup
     function closePopup() {
       document.getElementById('annotationPopup').classList.remove('show');
       document.getElementById('popupBackdrop').classList.remove('show');
@@ -604,59 +489,55 @@
 
     document.getElementById('popupClose').addEventListener('click', closePopup);
     document.getElementById('popupBackdrop').addEventListener('click', closePopup);
-<script>
-  // --- Slider functionality (mobile-first, robust) ---
-  const handle = document.getElementById('sliderHandle');
-  const topImage = document.getElementById('topImage');
-  const slider = document.getElementById('comparisonSlider');
-  const containerEl = document.getElementById('comparisonContainer');
 
-  function applyComparisonSplit(value) {
-    const percentage = Math.max(0, Math.min(100, Number(value) || 0));
-    const clipInset = `inset(0 ${100 - percentage}% 0 0)`;
+    // ---------- Slider (rebuilt from scratch) ----------
+    const container = document.getElementById('comparisonContainer');
+    const topImage = document.getElementById('topImage');
+    const handle = document.getElementById('sliderHandle');
+    const slider = document.getElementById('comparisonSlider');
 
-    // Move the visible handle line
-    handle.style.left = `${percentage}%`;
+    function setSplit(percent) {
+      const p = Math.max(0, Math.min(100, percent));
+      // show LEFT part of top image, hide the rest
+      const clip = `inset(0 ${100 - p}% 0 0)`;
+      topImage.style.clipPath = clip;
+      topImage.style.webkitClipPath = clip;
+      handle.style.left = `${p}%`;
+      slider.value = String(p);
+    }
 
-    // Reveal left part of the top image
-    topImage.style.clipPath = clipInset;
-    topImage.style.webkitClipPath = clipInset;
-  }
+    slider.addEventListener('input', (e) => {
+      setSplit(Number(e.target.value));
+    });
 
-  // Native range input: best support on iOS/Android
-  slider.addEventListener('input', (event) => {
-    applyComparisonSplit(event.target.value);
-  });
+    // Drag/tap on the image to move the split (mobile-friendly)
+    let dragging = false;
 
-  // Bonus: tap/drag anywhere on the image to move slider (nice on mobile)
-  function setFromClientX(clientX) {
-    const rect = containerEl.getBoundingClientRect();
-    const x = clientX - rect.left;
-    const pct = (x / rect.width) * 100;
-    slider.value = String(Math.max(0, Math.min(100, pct)));
-    applyComparisonSplit(slider.value);
-  }
+    function clientXToPercent(clientX) {
+      const rect = container.getBoundingClientRect();
+      const x = clientX - rect.left;
+      return (x / rect.width) * 100;
+    }
 
-  // Pointer events for tap/drag on the container (mobile + desktop)
-  let isDown = false;
+    container.addEventListener('pointerdown', (e) => {
+      // If user taps a hotspot, let the hotspot handle it
+      if (e.target.closest('.hotspot-circle')) return;
 
-  containerEl.addEventListener('pointerdown', (e) => {
-    // Allow hotspot clicks to still work
-    if (e.target.closest('.hotspot-circle')) return;
+      dragging = true;
+      container.setPointerCapture(e.pointerId);
+      setSplit(clientXToPercent(e.clientX));
+    });
 
-    isDown = true;
-    containerEl.setPointerCapture(e.pointerId);
-    setFromClientX(e.clientX);
-  });
+    container.addEventListener('pointermove', (e) => {
+      if (!dragging) return;
+      setSplit(clientXToPercent(e.clientX));
+    });
 
-  containerEl.addEventListener('pointermove', (e) => {
-    if (!isDown) return;
-    setFromClientX(e.clientX);
-  });
+    container.addEventListener('pointerup', () => { dragging = false; });
+    container.addEventListener('pointercancel', () => { dragging = false; });
 
-  containerEl.addEventListener('pointerup', () => { isDown = false; });
-  containerEl.addEventListener('pointercancel', () => { isDown = false; });
-
-  // Initialise
-  applyComparisonSplit(slider.value);
-</script>
+    // Initial position
+    setSplit(50);
+  </script>
+</body>
+</html>
