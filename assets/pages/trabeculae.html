@@ -164,6 +164,7 @@
     .img-top{
       z-index: 2;
       clip-path: inset(0 50% 0 0);
+      -webkit-clip-path: inset(0 50% 0 0);
     }
 
     /* Bottom image (textbook) */
@@ -600,7 +601,20 @@
       const percentage = (x / rect.width) * 100;
 
       handle.style.left = `${percentage}%`;
-      topImage.style.clipPath = `inset(0 ${100 - percentage}% 0 0)`;
+      const clipInset = `inset(0 ${100 - percentage}% 0 0)`;
+      topImage.style.clipPath = clipInset;
+      topImage.style.webkitClipPath = clipInset;
+    }
+
+
+    function getClientXFromTouch(event) {
+      if (event.touches && event.touches.length > 0) {
+        return event.touches[0].clientX;
+      }
+      if (event.changedTouches && event.changedTouches.length > 0) {
+        return event.changedTouches[0].clientX;
+      }
+      return null;
     }
 
     function isHotspotTarget(target) {
@@ -640,6 +654,35 @@
     });
 
     document.addEventListener('pointerup', stopDrag);
+
+    // Touch fallback for browsers/environments where Pointer Events are unreliable
+    container.addEventListener('touchstart', (event) => {
+      if (isHotspotTarget(event.target)) {
+        return;
+      }
+      const clientX = getClientXFromTouch(event);
+      if (clientX === null) {
+        return;
+      }
+      event.preventDefault();
+      startDrag(clientX);
+    }, { passive: false });
+
+    document.addEventListener('touchmove', (event) => {
+      if (!isDragging) {
+        return;
+      }
+      const clientX = getClientXFromTouch(event);
+      if (clientX === null) {
+        return;
+      }
+      event.preventDefault();
+      updateSlider(clientX);
+    }, { passive: false });
+
+    document.addEventListener('touchend', stopDrag);
+    document.addEventListener('touchcancel', stopDrag);
+
     document.addEventListener('pointercancel', stopDrag);
     container.addEventListener('pointerleave', () => {
       if (isDragging) {
