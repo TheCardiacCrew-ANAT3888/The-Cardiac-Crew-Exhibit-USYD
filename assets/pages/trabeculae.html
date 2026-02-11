@@ -164,6 +164,7 @@
     .img-top{
       z-index: 2;
       clip-path: inset(0 50% 0 0);
+      -webkit-clip-path: inset(0 50% 0 0);
     }
 
     /* Bottom image (textbook) */
@@ -223,8 +224,7 @@
       background: rgba(242,169,0,.9);
       transform: translateX(-50%);
       z-index: 10;
-      cursor: ew-resize;
-      touch-action: none;
+      pointer-events: none;
     }
 
     .slider-handle::before{
@@ -251,6 +251,13 @@
       color: #fff;
       font-weight: bold;
       pointer-events: none;
+    }
+
+    .comparison-slider{
+      width: 100%;
+      margin-top: 14px;
+      accent-color: var(--syd-gold);
+      touch-action: pan-y;
     }
 
     /* Annotation popup */
@@ -442,6 +449,16 @@
         </div>
       </div>
 
+      <input
+        type="range"
+        min="0"
+        max="100"
+        value="50"
+        class="comparison-slider"
+        id="comparisonSlider"
+        aria-label="Image comparison slider"
+      >
+
       <div class="instructions">
         <strong>How to use:</strong>
         • Drag the slider to compare embroidered vs textbook images<br>
@@ -587,68 +604,25 @@
     document.getElementById('popupClose').addEventListener('click', closePopup);
     document.getElementById('popupBackdrop').addEventListener('click', closePopup);
 
-    // Slider functionality
-    const container = document.getElementById('comparisonContainer');
+    // Slider functionality (rebuilt to use native range input for robust cross-device support)
     const handle = document.getElementById('sliderHandle');
     const topImage = document.getElementById('topImage');
-    let isDragging = false;
+    const slider = document.getElementById('comparisonSlider');
 
-    function updateSlider(clientX) {
-      const rect = container.getBoundingClientRect();
-      let x = clientX - rect.left;
-      x = Math.max(0, Math.min(x, rect.width));
-      const percentage = (x / rect.width) * 100;
-
+    function applyComparisonSplit(value) {
+      const percentage = Number(value);
+      const clipInset = `inset(0 ${100 - percentage}% 0 0)`;
       handle.style.left = `${percentage}%`;
-      topImage.style.clipPath = `inset(0 ${100 - percentage}% 0 0)`;
+      topImage.style.clipPath = clipInset;
+      topImage.style.webkitClipPath = clipInset;
     }
 
-    function isHotspotTarget(target) {
-      return !!target.closest('.hotspot-circle');
-    }
-
-    function startDrag(clientX) {
-      isDragging = true;
-      updateSlider(clientX);
-    }
-
-    function stopDrag() {
-      isDragging = false;
-    }
-
-    // Pointer events (covers mouse, touch, stylus)
-    handle.addEventListener('pointerdown', (event) => {
-      event.preventDefault();
-      handle.setPointerCapture(event.pointerId);
-      startDrag(event.clientX);
-    });
-
-    container.addEventListener('pointerdown', (event) => {
-      if (isHotspotTarget(event.target)) {
-        return;
-      }
-      event.preventDefault();
-      startDrag(event.clientX);
-    });
-
-    document.addEventListener('pointermove', (event) => {
-      if (!isDragging) {
-        return;
-      }
-      event.preventDefault();
-      updateSlider(event.clientX);
-    });
-
-    document.addEventListener('pointerup', stopDrag);
-    document.addEventListener('pointercancel', stopDrag);
-    container.addEventListener('pointerleave', () => {
-      if (isDragging) {
-        stopDrag();
-      }
+    slider.addEventListener('input', (event) => {
+      applyComparisonSplit(event.target.value);
     });
 
     // Set default split to center on load.
-    updateSlider(container.getBoundingClientRect().left + container.getBoundingClientRect().width / 2);
+    applyComparisonSplit(slider.value);
   </script>
 </body>
 </html>
