@@ -1,1 +1,596 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Trabeculae Carneae - Interactive Demo</title>
+  <meta name="theme-color" content="#8A1538" />
 
+  <style>
+    :root{
+      --syd-maroon:#8A1538;
+      --syd-gold:#F2A900;
+      --shadow:0 18px 50px rgba(0,0,0,.28);
+      --radius-xl:22px;
+      --radius-lg:18px;
+      --blur:18px;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --maxw: 520px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%; margin:0}
+    body{
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      color: rgba(255,255,255,.92);
+      background:#0b0b10;
+      overflow-x:hidden;
+    }
+
+    /* Background effects */
+    .bg{position:fixed; inset:0; z-index:-3;
+      background:
+        radial-gradient(1200px 900px at 20% 10%, rgba(242,169,0,.40), transparent 55%),
+        radial-gradient(1100px 850px at 90% 0%, rgba(138,21,56,.55), transparent 55%),
+        radial-gradient(1100px 850px at 80% 80%, rgba(242,169,0,.22), transparent 60%),
+        radial-gradient(900px 700px at 5% 85%, rgba(138,21,56,.35), transparent 60%),
+        linear-gradient(180deg, rgba(15,15,25,1), rgba(10,10,16,1));
+    }
+    .grain{
+      position:fixed; inset:-20%; z-index:-2; pointer-events:none;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='260' height='260' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E");
+      background-size:260px 260px;
+      mix-blend-mode: overlay;
+      opacity:.35;
+      transform:translateZ(0);
+    }
+    .vignette{position:fixed; inset:0; z-index:-1; pointer-events:none;
+      background: radial-gradient(circle at 50% 20%, transparent 35%, rgba(0,0,0,.45) 100%);
+    }
+
+    /* Container */
+    .container{
+      max-width: var(--maxw);
+      margin: 0 auto;
+      padding: 20px 14px;
+      padding-top: calc(20px + var(--safe-top));
+      padding-bottom: calc(40px + var(--safe-bottom));
+    }
+
+    /* Header */
+    .header{
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    h1{
+      margin:0 0 8px 0;
+      font-size:28px;
+      letter-spacing:-.02em;
+      background: linear-gradient(135deg, rgba(242,169,0,1), rgba(255,255,255,.95));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .subtitle{
+      opacity:.82;
+      font-size:14px;
+      line-height:1.4;
+    }
+
+    /* Card */
+    .card{
+      border-radius: var(--radius-lg);
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.08);
+      backdrop-filter: blur(var(--blur));
+      -webkit-backdrop-filter: blur(var(--blur));
+      box-shadow: var(--shadow);
+      padding: 18px;
+      margin-bottom: 20px;
+    }
+
+    /* Image comparison container */
+    .comparison-container{
+      position: relative;
+      width: 100%;
+      max-width: 100%;
+      aspect-ratio: 1;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #000;
+      user-select: none;
+      touch-action: pan-y pinch-zoom;
+    }
+
+    .img-wrapper{
+      position: absolute;
+      inset: 0;
+    }
+
+    .img-wrapper img{
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      pointer-events: none;
+    }
+
+    /* Top image (embroidered) with clip */
+    .img-top{
+      z-index: 2;
+      clip-path: inset(0 50% 0 0);
+    }
+
+    /* Bottom image (textbook) */
+    .img-bottom{
+      z-index: 1;
+    }
+
+    /* SVG overlay for hotspots */
+    .hotspot-overlay{
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    .hotspot-overlay svg{
+      width: 100%;
+      height: 100%;
+    }
+
+    .hotspot-circle{
+      fill: rgba(242,169,0,.15);
+      stroke: rgba(242,169,0,.85);
+      stroke-width: 2;
+      cursor: pointer;
+      pointer-events: all;
+      transition: all 0.2s ease;
+    }
+
+    .hotspot-circle:hover,
+    .hotspot-circle:active{
+      fill: rgba(242,169,0,.35);
+      stroke: rgba(242,169,0,1);
+      stroke-width: 3;
+    }
+
+    .hotspot-label{
+      fill: rgba(255,255,255,.95);
+      font-size: 12px;
+      font-weight: 600;
+      pointer-events: none;
+      text-anchor: middle;
+      paint-order: stroke;
+      stroke: rgba(0,0,0,.8);
+      stroke-width: 3px;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* Slider handle */
+    .slider-handle{
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: rgba(242,169,0,.9);
+      transform: translateX(-50%);
+      z-index: 10;
+      cursor: ew-resize;
+      touch-action: none;
+    }
+
+    .slider-handle::before{
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 44px;
+      height: 44px;
+      background: rgba(242,169,0,.95);
+      border-radius: 50%;
+      border: 3px solid rgba(255,255,255,.9);
+      box-shadow: 0 4px 12px rgba(0,0,0,.4);
+    }
+
+    .slider-handle::after{
+      content: '⟷';
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 18px;
+      color: #fff;
+      font-weight: bold;
+      pointer-events: none;
+    }
+
+    /* Annotation popup */
+    .annotation-popup{
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      max-width: min(400px, calc(100vw - 40px));
+      border-radius: var(--radius-lg);
+      border:1px solid rgba(255,255,255,.18);
+      background: rgba(12,12,18,.95);
+      backdrop-filter: blur(var(--blur));
+      -webkit-backdrop-filter: blur(var(--blur));
+      box-shadow: 0 20px 60px rgba(0,0,0,.6);
+      padding: 18px;
+      z-index: 1000;
+      display: none;
+      animation: popIn 0.2s ease;
+    }
+
+    .annotation-popup.show{
+      display: block;
+    }
+
+    @keyframes popIn {
+      from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.9);
+      }
+      to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+      }
+    }
+
+    .popup-header{
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .popup-title{
+      font-size: 18px;
+      font-weight: 700;
+      margin: 0;
+      color: var(--syd-gold);
+    }
+
+    .popup-close{
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.08);
+      color: #fff;
+      font-size: 18px;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      touch-action: manipulation;
+    }
+
+    .popup-close:active{
+      transform: scale(0.95);
+    }
+
+    .popup-body{
+      font-size: 14px;
+      line-height: 1.5;
+      opacity: .92;
+    }
+
+    .popup-body strong{
+      color: rgba(255,255,255,1);
+      display: block;
+      margin-top: 10px;
+      margin-bottom: 4px;
+    }
+
+    .popup-body strong:first-child{
+      margin-top: 0;
+    }
+
+    .popup-backdrop{
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.5);
+      z-index: 999;
+      display: none;
+    }
+
+    .popup-backdrop.show{
+      display: block;
+    }
+
+    /* Instructions */
+    .instructions{
+      background: rgba(0,0,0,.18);
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 13px;
+      line-height: 1.5;
+      opacity: .88;
+    }
+
+    .instructions strong{
+      color: var(--syd-gold);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    /* Legend */
+    .legend{
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255,255,255,.08);
+    }
+
+    .legend-item{
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      opacity: .82;
+    }
+
+    .legend-color{
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      border: 1px solid rgba(255,255,255,.2);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="bg"></div>
+  <div class="grain"></div>
+  <div class="vignette"></div>
+
+  <div class="container">
+    <div class="header">
+      <h1>Trabeculae Carneae</h1>
+      <p class="subtitle">Interactive Embroidery & Textbook Comparison</p>
+    </div>
+
+    <div class="card">
+      <div class="comparison-container" id="comparisonContainer">
+        <!-- Bottom image (textbook) -->
+        <div class="img-wrapper img-bottom">
+          <img src="netters_R.png" alt="Textbook reference" id="textbookImg">
+        </div>
+
+        <!-- Top image (embroidered) with clip -->
+        <div class="img-wrapper img-top" id="topImage">
+          <img src="trabeculae_R.png" alt="Embroidered version" id="embroideredImg">
+        </div>
+
+        <!-- Slider handle -->
+        <div class="slider-handle" id="sliderHandle"></div>
+
+        <!-- Hotspot overlay -->
+        <div class="hotspot-overlay">
+          <svg id="hotspotSvg" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <!-- Hotspots will be added here via JavaScript -->
+          </svg>
+        </div>
+      </div>
+
+      <div class="instructions">
+        <strong>How to use:</strong>
+        • Drag the slider to compare embroidered vs textbook images<br>
+        • Tap any yellow circle to see detailed annotations<br>
+        • Works on mobile and desktop!
+      </div>
+
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-color" style="background: rgba(242,169,0,.3); border-color: var(--syd-gold);"></div>
+          <span>Clickable structures</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Annotation popup -->
+  <div class="popup-backdrop" id="popupBackdrop"></div>
+  <div class="annotation-popup" id="annotationPopup">
+    <div class="popup-header">
+      <h3 class="popup-title" id="popupTitle">Structure Name</h3>
+      <button class="popup-close" id="popupClose">✕</button>
+    </div>
+    <div class="popup-body" id="popupBody">
+      <strong>What they are:</strong>
+      Description here
+      <strong>Function:</strong>
+      Function here
+    </div>
+  </div>
+
+  <script>
+    // Anatomical structure data with positions and annotations
+    const structures = [
+      {
+        id: 'trabeculae',
+        name: 'Trabeculae Carneae',
+        x: 35,  // percentage from left
+        y: 55,  // percentage from top
+        radius: 8, // percentage
+        whatTheyAre: 'Irregular ridges and muscular bumps lining the inside wall of the ventricle.',
+        function: 'They help the heart muscle contract more efficiently and stop the ventricle walls from sticking together when the heart squeezes.'
+      },
+      {
+        id: 'papillary',
+        name: 'Papillary Muscles',
+        x: 50,
+        y: 70,
+        radius: 7,
+        whatTheyAre: 'Strong cone-shaped muscles sticking out from the ventricular wall (you can see superior and inferior ones in the image).',
+        function: 'They tighten during each heartbeat to stop the valve from flipping backwards.'
+      },
+      {
+        id: 'chordae',
+        name: 'Chordae Tendineae',
+        x: 48,
+        y: 45,
+        radius: 6,
+        whatTheyAre: 'Thin, strong string-like cords connecting papillary muscles to the valve flaps.',
+        function: 'They act like parachute cords, holding the valve in place so blood doesn't leak backward.'
+      },
+      {
+        id: 'mitral',
+        name: 'Mitral Valve Leaflets',
+        x: 50,
+        y: 28,
+        radius: 7,
+        whatTheyAre: 'The two flexible flaps of the valve between the left atrium and left ventricle (anterior & posterior leaflets).',
+        function: 'They open to let blood flow forward into the ventricle and close to stop blood going backward.'
+      },
+      {
+        id: 'myocardium',
+        name: 'Left Ventricular Wall (Myocardium)',
+        x: 20,
+        y: 50,
+        radius: 8,
+        whatTheyAre: 'The thick muscular wall forming the chamber.',
+        function: 'This is the main pump — it contracts powerfully to push blood to the body.'
+      },
+      {
+        id: 'septum',
+        name: 'Interventricular Septum',
+        x: 70,
+        y: 50,
+        radius: 7,
+        whatTheyAre: 'The wall separating the left and right ventricles.',
+        function: 'Keeps oxygen-rich and oxygen-poor blood separate and helps with the heart's pumping action.'
+      }
+    ];
+
+    // Initialize hotspots
+    const svg = document.getElementById('hotspotSvg');
+    
+    structures.forEach(structure => {
+      // Create circle
+      const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      circle.setAttribute('cx', structure.x);
+      circle.setAttribute('cy', structure.y);
+      circle.setAttribute('r', structure.radius);
+      circle.classList.add('hotspot-circle');
+      circle.dataset.structureId = structure.id;
+      
+      // Create label (number)
+      const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      label.setAttribute('x', structure.x);
+      label.setAttribute('y', structure.y + 1);
+      label.classList.add('hotspot-label');
+      label.textContent = structures.indexOf(structure) + 1;
+      
+      svg.appendChild(circle);
+      svg.appendChild(label);
+      
+      // Click handler
+      circle.addEventListener('click', () => showAnnotation(structure));
+    });
+
+    // Show annotation popup
+    function showAnnotation(structure) {
+      const popup = document.getElementById('annotationPopup');
+      const backdrop = document.getElementById('popupBackdrop');
+      const title = document.getElementById('popupTitle');
+      const body = document.getElementById('popupBody');
+      
+      title.textContent = structure.name;
+      body.innerHTML = `
+        <strong>What they are:</strong>
+        ${structure.whatTheyAre}
+        <strong>Function:</strong>
+        ${structure.function}
+      `;
+      
+      popup.classList.add('show');
+      backdrop.classList.add('show');
+    }
+
+    // Close popup
+    function closePopup() {
+      document.getElementById('annotationPopup').classList.remove('show');
+      document.getElementById('popupBackdrop').classList.remove('show');
+    }
+
+    document.getElementById('popupClose').addEventListener('click', closePopup);
+    document.getElementById('popupBackdrop').addEventListener('click', closePopup);
+
+    // Slider functionality
+    const container = document.getElementById('comparisonContainer');
+    const handle = document.getElementById('sliderHandle');
+    const topImage = document.getElementById('topImage');
+    let isDragging = false;
+
+    function updateSlider(clientX) {
+      const rect = container.getBoundingClientRect();
+      let x = clientX - rect.left;
+      x = Math.max(0, Math.min(x, rect.width));
+      const percentage = (x / rect.width) * 100;
+      
+      handle.style.left = percentage + '%';
+      topImage.style.clipPath = `inset(0 ${100 - percentage}% 0 0)`;
+    }
+
+    // Mouse events
+    handle.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      e.preventDefault();
+    });
+    
+    document.addEventListener('mouseup', () => {
+      isDragging = false;
+    });
+    
+    document.addEventListener('mousemove', (e) => {
+      if (isDragging) {
+        e.preventDefault();
+        updateSlider(e.clientX);
+      }
+    });
+
+    // Touch events
+    handle.addEventListener('touchstart', (e) => {
+      isDragging = true;
+      e.preventDefault();
+    }, { passive: false });
+    
+    document.addEventListener('touchend', () => {
+      isDragging = false;
+    });
+    
+    document.addEventListener('touchmove', (e) => {
+      if (isDragging) {
+        e.preventDefault();
+        updateSlider(e.touches[0].clientX);
+      }
+    }, { passive: false });
+
+    // Also allow dragging anywhere on container
+    container.addEventListener('mousedown', (e) => {
+      if (!e.target.closest('.hotspot-circle')) {
+        isDragging = true;
+        updateSlider(e.clientX);
+      }
+    });
+    
+    container.addEventListener('touchstart', (e) => {
+      if (!e.target.closest('.hotspot-circle')) {
+        isDragging = true;
+        updateSlider(e.touches[0].clientX);
+      }
+    }, { passive: false });
+  </script>
+</body>
+</html>
