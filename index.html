@@ -1350,6 +1350,17 @@ from cardiac muscle to cultural meaning—shapes both the anatomy of the heart a
       }
     }
 
+    function setInitialViewFromUrl(){
+      const params = new URLSearchParams(window.location.search);
+      const requestedView = params.get("view") || window.location.hash.replace("#", "");
+      const allowedViews = new Set(["home", "exhibits", "video", "about"]);
+
+      if (allowedViews.has(requestedView)) {
+        setView(requestedView);
+        if (requestedView === "video") loadYouTubeFull();
+      }
+    }
+
     function init(){
       if($("#arTag")) $("#arTag").textContent = state.arOn ? "On" : "Off";
       $("#arToggle")?.setAttribute("aria-checked", state.arOn ? "true" : "false");
@@ -1365,6 +1376,7 @@ from cardiac muscle to cultural meaning—shapes both the anatomy of the heart a
       });
 
       initNav();
+      setInitialViewFromUrl();
       openWelcomeModal(true);
     }
 
