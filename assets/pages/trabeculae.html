@@ -619,6 +619,93 @@
 
     slider.addEventListener('input', (event) => {
       applyComparisonSplit(event.target.value);
+      const clipInset = `inset(0 ${100 - percentage}% 0 0)`;
+      topImage.style.clipPath = clipInset;
+      topImage.style.webkitClipPath = clipInset;
+    }
+
+
+    function getClientXFromTouch(event) {
+      if (event.touches && event.touches.length > 0) {
+        return event.touches[0].clientX;
+      }
+      if (event.changedTouches && event.changedTouches.length > 0) {
+        return event.changedTouches[0].clientX;
+      }
+      return null;
+    }
+
+    function isHotspotTarget(target) {
+      return !!target.closest('.hotspot-circle');
+    }
+
+    function startDrag(clientX) {
+      isDragging = true;
+      updateSlider(clientX);
+    }
+
+    function stopDrag() {
+      isDragging = false;
+    }
+
+    // Pointer events (covers mouse, touch, stylus)
+    handle.addEventListener('pointerdown', (event) => {
+      event.preventDefault();
+      handle.setPointerCapture(event.pointerId);
+      startDrag(event.clientX);
+    });
+
+    container.addEventListener('pointerdown', (event) => {
+      if (isHotspotTarget(event.target)) {
+        return;
+      }
+      event.preventDefault();
+      startDrag(event.clientX);
+    });
+
+    document.addEventListener('pointermove', (event) => {
+      if (!isDragging) {
+        return;
+      }
+      event.preventDefault();
+      updateSlider(event.clientX);
+    });
+
+    document.addEventListener('pointerup', stopDrag);
+
+    // Touch fallback for browsers/environments where Pointer Events are unreliable
+    container.addEventListener('touchstart', (event) => {
+      if (isHotspotTarget(event.target)) {
+        return;
+      }
+      const clientX = getClientXFromTouch(event);
+      if (clientX === null) {
+        return;
+      }
+      event.preventDefault();
+      startDrag(clientX);
+    }, { passive: false });
+
+    document.addEventListener('touchmove', (event) => {
+      if (!isDragging) {
+        return;
+      }
+      const clientX = getClientXFromTouch(event);
+      if (clientX === null) {
+        return;
+      }
+      event.preventDefault();
+      updateSlider(clientX);
+    }, { passive: false });
+
+    document.addEventListener('touchend', stopDrag);
+    document.addEventListener('touchcancel', stopDrag);
+
+    document.addEventListener('pointercancel', stopDrag);
+    container.addEventListener('pointerleave', () => {
+      if (isDragging) {
+        stopDrag();
+      }
     });
 
     // Set default split to center on load.
