@@ -108,6 +108,31 @@
       -webkit-text-fill-color: transparent;
     }
     .subtitle{opacity:.82; font-size:14px; line-height:1.4;}
+    .general-caption{
+      text-align:left;
+      font-size:14px;
+      line-height:1.55;
+      margin: 14px 0 0;
+      opacity:.92;
+    }
+
+    .audio-btn{
+      margin: 10px auto 0;
+      width: fit-content;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.10);
+      color: rgba(255,255,255,.95);
+      font-size:14px;
+      font-weight:600;
+      cursor:pointer;
+      touch-action:manipulation;
+    }
+    .audio-btn:active{transform: scale(.98);}
 
     /* Card */
     .card{
@@ -119,6 +144,18 @@
       box-shadow: var(--shadow);
       padding: 18px;
       margin-bottom: 20px;
+    }
+
+    .figure-title{
+      margin: 0 0 8px;
+      font-size:20px;
+      color: var(--syd-gold);
+    }
+    .figure-caption{
+      margin: 0 0 14px;
+      font-size:14px;
+      line-height:1.5;
+      opacity:.92;
     }
 
     /* Image comparison container */
@@ -332,25 +369,40 @@
         </div>
         <a class="iconbtn" href="../../index.html?view=exhibits" aria-label="Back to exhibits">⟵</a>
       </div>
+      <button class="audio-btn" id="audioButton" type="button" aria-label="Play trabeculae narration">
+        ▶ Play audio narration
+      </button>
     </header>
 
     <div class="container">
       <div class="header">
         <h1>Trabeculae Carneae</h1>
         <p class="subtitle">Interactive Embroidery & Textbook Comparison</p>
+        <p class="general-caption">
+          In the internal space of the heart's bottom chamber, known as ventricles, there are a series of muscular irregular structures known as the trabeculae carnea. Trabeculae carnea means meaty ridges in Latin. The trabeculae carnea have a unique beauty in their design and provide structural support to the heart while also assisting in pumping blood from the bottom chamber to the top chamber and also around the body.
+        </p>
+        <p class="general-caption">
+          These patchwork embroidery sections display the internal features of the left ventricle of the heart. The combination of patchwork and embroidery demonstrates the textural aspects of the trabeculae carnea.
+        </p>
       </div>
 
       <div class="card">
-        <div class="comparison-container" id="comparisonContainer">
+        <h2 class="figure-title">Figure 1.</h2>
+        <p class="figure-caption">
+          The patchwork embroidery on the right shows the left bottom chamber with the muscle wall removed.<br>
+          From: Dr Frank Netter's hand-drawn illustrations of 'Flap opened in infero-lateral wall of left ventricle'
+        </p>
+
+        <div class="comparison-container" id="comparisonContainer1">
           <div class="img-wrapper img-bottom">
-            <img src="../images/netters_L.png" alt="Textbook reference" id="textbookImg">
+            <img src="../images/netters_L.png" alt="Textbook reference" id="textbookImg1">
           </div>
 
-          <div class="img-wrapper img-top" id="topImage">
-            <img src="../images/trabeculae_L.png" alt="Embroidered version" id="embroideredImg">
+          <div class="img-wrapper img-top" id="topImage1">
+            <img src="../images/trabeculae_L.png" alt="Embroidered version" id="embroideredImg1">
           </div>
 
-          <div class="slider-handle" id="sliderHandle"></div>
+          <div class="slider-handle" id="sliderHandle1"></div>
 
           <div class="hotspot-overlay">
             <svg id="hotspotSvg" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
@@ -363,7 +415,7 @@
           max="100"
           value="50"
           class="comparison-slider"
-          id="comparisonSlider"
+          id="comparisonSlider1"
           aria-label="Image comparison slider"
         >
 
@@ -380,6 +432,36 @@
             <span>Clickable structures</span>
           </div>
         </div>
+      </div>
+
+      <div class="card">
+        <h2 class="figure-title">Figure 2.</h2>
+        <p class="figure-caption">
+          The patchwork embroidery on the left shows the left lower chamber, known as the ventricle, with the left valve between the top and bottom chambers removed.<br>
+          From: Dr Frank Netter's hand-drawn illustrations of 'Section through left atrium and ventricle with left atrioventricular (mitral valve) cut away'
+        </p>
+
+        <div class="comparison-container" id="comparisonContainer2">
+          <div class="img-wrapper img-bottom">
+            <img src="../images/netters_R.png" alt="Textbook reference for figure 2">
+          </div>
+
+          <div class="img-wrapper img-top" id="topImage2">
+            <img src="../images/trabeculae_R.png" alt="Embroidered version for figure 2">
+          </div>
+
+          <div class="slider-handle" id="sliderHandle2"></div>
+        </div>
+
+        <input
+          type="range"
+          min="0"
+          max="100"
+          value="50"
+          class="comparison-slider"
+          id="comparisonSlider2"
+          aria-label="Image comparison slider for figure 2"
+        >
       </div>
     </div>
   </div>
@@ -490,54 +572,92 @@
     document.getElementById('popupClose').addEventListener('click', closePopup);
     document.getElementById('popupBackdrop').addEventListener('click', closePopup);
 
-    // ---------- Slider (rebuilt from scratch) ----------
-    const container = document.getElementById('comparisonContainer');
-    const topImage = document.getElementById('topImage');
-    const handle = document.getElementById('sliderHandle');
-    const slider = document.getElementById('comparisonSlider');
+    // ---------- Audio ----------
+    const audio = new Audio('../audio/trabeculae_en.mp3');
+    const audioButton = document.getElementById('audioButton');
 
-    function setSplit(percent) {
-      const p = Math.max(0, Math.min(100, percent));
-      // show LEFT part of top image, hide the rest
-      const clip = `inset(0 ${100 - p}% 0 0)`;
-      topImage.style.clipPath = clip;
-      topImage.style.webkitClipPath = clip;
-      handle.style.left = `${p}%`;
-      slider.value = String(p);
+    function updateAudioButton() {
+      audioButton.textContent = audio.paused ? '▶ Play audio narration' : '⏸ Pause audio narration';
     }
 
-    slider.addEventListener('input', (e) => {
-      setSplit(Number(e.target.value));
+    audioButton.addEventListener('click', async () => {
+      if (audio.paused) {
+        try {
+          await audio.play();
+        } catch (err) {
+          console.error('Audio playback failed:', err);
+        }
+      } else {
+        audio.pause();
+      }
+      updateAudioButton();
     });
 
-    // Drag/tap on the image to move the split (mobile-friendly)
-    let dragging = false;
+    audio.addEventListener('ended', updateAudioButton);
 
-    function clientXToPercent(clientX) {
-      const rect = container.getBoundingClientRect();
-      const x = clientX - rect.left;
-      return (x / rect.width) * 100;
+    // ---------- Sliders ----------
+    function initComparisonSlider({ containerId, topImageId, handleId, sliderId, ignoreSelector }) {
+      const container = document.getElementById(containerId);
+      const topImage = document.getElementById(topImageId);
+      const handle = document.getElementById(handleId);
+      const slider = document.getElementById(sliderId);
+
+      function setSplit(percent) {
+        const p = Math.max(0, Math.min(100, percent));
+        const clip = `inset(0 ${100 - p}% 0 0)`;
+        topImage.style.clipPath = clip;
+        topImage.style.webkitClipPath = clip;
+        handle.style.left = `${p}%`;
+        slider.value = String(p);
+      }
+
+      slider.addEventListener('input', (e) => {
+        setSplit(Number(e.target.value));
+      });
+
+      let dragging = false;
+
+      function clientXToPercent(clientX) {
+        const rect = container.getBoundingClientRect();
+        const x = clientX - rect.left;
+        return (x / rect.width) * 100;
+      }
+
+      container.addEventListener('pointerdown', (e) => {
+        if (ignoreSelector && e.target.closest(ignoreSelector)) return;
+
+        dragging = true;
+        container.setPointerCapture(e.pointerId);
+        setSplit(clientXToPercent(e.clientX));
+      });
+
+      container.addEventListener('pointermove', (e) => {
+        if (!dragging) return;
+        setSplit(clientXToPercent(e.clientX));
+      });
+
+      container.addEventListener('pointerup', () => { dragging = false; });
+      container.addEventListener('pointercancel', () => { dragging = false; });
+
+      setSplit(50);
     }
 
-    container.addEventListener('pointerdown', (e) => {
-      // If user taps a hotspot, let the hotspot handle it
-      if (e.target.closest('.hotspot-circle')) return;
-
-      dragging = true;
-      container.setPointerCapture(e.pointerId);
-      setSplit(clientXToPercent(e.clientX));
+    initComparisonSlider({
+      containerId: 'comparisonContainer1',
+      topImageId: 'topImage1',
+      handleId: 'sliderHandle1',
+      sliderId: 'comparisonSlider1',
+      ignoreSelector: '.hotspot-circle'
     });
 
-    container.addEventListener('pointermove', (e) => {
-      if (!dragging) return;
-      setSplit(clientXToPercent(e.clientX));
+    initComparisonSlider({
+      containerId: 'comparisonContainer2',
+      topImageId: 'topImage2',
+      handleId: 'sliderHandle2',
+      sliderId: 'comparisonSlider2'
     });
 
-    container.addEventListener('pointerup', () => { dragging = false; });
-    container.addEventListener('pointercancel', () => { dragging = false; });
-
-    // Initial position
-    setSplit(50);
+    updateAudioButton();
   </script>
 </body>
 </html>
