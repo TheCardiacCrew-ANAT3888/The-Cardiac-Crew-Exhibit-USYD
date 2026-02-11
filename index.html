@@ -785,6 +785,9 @@
                 <button class="iconbtn" id="backFromVideo" aria-label="Back">⟵</button>
               </div>
 
+              <h1 style="margin-top:12px;">The Universal Search for Structure: A Journey Through the Heart</h1>
+              <p class="muted" style="margin:0;">multimedia component</p>
+
               <div class="hr"></div>
 
               <div style="position:relative; width:100%; aspect-ratio:16/9; border-radius:16px; overflow:hidden; border:1px solid rgba(255,255,255,.12); background: rgba(0,0,0,.18);">
@@ -800,8 +803,10 @@
 
               <div class="hr"></div>
 
-              <h2>Script</h2>
-              <div class="muted" id="videoScript" style="white-space:pre-wrap"></div>
+              <details>
+                <summary class="tag" style="margin-bottom:10px;">📜 <b>Script</b></summary>
+                <div class="muted" id="videoScript" style="white-space:pre-wrap"></div>
+              </details>
             </div>
           </div>
         </section>
@@ -1258,7 +1263,7 @@
     function loadYouTubeFull(){
       const iframe = document.getElementById("ytFull");
       if(!iframe) return;
-      if(iframe.src) return;
+      if(iframe.getAttribute("src")) return;
       iframe.src = `https://www.youtube.com/embed/${YT_FULL_ID}?rel=0&modestbranding=1&playsinline=1`;
     }
     function unloadYouTubeFull(){
